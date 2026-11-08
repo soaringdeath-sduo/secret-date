@@ -201,7 +201,8 @@
       { title:'Готовы доверить ему <span class="accent">одну маленькую тайну</span>?', subtitle:'Маршрут засекречен. Скука отменяется, объятия гарантируются. ✨' }
     ];
     const card = document.getElementById('card');
-    let stage = localStorage.getItem(INVITE_KEY) === '1' ? questions.length + (getDay()?2:1) : -1;
+    const replayFromLink = new URLSearchParams(window.location.search).get('replay') === '1';
+    let stage = replayFromLink ? -1 : (localStorage.getItem(INVITE_KEY) === '1' ? questions.length + (getDay()?2:1) : -1);
     let noCount=0;
     let incorrect=0;
     let ticker=null;
@@ -356,10 +357,12 @@
           <a class="button yes" href="${shareLink}" target="_blank" rel="noopener noreferrer">Отправить Игорю в Telegram ✉️</a>
           <small>В Telegram останется выбрать чат и нажать «Отправить». Сам сайт сообщение не отправляет.</small>
           <button class="change-date" id="change-date" type="button">Изменить выбранный день</button>
+          <button class="change-date" id="replay-questions" type="button">💌 Пройти открытку с вопросами заново</button>
         </div>
         <div class="unlock" id="unlock-box" aria-live="polite"></div>
       </div>`;
       document.getElementById('change-date').addEventListener('click',()=>{stage=questions.length+1;render();});
+      document.getElementById('replay-questions').addEventListener('click',()=>{stage=-1;render();});
       enableTicker();
     }
     function celebrate() {
