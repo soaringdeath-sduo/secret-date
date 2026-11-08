@@ -174,6 +174,12 @@
     const CITY = 'г. Луга';
     const SECRET = '2810';
     const DATE_KEY = 'sd2810-selected-day-v1';
+    // Выбранная ведущим доступность передаётся через параметр ссылки, а не между устройствами автоматически.
+    const planParam = new URLSearchParams(window.location.search).get('plan');
+    if (/^[0-9a-f]{1,3}$/i.test(planParam||'')) {
+      const mask = parseInt(planParam,16);
+      if(mask>0 && mask<=511)localStorage.setItem('sd2810-plan-v1',String(mask));
+    }
     const DATES = {
       sat:{date:'14 ноября 2026 года',short:'14 ноября',week:'субботу',startUTC:Date.UTC(2026,10,14,8,30,0)},
       sun:{date:'15 ноября 2026 года',short:'15 ноября',week:'воскресенье',startUTC:Date.UTC(2026,10,15,8,30,0)}
@@ -329,7 +335,7 @@
         const choose=key=>{
           const previous=localStorage.getItem(DATE_KEY);
           localStorage.setItem(DATE_KEY,key);
-          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-secret-ending-v1'])localStorage.removeItem(k);}
+          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-route-v6','sd2810-route-origin-v6','sd2810-secret-ending-v1','sd2810-secret-ending-v2','sd2810-secret-category-v1','sd2810-movie-v1'])localStorage.removeItem(k);}
           stage=questions.length+2;render();celebrate();
         };
         document.getElementById('choose-sat').addEventListener('click',()=>choose('sat'));
