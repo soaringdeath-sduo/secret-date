@@ -149,6 +149,13 @@
     .launch-btn{display:block!important;width:100%;text-align:center;text-decoration:none!important;margin:15px auto 4px;padding:17px 9px!important;border-radius:15px!important;font-size:14px!important}
     .host-label{font-size:11px;color:#efc79d;margin:10px 0 0}
     .host-entry{border:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;padding:7px}
+    .date-options{display:grid;gap:12px;width:100%;margin:22px 0}
+    .date-option{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;min-height:78px;padding:15px 18px;text-align:left;color:#fff3f7;background:rgba(255,165,199,.08);border:1px solid rgba(255,200,222,.32);border-radius:17px;cursor:pointer;transition:transform .2s,background .2s}
+    .date-option:hover,.date-option:focus-visible{transform:translateY(-2px);background:rgba(255,169,199,.2);border-color:#ffd0e3}
+    .date-option strong{font-size:17px;display:block}.date-option small{font-size:12px;color:#d9bed0;display:block;margin-top:3px}
+    .date-confirm{margin-top:14px;width:100%;padding:14px;border:1px solid rgba(255,194,220,.2);background:rgba(255,194,220,.08);border-radius:17px}
+    .date-confirm p{font-size:13px;line-height:1.6;color:#ffe1ed;margin:7px 0}.date-confirm .button{display:block;width:100%;margin:12px auto;padding:16px 9px;font-size:14px;text-align:center;text-decoration:none}
+    .date-confirm small{font-size:11px;color:#d1b5c8}.change-date{background:none;border:0;color:#ffcade;text-decoration:underline;padding:11px 5px;cursor:pointer;font:inherit;font-size:12px}
   </style>
 </head>
 <body>
@@ -163,16 +170,20 @@
   <script>
     "use strict";
     // Чтобы поменять дату и время, достаточно изменить константы ниже.
-    const DATE = '15 ноября 2026 года';
     const TIME = '11:30';
     const CITY = 'г. Луга';
-    const SECRET = '2810'; // принимается 28.10, 28/10 или 2810
-    const EVENT_START = Date.UTC(2026, 10, 15, 8, 30, 0); // 15.11.2026 11:30 по Москве
+    const SECRET = '2810';
+    const DATE_KEY = 'sd2810-selected-day-v1';
+    const DATES = {
+      sat:{date:'14 ноября 2026 года',short:'14 ноября',week:'субботу',startUTC:Date.UTC(2026,10,14,8,30,0)},
+      sun:{date:'15 ноября 2026 года',short:'15 ноября',week:'воскресенье',startUTC:Date.UTC(2026,10,15,8,30,0)}
+    };
+    const getDay = () => DATES[localStorage.getItem(DATE_KEY)] || null;
     const INVITE_KEY = 'sd2810-invite-approved-v3';
     const HOST_KEY = 'sd2810-host-v3';
-    const HOST_CODE = '2114-2810'; // только для удобства; код в публичном HTML не защищён
+    const HOST_CODE = '2114-2810'; // только для тестирования — виден в HTML
     const isHost = () => localStorage.getItem(HOST_KEY) === '1';
-    const isOpen = () => isHost() || Date.now() >= EVENT_START;
+    const isOpen = () => isHost() || (!!getDay() && Date.now() >= getDay().startUTC);
     const formatWait = ms => {
       const total = Math.max(0, Math.ceil(ms / 1000));
       const days = Math.floor(total / 86400);
@@ -190,37 +201,38 @@
       { title:'Готовы доверить ему <span class="accent">одну маленькую тайну</span>?', subtitle:'Маршрут засекречен. Скука отменяется, объятия гарантируются. ✨' }
     ];
     const card = document.getElementById('card');
-    let stage = localStorage.getItem(INVITE_KEY) === '1' ? questions.length + 1 : -1;
+    let stage = localStorage.getItem(INVITE_KEY) === '1' ? questions.length + (getDay()?2:1) : -1;
     let noCount=0;
     let incorrect=0;
     let ticker=null;
     function renderLaunch(){
       const box=document.getElementById('unlock-box');
-      if(!box)return;
+      const chosen=getDay();
+      if(!box||!chosen)return;
       if(isOpen()){
         box.innerHTML=`<p class="unlock-title">✨ Время приключения пришло!</p>
           <p class="unlock-description">Открой следующую главу, когда встретишься с Игорем.</p>
           <a href="secret_date_game_luga.html" class="button yes launch-btn">Начать секретный маршрут 💗</a>${isHost()?'<p class="host-label">🔧 Режим проверки: дата не ограничивает запуск</p>':''}`;
       }else{
         box.innerHTML=`<p class="unlock-title">🔒 Секретный маршрут пока закрыт</p>
-          <p class="unlock-description">Твоё приглашение действительно. Игра начнётся 15 ноября в 11:30 по Москве.</p>
-          <div class="countdown" role="timer">${formatWait(EVENT_START-Date.now())}</div>
+          <p class="unlock-description">Твоё приглашение действительно. Игра начнётся ${chosen.short} в ${TIME} по Москве.</p>
+          <div class="countdown" role="timer">${formatWait(chosen.startUTC-Date.now())}</div>
           <p class="unlock-description">До встречи! Не забудь открыть эту страницу в день свидания. ♡</p>`;
       }
     }
     function enableTicker(){
       if(ticker!==null){clearInterval(ticker);ticker=null;}
-      if(stage>questions.length){renderLaunch();ticker=setInterval(renderLaunch,1000);}
+      if(stage>questions.length+1){renderLaunch();ticker=setInterval(renderLaunch,1000);}
     }
     function hostTools(){
       const raw=prompt('Режим ведущего: введите код');
       if((raw||'').trim()!==HOST_CODE)return;
       localStorage.setItem(HOST_KEY,'1');
-      const option=prompt('Проверка: 1 — вопросы с начала, 2 — приглашение и таймер, 3 — открыть игру, 4 — выйти из режима ведущего','2');
+      const option=prompt('Проверка: 1 — вопросы, 2 — дата/таймер, 3 — игра, 4 — выйти, 5 — выбор даты','2');
       if(option==='4'){localStorage.removeItem(HOST_KEY);render();return;}
       if(option==='1'){stage=-1;localStorage.removeItem(INVITE_KEY);render();return;}
       if(option==='3'){localStorage.setItem(INVITE_KEY,'1');window.location.href='secret_date_game_luga.html';return;}
-      if(option==='2'){localStorage.setItem(INVITE_KEY,'1');stage=questions.length+1;render();return;}
+      if(option==='2'||option==='5'){localStorage.setItem(INVITE_KEY,'1');stage=option==='5'?questions.length+1:(getDay()?questions.length+2:questions.length+1);render();return;}
       render();
     }
 
@@ -301,6 +313,31 @@
         });
         return;
       }
+      if(stage===questions.length+1 || !getDay()){
+        card.innerHTML=`<div class="step reveal">
+          <div class="q-number">📅</div>
+          <p class="eyebrow">последняя деталь</p>
+          <h1 class="serif">Лиза, когда тебе <span class="accent">удобнее?</span></h1>
+          <p class="lead">Выбери день нашего свидания. Начало одинаковое — в <b>11:30</b>. Здесь нет неправильного ответа. 💗</p>
+          <div class="date-options">
+            <button class="date-option" id="choose-sat" type="button"><span><strong>Суббота, 14 ноября</strong><small>Начало в 11:30</small></span><span>🌷</span></button>
+            <button class="date-option" id="choose-sun" type="button"><span><strong>Воскресенье, 15 ноября</strong><small>Начало в 11:30</small></span><span>💌</span></button>
+          </div>
+          <p class="hint">После выбора появится твоё приглашение.</p>
+        </div>`;
+        const choose=key=>{
+          const previous=localStorage.getItem(DATE_KEY);
+          localStorage.setItem(DATE_KEY,key);
+          if(previous!==key){localStorage.removeItem('sd2810-route-v4');localStorage.removeItem('sd2810-route-origin-v4');}
+          stage=questions.length+2;render();celebrate();
+        };
+        document.getElementById('choose-sat').addEventListener('click',()=>choose('sat'));
+        document.getElementById('choose-sun').addEventListener('click',()=>choose('sun'));
+        return;
+      }
+      const chosen=getDay();
+      const shareText=`Игорь, я выбрала ${chosen.week}, ${chosen.short} 2026 года, в 11:30 ❤️ Жду нашего свидания!`;
+      const shareLink='https://t.me/share/url?url='+encodeURIComponent('https://soaringdeath-sduo.github.io/secret-date/')+'&text='+encodeURIComponent(shareText);
       card.innerHTML=`<div class="step reveal" id="final">
         <div class="final-heart" aria-hidden="true">♥</div>
         <p class="stamp">✓ личность подтверждена · пароль верный</p>
@@ -308,13 +345,21 @@
         <h1 class="serif invitation-title">Вы приглашены <span class="accent">на свидание!</span> ♡</h1>
         <p class="lead" style="margin-bottom:8px">Бекетова Елизавета Васильевна, ваше персональное приглашение:</p>
         <div class="details">
-          <div class="detail"><div class="ico">🗓️</div><div><span class="label">дата</span><strong>${DATE}</strong></div></div>
+          <div class="detail"><div class="ico">🗓️</div><div><span class="label">дата</span><strong>${chosen.date}</strong></div></div>
           <div class="detail"><div class="ico">🕙</div><div><span class="label">начало</span><strong>${TIME}</strong></div></div>
           <div class="detail"><div class="ico">📍</div><div><span class="label">город</span><strong>${CITY}</strong></div></div>
         </div>
         <div class="heartline" aria-hidden="true">♡ ♥ ♡</div>
+        <div class="date-confirm">
+          <p><b>💌 Сообщи Игорю выбранный день</b></p>
+          <p>Нажми кнопку, выбери чат Игоря в Telegram и отправь готовое сообщение. Тогда он точно будет знать, когда тебя ждать.</p>
+          <a class="button yes" href="${shareLink}" target="_blank" rel="noopener noreferrer">Отправить Игорю в Telegram ✉️</a>
+          <small>В Telegram останется выбрать чат и нажать «Отправить». Сам сайт сообщение не отправляет.</small>
+          <button class="change-date" id="change-date" type="button">Изменить выбранный день</button>
+        </div>
         <div class="unlock" id="unlock-box" aria-live="polite"></div>
       </div>`;
+      document.getElementById('change-date').addEventListener('click',()=>{stage=questions.length+1;render();});
       enableTicker();
     }
     function celebrate() {
