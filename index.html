@@ -329,7 +329,7 @@
         const choose=key=>{
           const previous=localStorage.getItem(DATE_KEY);
           localStorage.setItem(DATE_KEY,key);
-          if(previous!==key){localStorage.removeItem('sd2810-route-v4');localStorage.removeItem('sd2810-route-origin-v4');}
+          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-secret-ending-v1'])localStorage.removeItem(k);}
           stage=questions.length+2;render();celebrate();
         };
         document.getElementById('choose-sat').addEventListener('click',()=>choose('sat'));
