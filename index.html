@@ -164,10 +164,10 @@
     "use strict";
     // Чтобы поменять дату и время, достаточно изменить константы ниже.
     const DATE = '15 ноября 2026 года';
-    const TIME = '10:00';
+    const TIME = '11:30';
     const CITY = 'г. Луга';
     const SECRET = '2810'; // принимается 28.10, 28/10 или 2810
-    const EVENT_START = Date.UTC(2026, 10, 15, 7, 0, 0); // 15.11.2026 10:00 по Москве
+    const EVENT_START = Date.UTC(2026, 10, 15, 8, 30, 0); // 15.11.2026 11:30 по Москве
     const INVITE_KEY = 'sd2810-invite-approved-v3';
     const HOST_KEY = 'sd2810-host-v3';
     const HOST_CODE = '2114-2810'; // только для удобства; код в публичном HTML не защищён
@@ -203,7 +203,7 @@
           <a href="secret_date_game_luga.html" class="button yes launch-btn">Начать секретный маршрут 💗</a>${isHost()?'<p class="host-label">🔧 Режим проверки: дата не ограничивает запуск</p>':''}`;
       }else{
         box.innerHTML=`<p class="unlock-title">🔒 Секретный маршрут пока закрыт</p>
-          <p class="unlock-description">Твоё приглашение действительно. Игра начнётся 15 ноября в 10:00 по Москве.</p>
+          <p class="unlock-description">Твоё приглашение действительно. Игра начнётся 15 ноября в 11:30 по Москве.</p>
           <div class="countdown" role="timer">${formatWait(EVENT_START-Date.now())}</div>
           <p class="unlock-description">До встречи! Не забудь открыть эту страницу в день свидания. ♡</p>`;
       }
