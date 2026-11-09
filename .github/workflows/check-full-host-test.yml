@@ -8,6 +8,9 @@ on:
       - "daily.html"
       - "secret_date_game_luga.html"
       - "story-flow.js"
+      - "story-flow.css"
+      - "host-full-test.css"
+      - "scripts/check-swipe-layout.mjs"
       - "soundtrack.js"
       - "host-full-test.js"
       - "daily-content/**"
@@ -30,4 +33,6 @@ jobs:
         with:
           node-version: "22"
       - name: Verify isolated complete walkthrough
-        run: node scripts/check-full-host-test.mjs
+        run: |
+          node scripts/check-full-host-test.mjs
+          node scripts/check-swipe-layout.mjs
