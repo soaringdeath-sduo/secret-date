@@ -142,6 +142,18 @@
   return config.allow(position);
  }
  function isLast(){return position>=panels.length-1;}
+ // Only genuine story reveals ask for a second, deliberate tap.
+ // Every locked story-break and sealed envelope still uses config.allow.
+ const IMPORTANT_MINI_REVEALS={
+  1:[1,4],  // personal song and the first coordinate
+  3:[0],    // economy date ticket
+  6:[5],    // suspect surprise after the optional cafe
+  11:[0],   // second secret choice
+  13:[1]    // final personal song
+ };
+ function requiresMiniConfirmation(){
+  return (IMPORTANT_MINI_REVEALS[config?.stage]||[]).includes(position);
+ }
  function statusText(){
   if(!allowed())return '🔒 Следующий конверт пока закрыт. Заверши текущий этап ♡';
   if(!isLast())return 'Свайпни влево или нажми «Далее»';
@@ -172,23 +184,32 @@
   if(!config||!nextButton||!prevButton)return;
   const can=allowed(),hasNext=config.hasNext(),last=isLast();
   prevButton.disabled=position===0;
+  // Legacy in-content chapter links remain wired for compatibility,
+  // but only one visible action may take the couple to the next chapter.
+  for(const selector of ['#go','#lunch-go']){
+   const duplicate=panels[position]?.querySelector(selector);
+   if(duplicate)duplicate.hidden=last&&hasNext;
+  }
   // When a single screen already has its own action (spin, photo, GPS),
   // do not show a second, disabled "Next" control underneath it.
   nextButton.hidden=last&&!hasNext;
   prevButton.hidden=position===0;
   if(nav)nav.hidden=nextButton.hidden&&prevButton.hidden;
   nextButton.disabled=!can||(last&&!hasNext);
-  nextButton.textContent=can?(last?'Открыть следующую главу →':'Далее →'):'🔒 Конверт закрыт';
+  nextButton.textContent=can?(last?'Перейти к следующей главе →':'Далее →'):'🔒 Конверт закрыт';
   if(status)status.textContent=statusText();
  }
  function next(){
   if(!config||!allowed())return;
   if(position<panels.length-1){
-   confirmAdvance(()=>{
-    if(!config||!allowed())return;
-    saveStep(position+1);
-    show(position+1);
-   },'Открыть следующий мини-этап?');
+   const current=position,chapter=config.stage;
+   const advanceSlide=()=>{
+    if(!config||config.stage!==chapter||position!==current||!allowed())return;
+    saveStep(current+1);
+    show(current+1);
+   };
+   if(requiresMiniConfirmation())confirmAdvance(advanceSlide,'Открыть следующий сюжетный момент?');
+   else advanceSlide();
    return;
   }
   if(config.hasNext())config.advance();
