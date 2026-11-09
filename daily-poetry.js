@@ -170,7 +170,7 @@
    });
   }catch(e){if(host?.isConnected)host.innerHTML='<p class="day-status-note">Стихотворение пока не загрузилось. Попробуй обновить страницу.</p>';}
  }
- async function open(day,trigger,canOpen){
+ async function open(day,trigger,canOpen,afterQuiz=false){
   if(!canOpen)return;
   const old=document.getElementById('poetry-modal');pauseAll(old);if(old)old.remove();
   activeCard=trigger;
@@ -178,16 +178,41 @@
   modal.id='poetry-modal';modal.className='poetry-modal';modal.setAttribute('role','dialog');
   modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','Стихотворение для Лизы');
   modal.innerHTML='<div class="poetry-dialog"><button class="poetry-dialog-close" type="button" aria-label="Закрыть стихотворение">×</button>'+
-   '<div class="poetry-dialog-content"><p>Открываем твоё признание… ♡</p></div></div>';
+   (afterQuiz?'<div class="poetry-story-head"><span>ВЫПУСК ПРОЙДЕН ♡</span><strong>У Игоря есть для тебя несколько слов...</strong><small>Открыто сразу после 15-го вопроса</small></div>':'')+
+   '<div class="poetry-dialog-content"><p>Открываем твоё признание… ♡</p></div>'+
+   (afterQuiz?'<div class="poetry-story-next"><p>Листай влево или нажми «Далее» — впереди твоя печать за выпуск.</p><button type="button" class="btn" id="poetry-story-next">Далее → Моя печать ♡</button></div>':'')+
+   '</div>';
   document.body.appendChild(modal);
   document.body.classList.add('poetry-dialog-open');
   const close=modal.querySelector('.poetry-dialog-close');
   close.addEventListener('click',closeModal);
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+  if(afterQuiz){
+   const next=modal.querySelector('#poetry-story-next');
+   next.addEventListener('click',closeModal);
+   // Horizontal swipe left: move from the poem to the chapter's completion card.
+   // Vertical scrolling and native audio controls stay untouched.
+   let start=null;
+   const dialog=modal.querySelector('.poetry-dialog');
+   dialog.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1||e.target.closest('button,a,input,audio,textarea,select')){start=null;return;}
+    start={x:e.touches[0].clientX,y:e.touches[0].clientY};
+   },{passive:true});
+   dialog.addEventListener('touchend',e=>{
+    if(!start||!e.changedTouches.length)return;
+    const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;
+    start=null;
+    if(dx< -85&&Math.abs(dx)>Math.abs(dy)*1.35)closeModal();
+   },{passive:true});
+  }
   document.addEventListener('keydown',focusModal);
   close.focus();
   const container=modal.querySelector('.poetry-dialog-content');
   await populate(container,day,hostToolsVisible());
+ }
+ function openAfterQuiz(day){
+  // Called only after the completed 15th question, not when opening an old chapter.
+  return open(day,null,true,true);
  }
  function completion(host,day,asPreview=false){
   if(!host)return;
@@ -222,5 +247,5 @@
    }
   }catch(e){if(grid?.isConnected)grid.innerHTML='<p class="day-status-note">Альбом пока не удалось загрузить.</p>';}
  }
- global.DailyPoetry={completion,library,daysFor,audioURL};
+ global.DailyPoetry={completion,library,daysFor,audioURL,openAfterQuiz};
 })(window);
