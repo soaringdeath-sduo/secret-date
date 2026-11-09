@@ -31,14 +31,20 @@ const dom=new JSDOM('<!doctype html><html lang="ru"><body><div id="library"></di
 const w=dom.window,document=w.document;
 w.SDTest={active:()=>false};
 w.HTMLMediaElement.prototype.pause=function(){};
-let numHead=0;
+let numHead=0,rangeGets=0,retryReady=false;
 w.fetch=async (url,options={})=>{
  const src=String(url);
  if(src.includes('poetry-data.json'))return {ok:true,json:async()=>data};
  if(options.method==='HEAD'){
   numHead++;
   const exists=/poem-day-10\.mp3/.test(src);
+  if(retryReady&&/poem-day-09\.mp3/.test(src))throw new Error('Embedded Android HEAD request rejected');
   return {ok:exists,headers:{get:()=>exists?'audio/mpeg':'text/html'}};
+ }
+ if(options.method==='GET'&&options.headers?.Range==='bytes=0-0'){
+  rangeGets++;
+  const exists=retryReady&&/poem-day-09\.mp3/.test(src);
+  return {ok:exists,headers:{get:()=>exists?'audio/mpeg':'text/html'},body:{cancel:async()=>{}}};
  }
  throw new Error('Unexpected fetch '+src);
 };
@@ -60,6 +66,13 @@ assert.ok(card.textContent.includes('Пускай пока останется с
 assert.ok(!card.querySelector('audio'),'Missing audio should not render a dead player');
 assert.ok(!card.querySelector('.poetry-missing'),'Guest should not see production status');
 assert.ok(!card.querySelector('[data-poetry-copy]'),'Guest should not see host copy controls');
+const retry=card.querySelector('.poetry-retry');
+assert.ok(retry,'When Pages is deploying, provide a retry button instead of a false missing-file claim');
+assert.ok(!card.querySelector('audio'),'No broken audio controls before the file is published');
+retryReady=true;
+retry.click();await tick();
+assert.ok(card.querySelector('audio'),'Retry should find uploaded MP3 after deployment');
+assert.ok(rangeGets>=2,'Android HEAD failures must fall back to ranged GET');
 
 const second=document.getElementById('second');
 api.completion(second,10,false);await tick();
@@ -74,6 +87,7 @@ assert.ok(modal.querySelector('.poetry-card'));
 modal.querySelector('.poetry-dialog-close').click();
 assert.ok(!document.querySelector('#poetry-modal'),'Modal should close');
 assert.ok(numHead>=2,'Audio availability should be checked before showing a player');
+assert.ok(rangeGets>=2,'Fallback retrieval must run after false-negative HEAD');
 
 w.localStorage.setItem('sd2810-host-v3','1');
 w.SDTest.active=()=>true;
