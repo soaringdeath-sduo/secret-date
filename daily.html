@@ -314,12 +314,12 @@ function showComplete(){
  markComplete();
  const i=current;
  root.dataset.theme=COLORS[i];
- root.innerHTML='<div class="kicker">ВЫПУСК '+(i+1)+' ЗАВЕРШЁН</div>'
-  +'<h1>Миссия<br><em>пройдена! ♡</em></h1>'
+ root.innerHTML='<div class="kicker">'+(previewMode?'ПРОВЕРКА ВЕДУЩЕГО · ВЫПУСК '+(i+1):'ВЫПУСК '+(i+1)+' ЗАВЕРШЁН')+'</div>'
+  +'<h1>'+(previewMode?'Проверка<br><em>завершена ♡</em>':'Миссия<br><em>пройдена! ♡</em>')+'</h1>'
   +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">'+ICONS[i]+'</div><figcaption>'+safe(CAPTIONS[i])+'</figcaption></div>'
-  +'<p>Все <b>15 вопросов</b> пройдены. Ты получила ещё одну печать в нашем романтическом альбоме!</p>'
-  +'<div class="daily-done-stamp">✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА</div>'
-  +'<p class="day-status-note">Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.</p>'
+  +'<p>'+(previewMode?'Все 15 вопросов просмотрены, результаты Лизы не изменились.':'Все <b>15 вопросов</b> пройдены. Ты получила ещё одну печать в нашем романтическом альбоме!')+'</p>'
+  +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
+  +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
   +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>';
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
 }
@@ -342,13 +342,13 @@ async function syncClock(showLoading){
   if(clockEpoch===null)clockError='Не получается проверить время на сервере. Подключись к интернету и повтори.';
  }finally{
   clockLoading=false;
-  if(current>=0 && !available(current))showUnavailable();
+  if(current>=0 && !canContinue())showUnavailable();
   else if(current<0)renderHome();
  }
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncClock(false)});
 window.addEventListener('focus',()=>syncClock(false));
-setInterval(()=>{if(current>=0&&phase(current)!=='today')showUnavailable();else if(current<0)renderHome()},30000);
+setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0)renderHome()},30000);
 setInterval(()=>syncClock(false),120000);
 persist(state());renderHome();syncClock(true);
 
