@@ -228,6 +228,7 @@ function renderQuestion(){
  const percent=Math.round(step/15*100);
  let html='<div class="kicker">'+SHORT[current]+' • ВЫПУСК '+(current+1)+'</div>'
   +'<div class="chapter-ribbon">'+safe(episode.title)+' ♡</div>'
+  +(previewMode?'<div class="daily-preview-note">🔧 Просмотр ведущего: можно проверить все вопросы, ответы и печати Лизы не меняются.</div>':'')
   +'<div class="daily-episode-head"><strong>Вопрос '+(step+1)+' из 15</strong> · '+safe(episode.subtitle)+'</div>'
   +'<div class="daily-progress" role="progressbar" aria-valuemin="0" aria-valuemax="15" aria-valuenow="'+step+'"><span style="width:'+percent+'%"></span></div>'
   +'<p class="question-step">'+(step<5?'ПЕРВАЯ ГЛАВА':step<10?'ПРОДОЛЖАЕМ':'УЖЕ ПОЧТИ ФИНАЛ')+'</p>'
@@ -240,7 +241,7 @@ function renderQuestion(){
   +'<div class="day-status-note" id="daily-custom-error" role="status">До 180 символов.</div>'
   +'<button class="btn" type="submit">Сохранить мой ответ ♡</button></form>'
   +'<div id="daily-feedback" role="status"></div><div id="daily-save-status" class="day-status-note" role="status"></div></div>'
-  +'<p class="day-status-note">Ответы сохраняются после каждого вопроса. Можно закрыть страницу и вернуться в этот же день.</p>'
+  +'<p class="day-status-note">'+(previewMode?'Это тестовое прохождение. Ничего не сохраняется.':'Ответы сохраняются после каждого вопроса. Можно закрыть страницу и вернуться в этот же день.')+'</p>'
   +'<button type="button" class="btn alt" id="back-to-list">← Сохранить и выйти</button>';
  root.innerHTML=html;
  root.querySelectorAll('[data-answer]').forEach(el=>el.addEventListener('click',()=>chooseAnswer(Number(el.dataset.answer))));
@@ -277,9 +278,12 @@ function recordAnswer(value){
  if(custom&&(!value.custom.trim()||value.custom.length>180))return;
  if(!custom&&(!Number.isInteger(value)||value<0||value>=q[1].length))return;
  answers.push(value);
- const st=state();st.version=2;st.answers[current]=answers.slice();
- if(answers.length===15)st.done[current]=true;
- const stored=persist(st);
+ let stored=true;
+ if(!previewMode){
+  const st=state();st.version=2;st.answers[current]=answers.slice();
+  if(answers.length===15)st.done[current]=true;
+  stored=persist(st);
+ }
  root.querySelectorAll('[data-answer]').forEach(el=>el.disabled=true);
  const customButton=root.querySelector('#daily-custom-toggle');
  if(customButton)customButton.disabled=true;
@@ -291,13 +295,13 @@ function recordAnswer(value){
   episode.kind==='words'?'Загаданное слово: '+q[1][0]+'. Расшифровка принята. ♡':
   'Отличный выбор! Ещё одна маленькая частичка вашей истории. ♡';
  const area=root.querySelector('#daily-feedback');
- if(area)area.innerHTML='<div class="quiz-feedback">'+safe(response)+(stored?'':' Прогресс пока не сохранился на устройстве.')+'</div>';
+ if(area)area.innerHTML='<div class="quiz-feedback">'+safe(response)+(previewMode?' Ответ не сохраняется в режиме ведущего.':stored?'':' Прогресс пока не сохранился на устройстве.')+'</div>';
  if(episode.kind==='words'&&!custom){
   const slots=root.querySelectorAll('.chapter-clues span');
   q[1][0].split('').forEach((letter,i)=>{if(slots[i])slots[i].textContent=letter});
  }
  const next=document.createElement('button');next.type='button';next.className='btn';
- next.textContent=answers.length===15?'Получить печать ♡':'Продолжить →';
+ next.textContent=answers.length===15?(previewMode?'Завершить просмотр ♡':'Получить печать ♡'):'Продолжить →';
  next.addEventListener('click',()=>{
   if(!canContinue())return showUnavailable();
   step=answers.length;
