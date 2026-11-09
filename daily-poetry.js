@@ -4,6 +4,7 @@
 (function(global){
  'use strict';
  const ASSETS='assets/poem-day-';
+ const RAW_ASSETS='https://raw.githubusercontent.com/soaringdeath-sduo/secret-date/main/assets/';
  const SELECTED='sd2810-selected-day-v1';
  const totalDays=['9','10','11','12','13','14'];
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -18,6 +19,7 @@
  let activeCard=null;
  function daysFor(selected){return selected==='sat'?totalDays.slice(0,5):totalDays;}
  function audioURL(day){return ASSETS+String(day).padStart(2,'0')+'.mp3'}
+ function backupURL(day){return RAW_ASSETS+'poem-day-'+String(day).padStart(2,'0')+'.mp3'}
  function goodAudioResponse(response){
   if(!response?.ok)return false;
   const mime=(response.headers?.get('content-type')||'').toLowerCase();
@@ -32,18 +34,17 @@
   const promise=(async()=>{
    try{
     const head=await fetch(url,{method:'HEAD',cache:'no-store'});
-    if(goodAudioResponse(head))return true;
+    if(goodAudioResponse(head))return url;
    }catch(e){}
    try{
     const get=await fetch(url,{method:'GET',headers:{Range:'bytes=0-0'},cache:'no-store'});
     const ok=goodAudioResponse(get);
     try{await get.body?.cancel?.()}catch(e){}
-    return ok;
-   }catch(e){return false}
+    return ok?url:backupURL(day);
+   }catch(e){return backupURL(day)}
   })();
   probes.set(day,promise);
-  promise.then(ok=>{if(!ok&&probes.get(day)===promise)probes.delete(day)},
-               ()=>{if(probes.get(day)===promise)probes.delete(day)});
+  promise.catch(()=>{if(probes.get(day)===promise)probes.delete(day)});
   return promise;
  }
  function isPreview(){
@@ -97,9 +98,9 @@
  }
  async function makeAudio(host,day,preview){
   if(!host?.isConnected)return;
-  const found=await probe(day);
+  const source=await probe(day);
   if(!host.isConnected)return;
-  if(!found){
+  if(!source){
    host.innerHTML='<div class="poetry-audio-pending"><p role="status">🎧 Аудиозапись пока недоступна на сайте. Возможно, публикация GitHub Pages ещё обновляется.</p>'+
     '<button type="button" class="poetry-retry">↻ Проверить аудиозапись снова</button>'+
     (preview?'<small>В репозитории ищем: <code>'+esc(audioURL(day))+'</code></small>':'')+'</div>';
@@ -117,9 +118,21 @@
    '<audio controls preload="none" aria-label="Аудиозапись стихотворения"></audio>'+
    '<a class="poetry-save" href="'+esc(audioURL(day))+'" download>↓ Сохранить MP3 на память</a>';
   const player=wrapper.querySelector('audio');
-  player.src=audioURL(day);
+  const download=wrapper.querySelector('.poetry-save');
+  player.src=source;
+  download.href=source;
+  let usingBackup=source===backupURL(day);
   player.addEventListener('error',()=>{
-    wrapper.querySelector('.poetry-audio-label').textContent='Плеер не смог загрузить запись.';
+    if(!usingBackup){
+      // The Pages file may have disappeared during a deployment: switch
+      // automatically to the same committed MP3 on GitHub Raw.
+      usingBackup=true;
+      player.src=backupURL(day);
+      download.href=backupURL(day);
+      wrapper.querySelector('.poetry-audio-label').textContent='🎧 Резервная запись готова — нажми воспроизведение';
+      return;
+    }
+    wrapper.querySelector('.poetry-audio-label').textContent='Запись пока недоступна. Попробуй проверить ещё раз.';
     if(!wrapper.querySelector('.poetry-retry')){
      const retry=document.createElement('button');
      retry.className='poetry-retry';retry.type='button';
