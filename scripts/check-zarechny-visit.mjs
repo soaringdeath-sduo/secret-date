@@ -24,6 +24,8 @@ assert.equal(visit.parkState().coffee,null,'Cannot choose coffee before getting 
 visit.parkAction('together');
 assert.equal(visit.parkState().together,false,'Cannot mark time together before arriving');
 visit.parkAction('arrive');
+assert.equal(visit.parkState().arrived,false,'Tap alone cannot fake arrival');
+visit.parkAction('arrive','gps');
 assert.equal(visit.parkState().arrived,true);
 visit.parkAction('coffee-yes');
 assert.equal(visit.parkState().coffee,null,'Coffee follows time together');
@@ -62,7 +64,7 @@ assert.ok(html.includes("if(stage===6)return 'park-v2-terrazza-stop';"),'Old sav
 assert.ok(html.includes('data-story-label="Остановка в Terrazza"'),'Cafe must be a distinct screen');
 assert.ok(html.includes('if(index===5)return parkState().coffeeDone;'),'Cannot bypass cafe stop without explicit completion');
 assert.ok(html.includes("if(from>=3&&from<=6)return to===from+1&&proof==='tap'"));
-assert.ok(html.includes("(from!==6||(parkReady()&&missionReady('photos')&&prankReady('suspect')))"),'Route gate must require the couple park visit');
+assert.ok(html.includes("(from!==6||(parkReady()&&missionReady('photos')&&prankReady('suspect')&&envelopeReady('letter')))"),'Route gate must require the couple park visit');
 assert.ok(html.includes("case 6:if(parkReady()&&prankReady('suspect')&&missionReady('photos'))save(7,'tap');break;"));
 assert.ok(!html.includes('Лужский городской Дом культуры'));
 console.log('✓ Park arrival and shared time are sequential and persist by date');
