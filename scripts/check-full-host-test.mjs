@@ -25,8 +25,9 @@ has(daily,"const available=i=>window.SDTest.active()",'Daily chapter clock must 
 has(daily,"const numberOfDays=()=>window.SDTest.active()",'Host must see all 6 days');
 has(daily,"openDay(i+1,false)",'Daily test should advance from episode to episode');
 has(daily,"window.SDTest.navTo('secret_date_game_luga.html')",'After all questions the test must reach route');
-has(quest,"if(!isHost()||window.SDTest.active())",'Real route step validation must apply to full host test');
-has(quest,"if(isHost()&&!window.SDTest.active())return true",'Host full test must not bypass gesture/task gates');
+has(quest,"if(!canStart()||!validStep(stage,to,proof))return;",'Real route step validation must apply to every host and participant');
+has(quest,"if(!window.SDTest.active()&&(code||'').trim()!==SETTINGS.helpCode)return false;",'Normal host must enter the code to remove a seal');
+has(quest,"envelopeReady('prank-end')",'Prank-ending envelope must remain locked until host approval');
 has(quest,"🔧 Подтвердить прибытие без GPS",'Mock GPS should be available for host');
 has(quest,"revealFirst(isHost()&&!window.SDTest.active())",'First soundtrack unlock should be isolated');
 has(quest,"revealFinal(isHost()&&!window.SDTest.active())",'Final soundtrack unlock should be isolated');
