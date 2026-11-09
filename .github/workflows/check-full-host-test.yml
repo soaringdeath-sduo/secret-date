@@ -8,6 +8,11 @@ on:
       - "daily.html"
       - "secret_date_game_luga.html"
       - "story-flow.js"
+      - "couple.html"
+      - "couple-core.js"
+      - "couple-app.js"
+      - "daily-couple.js"
+      - "scripts/check-couple-tests.mjs"
       - "story-flow.css"
       - "host-full-test.css"
       - "scripts/check-swipe-layout.mjs"
@@ -36,3 +41,4 @@ jobs:
         run: |
           node scripts/check-full-host-test.mjs
           node scripts/check-swipe-layout.mjs
+          node scripts/check-couple-tests.mjs
