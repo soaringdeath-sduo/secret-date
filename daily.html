@@ -129,6 +129,13 @@ const DAYS=[9,10,11,12,13,14],CAPTIONS=['Досье на Игоря','Как м�
 const ICONS=['🕵️','💞','🫶','🌷','🤝','✨'],COLORS=['rose','cream','lilac','peach','gold','dusk'];
 const SHORT=['9 ноября','10 ноября','11 ноября','12 ноября','13 ноября','14 ноября'];
 const root=document.getElementById('daily-root');
+const archiveRequested=()=>window.location.hash==='#daily-poetry-library'||window.location.hash==='#our-poems';
+function openPoetryArchive(){
+ current=-1;episode=null;previewMode=false;
+ renderHome();
+ // DailyPoetry.library scrolls to the unlocked album after its data loads.
+}
+window.addEventListener('hashchange',()=>{if(archiveRequested())openPoetryArchive();});
 let current=-1,episode=null,step=0,answers=[],working=false;
 let organizerMode=false,previewMode=false;
 const HOST_SESSION_KEY='sd2810-host-v3';
@@ -172,7 +179,7 @@ function intro(){
 }
 function renderHome(){
  current=-1;episode=null;previewMode=false;root.dataset.theme='rose';
- if(!isInvited()&&!organizerMode){
+ if(!isInvited()&&!organizerMode&&!window.SDTest.active()){
   root.innerHTML=intro()+'<div class="locked">🔒 Сначала открой приглашение, введи вашу дату-пароль и выбери день свидания.</div>'
   +'<a class="btn" style="display:block;text-align:center;text-decoration:none" href="index.html">Открыть приглашение 💌</a>';
   return;
@@ -418,10 +425,14 @@ document.getElementById('host-daily-button').addEventListener('click',()=>{
 });
 persist(state());
 if(window.SDTest.active()){
- organizerMode=false;previewMode=false;renderHome();
- const st=state();const first=DAYS.findIndex((_,i)=>st.done[i]!==true);
- if(first>=0)openDay(first,false);
- else showCompleteFromFullTest();
+ organizerMode=false;previewMode=false;
+ if(archiveRequested())openPoetryArchive();
+ else{
+  renderHome();
+  const st=state();const first=DAYS.findIndex((_,i)=>st.done[i]!==true);
+  if(first>=0)openDay(first,false);
+  else showCompleteFromFullTest();
+ }
 }else{renderHome();syncClock(true);}
 function showCompleteFromFullTest(){
  root.innerHTML=intro()+'<div class="daily-preview-note">✓ Все шесть тестовых выпусков пройдены. Можешь продолжать проверку маршрута с самого начала.</div>'+(window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')+'<div id="daily-poetry-library"></div><button type="button" class="btn" id="sd-full-route">🚗 Начать GPS-квест</button>';
