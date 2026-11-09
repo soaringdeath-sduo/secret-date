@@ -214,6 +214,16 @@ that other services will comply. See ai-policy.txt.
     function resumeDestination(){
       const chosen=getDay();
       if(!chosen||localStorage.getItem(INVITE_KEY)!=='1')return null;
+      // After the last embrace, the persistent album becomes the return point.
+      try{
+       const memory=JSON.parse(localStorage.getItem('sd2810-final-memory-v1')||'null');
+       if(memory?.done&&memory.day===localStorage.getItem(DATE_KEY)
+        &&memory.origin===localStorage.getItem('sd2810-route-origin-v7')
+        &&memory.ending===localStorage.getItem('sd2810-secret-ending-v2')){
+        return {href:'our-day.html',title:'📖 Наш день — альбом воспоминаний',
+         detail:'Фотографии, стихи голосом Игоря и две наши песни на память.'};
+       }
+      }catch(e){}
       const route=Number(localStorage.getItem('sd2810-route-v7')||0);
       if(Number.isInteger(route)&&route>0&&route<=13&&isOpen()){
         return {
@@ -396,7 +406,7 @@ that other services will comply. See ai-policy.txt.
         const choose=key=>{
           const previous=localStorage.getItem(DATE_KEY);
           localStorage.setItem(DATE_KEY,key);
-          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-route-v6','sd2810-route-origin-v6','sd2810-route-v7','sd2810-route-origin-v7','sd2810-journey-gate-v1','sd2810-quest-v1','sd2810-secret-ending-v1','sd2810-secret-ending-v2','sd2810-secret-category-v1','sd2810-movie-v1','sd2810-radio-intercept-v1','sd2810-missions-between-v1','sd2810-six-story-pranks-v1','sd2810-route-visits-v1','sd2810-zarechny-visit-v1'])localStorage.removeItem(k);}
+          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-route-v6','sd2810-route-origin-v6','sd2810-route-v7','sd2810-route-origin-v7','sd2810-journey-gate-v1','sd2810-quest-v1','sd2810-secret-ending-v1','sd2810-secret-ending-v2','sd2810-secret-category-v1','sd2810-movie-v1','sd2810-radio-intercept-v1','sd2810-missions-between-v1','sd2810-six-story-pranks-v1','sd2810-route-visits-v1','sd2810-zarechny-visit-v1','sd2810-final-memory-v1'])localStorage.removeItem(k);}
           stage=questions.length+2;render();celebrate();
         };
         document.getElementById('choose-sat').addEventListener('click',()=>choose('sat'));
