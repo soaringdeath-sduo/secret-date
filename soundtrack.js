@@ -236,7 +236,7 @@
     const was=unlocked(0);
     unlock(0,isHost);
     syncUI();
-    if(!was)openTrack(0,true);
+    openTrack(0,!was); // First reveal uses radio transition; repeats reopen the card.
   }
   function openFirst(isHost){
     if(!enabled)return;
