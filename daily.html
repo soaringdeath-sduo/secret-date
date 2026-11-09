@@ -247,24 +247,46 @@ function renderQuestion(){
  });
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
 }
+function chooseCustomAnswer(raw){
+ if(!episode||!available(current))return showUnavailable();
+ const value=String(raw||'').trim().replace(/\s+/g,' ').slice(0,180);
+ if(!value){
+  const warning=root.querySelector('#daily-custom-error');
+  if(warning)warning.textContent='Напиши хотя бы пару слов — этот ответ будет только твоим. ♡';
+  return;
+ }
+ recordAnswer({custom:value});
+}
 function chooseAnswer(choice){
  if(!episode||!available(current))return showUnavailable();
- if(answers.length!==step||step>=15)return;
  const q=episode.questions[step];
- if(!Number.isInteger(choice)||choice<0||choice>=q[1].length)return;
- answers.push(choice);
+ if(!q||!Number.isInteger(choice)||choice<0||choice>=q[1].length)return;
+ recordAnswer(choice);
+}
+function recordAnswer(value){
+ if(!episode||!available(current))return showUnavailable();
+ if(answers.length!==step||step>=15)return;
+ const custom=value&&typeof value==='object'&&typeof value.custom==='string';
+ const q=episode.questions[step];
+ if(custom&&(!value.custom.trim()||value.custom.length>180))return;
+ if(!custom&&(!Number.isInteger(value)||value<0||value>=q[1].length))return;
+ answers.push(value);
  const st=state();st.version=2;st.answers[current]=answers.slice();
  if(answers.length===15)st.done[current]=true;
  const stored=persist(st);
  root.querySelectorAll('[data-answer]').forEach(el=>el.disabled=true);
- const word=episode.kind==='words'?'Загаданное слово: '+q[1][0]+'. ':'';
- const response=episode.kind==='mood'?'Записано в твоё романтическое досье! ❤️':
+ const customButton=root.querySelector('#daily-custom-toggle');
+ if(customButton)customButton.disabled=true;
+ const form=root.querySelector('#daily-custom-form');
+ if(form)form.hidden=true;
+ const response=custom?'Твой собственный ответ принят: «'+value.custom+'». ♡':
+  episode.kind==='mood'?'Записано в твоё романтическое досье! ❤️':
   episode.kind==='truth'?'По версии нашего секретного отдела: '+q[1][0]+'. ♡':
-  episode.kind==='words'?word+'Расшифровка принята. ♡':
+  episode.kind==='words'?'Загаданное слово: '+q[1][0]+'. Расшифровка принята. ♡':
   'Отличный выбор! Ещё одна маленькая частичка вашей истории. ♡';
  const area=root.querySelector('#daily-feedback');
  if(area)area.innerHTML='<div class="quiz-feedback">'+safe(response)+(stored?'':' Прогресс пока не сохранился на устройстве.')+'</div>';
- if(episode.kind==='words'){
+ if(episode.kind==='words'&&!custom){
   const slots=root.querySelectorAll('.chapter-clues span');
   q[1][0].split('').forEach((letter,i)=>{if(slots[i])slots[i].textContent=letter});
  }
