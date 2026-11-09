@@ -342,7 +342,7 @@ function showComplete(){
   +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
   +window.DailyCouple.portrait(i===0?null:episode,answers)
-  +(i===numberOfDays()-1&&window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')
+  +(i===(window.CoupleTests.days(chosen()).slice(-1)[0]-9)&&window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')
   +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>'
   +(window.SDTest.active()?'<button type="button" class="btn" id="sd-next-full-test">'+(i===DAYS.length-1?'🚗 Перейти к полному GPS-квесту':'Следующий выпуск ('+SHORT[i+1]+') →')+'</button>':'');
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
