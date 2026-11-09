@@ -116,7 +116,7 @@ let organizerMode=false,previewMode=false;
 const HOST_SESSION_KEY='sd2810-host-v3';
 let clockEpoch=null,clockAnchor=0,clockError='',clockLoading=false;
 const chosen=()=>localStorage.getItem(DATE_KEY);
-const numberOfDays=()=>chosen()==='sun'?6:5;
+const numberOfDays=()=>organizerMode?6:chosen()==='sun'?6:5;
 const isInvited=()=>localStorage.getItem(INVITE_KEY)==='1'&&['sat','sun'].includes(chosen());
 const nowTrusted=()=>clockEpoch===null?null:clockEpoch+(performance.now()-clockAnchor);
 const safe=x=>String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -144,6 +144,7 @@ function phase(i){
  return when<start?'future':when>=end?'past':'today';
 }
 const available=i=>isInvited()&&phase(i)==='today';
+const canContinue=()=>previewMode&&organizerMode||available(current);
 function intro(){
  return '<div class="kicker">НАШ МАЛЕНЬКИЙ СЕРИАЛ • ОПЕРАЦИЯ 28.10</div>'
   +'<h1>Каждый день —<br><em>немного любви ♡</em></h1>'
@@ -151,8 +152,8 @@ function intro(){
   +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">♡ ✨</div><figcaption>Наши маленькие истории</figcaption></div>';
 }
 function renderHome(){
- current=-1;episode=null;root.dataset.theme='rose';
- if(!isInvited()){
+ current=-1;episode=null;previewMode=false;root.dataset.theme='rose';
+ if(!isInvited()&&!organizerMode){
   root.innerHTML=intro()+'<div class="locked">🔒 Сначала открой приглашение, введи вашу дату-пароль и выбери день свидания.</div>'
   +'<a class="btn" style="display:block;text-align:center;text-decoration:none" href="index.html">Открыть приглашение 💌</a>';
   return;
@@ -166,9 +167,9 @@ function renderHome(){
  html+='<div class="daily-grid">';
  const st=state();
  for(let i=0;i<numberOfDays();i++){
-  const today=phase(i),done=st.done[i]===true,active=today==='today';
-  const subtitle=active?'15 вопросов · 5–7 минут':today==='past'?(done?'Пройденный выпуск — печать сохранена':'Время выпуска закончилось'):'Только '+SHORT[i]+', с 09:00 до 23:59 МСК';
-  const status=active?(done?'✓ Завершён':'Играть ♡'):today==='past'?(done?'✓ Печать':'Истёк'):today==='future'?'🔒 Скоро':'🔒';
+  const today=phase(i),done=st.done[i]===true,active=organizerMode||today==='today';
+  const subtitle=organizerMode?'Пробный просмотр · без сохранения':active?'15 вопросов · 5–7 минут':today==='past'?(done?'Пройденный выпуск — печать сохранена':'Время выпуска закончилось'):'Только '+SHORT[i]+', с 09:00 до 23:59 МСК';
+  const status=organizerMode?'👁 Смотреть':active?(done?'✓ Завершён':'Играть ♡'):today==='past'?(done?'✓ Печать':'Истёк'):today==='future'?'🔒 Скоро':'🔒';
   html+='<button type="button" class="day-card" data-open="'+i+'"'+(active?'':' disabled')+'>'
    +'<span class="day-icon">'+ICONS[i]+'</span><span><strong>'+SHORT[i]+' · '+CAPTIONS[i]+'</strong><small>'+subtitle+'</small></span>'
    +'<span class="day-status">'+status+'</span></button>';
@@ -178,7 +179,7 @@ function renderHome(){
  root.innerHTML=html;
  const retry=root.querySelector('#clock-retry');
  if(retry)retry.addEventListener('click',()=>syncClock(true));
- root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open))));
+ root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open),organizerMode)));
 }
 function showUnavailable(){
  current=-1;episode=null;renderHome();
