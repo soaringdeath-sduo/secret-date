@@ -2,6 +2,7 @@
    Never show Lisa's choices before Igor has answered; no network/database. */
 (function(){
  'use strict';
+ const localStorage=window.SDTest.storage;
  const root=document.getElementById('couple-root');
  const core=window.CoupleTests;
  const STORAGE='sd2810-couple-igor-v1';
