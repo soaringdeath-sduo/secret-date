@@ -109,7 +109,7 @@ p{line-height:1.65;color:#795d6d}
 .couple-answer-card strong{color:#7f4460;font-size:14px}
 </style>
 <link rel="stylesheet" href="host-full-test.css?v=2">
-<link rel="stylesheet" href="daily-poetry.css?v=2">
+<link rel="stylesheet" href="daily-poetry.css?v=3">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -120,7 +120,7 @@ p{line-height:1.65;color:#795d6d}
 <script src="host-full-test.js?v=1"></script>
 <script src="couple-core.js?v=1"></script>
 <script src="daily-couple.js?v=1"></script>
-<script src="daily-poetry.js?v=3"></script>
+<script src="daily-poetry.js?v=4"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
@@ -325,8 +325,15 @@ function recordAnswer(value){
   const slots=root.querySelectorAll('.chapter-clues span');
   q[1][0].split('').forEach((letter,i)=>{if(slots[i])slots[i].textContent=letter});
  }
+ if(answers.length===15){
+  // No extra hunt for the poem: the last answer opens that day's card.
+  step=15;
+  markComplete();
+  showComplete(true);
+  return;
+ }
  const next=document.createElement('button');next.type='button';next.className='btn';
- next.textContent=answers.length===15?(previewMode?'Завершить просмотр ♡':'Получить печать ♡'):'Продолжить →';
+ next.textContent='Продолжить →';
  next.addEventListener('click',()=>{
   if(!canContinue())return showUnavailable();
   step=answers.length;
@@ -334,7 +341,7 @@ function recordAnswer(value){
  });
  if(area)area.appendChild(next);
 }
-function showComplete(){
+function showComplete(openPoemNow=false){
  if(!episode||!canContinue())return showUnavailable();
  markComplete();
  const i=current;
@@ -343,9 +350,13 @@ function showComplete(){
   +'<h1>'+(previewMode?'Проверка<br><em>завершена ♡</em>':'Миссия<br><em>пройдена! ♡</em>')+'</h1>'
   +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">'+ICONS[i]+'</div><figcaption>'+safe(CAPTIONS[i])+'</figcaption></div>'
   +'<p>'+(previewMode?'Все 15 вопросов просмотрены, результаты Лизы не изменились.':'Все <b>15 вопросов</b> пройдены. Ты получила ещё одну печать в нашем романтическом альбоме!')+'</p>'
+  +'<div class="daily-poetry-bridge"><h3>💌 Стихотворение этого дня — для тебя</h3>'+
+   '<p>За каждым выпуском спрятана маленькая Polaroid-открытка с настоящим голосом Игоря.</p>'+
+   '<button type="button" class="btn" id="daily-reopen-poem">🎧 Открыть моё стихотворение ♡</button>'+
+   '<span>В конце игры оно появляется само. Потом его всегда можно открыть здесь снова.</span></div>'
+  +'<div id="daily-poetry-card"></div>'
   +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
-  +'<div id="daily-poetry-card"></div>'
   +window.DailyCouple.portrait(i===0?null:episode,answers)
   +(i===(window.CoupleTests.days(chosen()).slice(-1)[0]-9)&&window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')
   +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>'
@@ -353,6 +364,8 @@ function showComplete(){
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
  window.DailyCouple.bind(root,chosen,state);
  window.DailyPoetry.completion(root.querySelector('#daily-poetry-card'),DAYS[i],previewMode||organizerMode);
+ root.querySelector('#daily-reopen-poem').addEventListener('click',()=>window.DailyPoetry.openAfterQuiz(DAYS[i]));
+ if(openPoemNow)window.DailyPoetry.openAfterQuiz(DAYS[i]);
  if(window.SDTest.active())root.querySelector('#sd-next-full-test').addEventListener('click',()=>{
    if(i===DAYS.length-1)window.SDTest.navTo('secret_date_game_luga.html');
    else openDay(i+1,false);
