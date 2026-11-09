@@ -16,7 +16,7 @@ for(const [i,p] of data.entries()){
 }
 assert.ok(data[0].text.includes('вскоре'),'First poem should not mistakenly say the date is tomorrow');
 const daily=fs.readFileSync('daily.html','utf8');
-assert.ok(daily.includes('daily-poetry.css?v=1')&&daily.includes('daily-poetry.js?v=1'));
+assert.ok(daily.includes('daily-poetry.css?v=2')&&daily.includes('daily-poetry.js?v=2'));
 assert.ok(daily.includes('window.DailyPoetry.completion('),'Daily ending must reveal poem');
 assert.ok(daily.includes('window.DailyPoetry.library('),'Daily page must have permanent poem library');
 assert.ok(daily.includes("window.DailyPoetry.completion(root.querySelector('#daily-poetry-card'),DAYS[i]"),'Chapter card must match its day');
@@ -63,15 +63,19 @@ const card=document.getElementById('card');
 api.completion(card,9,false);await tick();
 assert.ok(card.textContent.includes('Пока это секрет'));
 assert.ok(card.textContent.includes('Пускай пока останется секрет'));
-assert.ok(!card.querySelector('audio'),'Missing audio should not render a dead player');
-assert.ok(!card.querySelector('.poetry-missing'),'Guest should not see production status');
+const guestPlayer=card.querySelector('audio');
+assert.ok(guestPlayer,'Uploaded MP3 should have a player even while Pages deployment is still pending');
+assert.ok(guestPlayer.src.includes('raw.githubusercontent.com'),'Fallback should use GitHub Raw until Pages publishes');
+assert.ok(!card.querySelector('.poetry-missing'),'Guest should not see outdated missing-file warning');
 assert.ok(!card.querySelector('[data-poetry-copy]'),'Guest should not see host copy controls');
+guestPlayer.dispatchEvent(new w.Event('error'));
 const retry=card.querySelector('.poetry-retry');
-assert.ok(retry,'When Pages is deploying, provide a retry button instead of a false missing-file claim');
-assert.ok(!card.querySelector('audio'),'No broken audio controls before the file is published');
+assert.ok(retry,'If even fallback cannot play, visitor can manually retry');
 retryReady=true;
 retry.click();await tick();
 assert.ok(card.querySelector('audio'),'Retry should find uploaded MP3 after deployment');
+assert.ok(card.querySelector('audio').src.endsWith('/assets/poem-day-09.mp3'),'Retry should switch back to Pages when available');
+assert.ok(!card.querySelector('audio').src.includes('raw.githubusercontent.com'),'Preferred origin should be own Pages host');
 assert.ok(rangeGets>=2,'Android HEAD failures must fall back to ranged GET');
 
 const second=document.getElementById('second');
