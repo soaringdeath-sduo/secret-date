@@ -26,6 +26,7 @@ on:
       - "story-flow.css"
       - "host-full-test.css"
       - "scripts/check-swipe-layout.mjs"
+      - "scripts/check-strict-confirmations.mjs"
       - "scripts/check-zarechny-visit.mjs"
       - "scripts/check-deep-walkthrough.mjs"
       - "scripts/check-resume-memory.mjs"
@@ -56,6 +57,7 @@ jobs:
         run: |
           node scripts/check-full-host-test.mjs
           node scripts/check-swipe-layout.mjs
+          node scripts/check-strict-confirmations.mjs
           node scripts/check-zarechny-visit.mjs
           node scripts/check-couple-tests.mjs
           node scripts/check-couple-browser.mjs

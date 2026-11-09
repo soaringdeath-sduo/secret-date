@@ -177,11 +177,12 @@ async function route(origin,choice='omchino',category='romance'){
  tap('#check');
  assert.equal(state(),3);
  next(w,1,'economy ticket');
- assert.equal(state(),3,'Economy chapter stays sealed');
- unseal('chocolate');
+ assert.equal(state(),3,'Economy ticket is accessible before the prank ending');
  tap('#go');
  assert.equal(state(),4);
  next(w,1,'economy receipt');
+ assert.equal(state(),4,'Fake ending must remain sealed');
+ unseal('prank-end');
  tap('#go');
  assert.equal(state(),5);
  tap('[data-mission-action="premium-request"]');
