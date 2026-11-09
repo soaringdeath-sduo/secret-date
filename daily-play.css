@@ -1,0 +1,62 @@
+/* Daily mini-games, random keepsake cards and the heart dinosaur. */
+.daily-mini-hero{border:1px dashed #d69bb0;border-radius:14px;padding:16px;margin:18px 0 16px;text-align:center;background:#f9e1e7;color:#9e4769;font-size:28px}
+.daily-mini-hero span{font:850 11px system-ui,sans-serif;letter-spacing:2px;vertical-align:middle}
+.daily-mini-stage{background:#fffaf5;border:1px solid #efd1d3;border-radius:17px;padding:18px 13px;margin:15px 0;min-height:155px}
+.daily-mini-counter{font-size:12px;font-weight:800;color:#965675;margin:0 0 13px;text-align:center}
+.daily-hunt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.daily-hunt-cell{aspect-ratio:1;border:5px solid #fffefb;background:linear-gradient(130deg,#f8e0e6,#f5ebdf);box-shadow:0 4px 11px #8c5a7130;font-size:28px;cursor:pointer;transform:rotate(-3deg);border-radius:3px}
+.daily-hunt-cell:nth-child(3n){transform:rotate(3deg)}
+.daily-hunt-cell:disabled{opacity:.72;cursor:default}
+.daily-hunt-cell.daily-mini-found{background:#ffc9df;box-shadow:0 3px 12px #c25e9290;opacity:1}
+.daily-hunt-cell.daily-mini-decoy{opacity:.35}
+.daily-memory-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.daily-memory-cell{aspect-ratio:1;border-radius:13px;border:2px solid #d9aabd;background:linear-gradient(150deg,#b3658a,#804a75);color:#fff8f7;font:900 28px Georgia,serif;cursor:pointer;box-shadow:0 5px 9px #9a6d8237}
+.daily-memory-cell.is-open,.daily-memory-cell.is-matched{background:#fff5ef;color:#9d4971}
+.daily-memory-cell.is-matched{border-color:#8dad9f;background:#e3f0e9}
+.daily-assembled{padding:14px;border:1px dashed #ca91a9;background:#f9e2e9;border-radius:10px;margin:10px 0 15px;text-align:center;min-height:52px;font:italic 22px Georgia,serif;color:#824364}
+.daily-word-grid{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.daily-word-choice,.daily-mini-option,.daily-match-choice{border-radius:12px;background:#fff4f1;border:1px solid #d4a9b9;color:#814562;padding:11px;font:750 14px/1.4 system-ui,sans-serif;cursor:pointer;min-height:46px}
+.daily-word-choice.is-matched,.daily-match-choice.is-matched{background:#e5f2ed;border-color:#a9cdbd;color:#4f8572;cursor:default}
+.daily-emoji-clue{font-size:39px;text-align:center;margin:15px 0 20px;letter-spacing:7px}
+.daily-mini-options{display:grid;gap:9px}
+.daily-match-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.daily-match-columns>div{display:grid;gap:9px}
+.daily-match-choice{font-size:13px;width:100%;padding:10px 4px}
+.daily-match-choice.is-selected{background:#eed6e0;border-color:#a34f7d;outline:2px solid #c084a1}
+.daily-mini-success{text-align:center;padding:15px 5px}
+.daily-mini-success h2{margin:12px 0}
+.daily-mini-confetti{font-size:36px;letter-spacing:5px}
+.daily-secret-event{position:relative;border:1px solid #d6a2b8;border-radius:18px;padding:23px 19px;background:linear-gradient(155deg,#fff5ef,#f9e2ed);text-align:center;margin:17px 0;box-shadow:0 7px 20px #a7688320}
+.daily-secret-event .kicker{font-size:10px}
+.daily-secret-event h3{font:normal 24px/1.25 Georgia,serif;margin:7px 0 11px}
+.daily-secret-event p{font-size:14px}
+.daily-secret-icon{font-size:46px;margin:15px 0 3px;filter:drop-shadow(0 3px 3px #a46c8a36)}
+.daily-secret-stamp{display:inline-block;margin:6px auto;border:2px dashed #bb7e96;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:900;letter-spacing:1px;color:#965572;transform:rotate(-2deg)}
+.daily-arcade-home{margin:19px 0 23px;text-align:center;background:linear-gradient(155deg,#f8e1e7,#fff9ec);border:2px solid #e5b2c6;border-radius:19px;padding:17px 15px;box-shadow:0 8px 18px #ad718a25}
+.daily-arcade-home h3{font:normal 29px Georgia,serif;margin:6px 0}
+.daily-arcade-home p{font-size:13px;margin:9px 0}
+.daily-arcade-home .btn{margin-bottom:0}
+.daily-arcade-home .daily-mini-marks{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:12px 0}
+.daily-mini-marks span{padding:6px 9px;border-radius:99px;background:#fff9f5;border:1px solid #e5baca;font-size:11px;color:#915677;font-weight:800}
+.daily-dino-title{margin:12px 0 7px;text-align:center;font:normal 36px Georgia,serif;color:#834761}
+.daily-dino-title span{font-style:italic}
+.daily-dino-scores{display:flex;justify-content:space-between;gap:8px;margin:12px 0;color:#875470;font-size:11px;font-weight:700}
+.daily-dino-scores span{background:#f9e2e8;border:1px solid #e6bed0;padding:7px 9px;border-radius:8px}
+.daily-dino-scores b{display:block;font:900 21px/1.2 system-ui,sans-serif;color:#72384f;font-variant-numeric:tabular-nums}
+.daily-dino-surface{position:relative;overflow:hidden;border-radius:16px;border:3px solid #c18baa;background:#ffe8f0;box-shadow:0 8px 20px #b47b9736;touch-action:manipulation}
+.daily-dino-surface canvas{display:block;width:100%;height:auto;aspect-ratio:18/7;cursor:pointer;outline:none;touch-action:manipulation}
+.daily-dino-surface canvas:focus-visible{outline:3px solid #9f5a82;outline-offset:-5px}
+.daily-dino-overlay{position:absolute;inset:0;background:#fff6ecba;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:15px;pointer-events:none;color:#6d3753}
+.daily-dino-overlay[hidden]{display:none!important}
+.daily-dino-overlay strong{font:normal clamp(22px,5.6vw,34px) Georgia,serif;color:#74384f;line-height:1.3}
+.daily-dino-overlay small{font:700 11px/1.55 system-ui,sans-serif;margin-top:10px;max-width:320px}
+.daily-dino-controls{display:grid;grid-template-columns:1.65fr 1fr;gap:9px;margin-top:12px}
+.daily-dino-controls .btn{margin:0;min-height:58px;font-size:16px}
+.daily-dino-rewards{display:grid;gap:9px;margin:19px 0 12px}
+.daily-dino-gift{display:grid;gap:5px;border:1px dashed #d8bec4;border-radius:12px;background:#f3eeed;padding:12px 15px;opacity:.75}
+.daily-dino-gift.is-unlocked{background:linear-gradient(135deg,#fff6e5,#ffe5ec);border:2px solid #d8a0b6;opacity:1;box-shadow:0 3px 13px #c7849229}
+.daily-dino-gift strong{font-size:13px;color:#80516a}
+.daily-dino-gift span{font-size:12px;color:#936c81;line-height:1.5}
+.daily-dino-gift.is-unlocked strong{color:#874061}
+@media(max-width:390px){.daily-hunt-grid,.daily-memory-grid{gap:7px}.daily-hunt-cell{font-size:23px;border-width:3px}.daily-memory-cell{font-size:23px}.daily-emoji-clue{font-size:31px}.daily-dino-scores{gap:3px}.daily-dino-scores span{padding:5px;font-size:10px}.daily-dino-scores b{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.daily-arcade-home,.daily-mini-stage,.daily-secret-event{transition:none}}
