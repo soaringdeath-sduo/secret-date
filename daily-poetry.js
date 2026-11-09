@@ -18,12 +18,33 @@
  let activeCard=null;
  function daysFor(selected){return selected==='sat'?totalDays.slice(0,5):totalDays;}
  function audioURL(day){return ASSETS+String(day).padStart(2,'0')+'.mp3'}
+ function goodAudioResponse(response){
+  if(!response?.ok)return false;
+  const mime=(response.headers?.get('content-type')||'').toLowerCase();
+  // Pages may serve a missing-file HTML document with an HTTP 200 status.
+  return !mime.includes('text/html');
+ }
  function probe(day){
   if(probes.has(day))return probes.get(day);
-  const promise=fetch(audioURL(day),{method:'HEAD',cache:'no-store'})
-    .then(r=>r.ok && (r.headers.get('content-type')||'').toLowerCase().indexOf('text/html')===-1)
-    .catch(()=>false);
-  probes.set(day,promise);return promise;
+  // Some Android embedded browsers / caches incorrectly fail HEAD. If it
+  // fails, retry with a small ranged GET. Never cache a failed check forever.
+  const url=audioURL(day);
+  const promise=(async()=>{
+   try{
+    const head=await fetch(url,{method:'HEAD',cache:'no-store'});
+    if(goodAudioResponse(head))return true;
+   }catch(e){}
+   try{
+    const get=await fetch(url,{method:'GET',headers:{Range:'bytes=0-0'},cache:'no-store'});
+    const ok=goodAudioResponse(get);
+    try{await get.body?.cancel?.()}catch(e){}
+    return ok;
+   }catch(e){return false}
+  })();
+  probes.set(day,promise);
+  promise.then(ok=>{if(!ok&&probes.get(day)===promise)probes.delete(day)},
+               ()=>{if(probes.get(day)===promise)probes.delete(day)});
+  return promise;
  }
  function isPreview(){
   // In full walk-through we must unlock poems one by one, like for Lisa.
@@ -79,7 +100,15 @@
   const found=await probe(day);
   if(!host.isConnected)return;
   if(!found){
-   if(preview)host.innerHTML='<p class="poetry-missing">🎧 Озвучка ещё не загружена. Добавь <code>'+esc(audioURL(day))+'</code>, и плеер появится автоматически.</p>';
+   host.innerHTML='<div class="poetry-audio-pending"><p role="status">🎧 Аудиозапись пока недоступна на сайте. Возможно, публикация GitHub Pages ещё обновляется.</p>'+
+    '<button type="button" class="poetry-retry">↻ Проверить аудиозапись снова</button>'+
+    (preview?'<small>В репозитории ищем: <code>'+esc(audioURL(day))+'</code></small>':'')+'</div>';
+   const button=host.querySelector('.poetry-retry');
+   button.addEventListener('click',()=>{
+    button.disabled=true;button.textContent='Проверяем запись…';
+    probes.delete(day);
+    makeAudio(host,day,preview);
+   });
    return;
   }
   const wrapper=document.createElement('div');
@@ -89,7 +118,16 @@
    '<a class="poetry-save" href="'+esc(audioURL(day))+'" download>↓ Сохранить MP3 на память</a>';
   const player=wrapper.querySelector('audio');
   player.src=audioURL(day);
-  player.addEventListener('error',()=>{wrapper.querySelector('.poetry-audio-label').textContent='Запись временно недоступна. Попробуй сохранить MP3.';});
+  player.addEventListener('error',()=>{
+    wrapper.querySelector('.poetry-audio-label').textContent='Плеер не смог загрузить запись.';
+    if(!wrapper.querySelector('.poetry-retry')){
+     const retry=document.createElement('button');
+     retry.className='poetry-retry';retry.type='button';
+     retry.textContent='↻ Проверить MP3 ещё раз';
+     retry.addEventListener('click',()=>{probes.delete(day);makeAudio(host,day,preview);});
+     wrapper.appendChild(retry);
+    }
+  });
   host.replaceChildren(wrapper);
  }
  async function populate(host,day,preview){
