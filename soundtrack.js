@@ -249,9 +249,19 @@
     syncUI();
     openTrack(1,false);
   }
+  function previewTrack(i){
+    // Только авторизованный ведущий; предпросмотр не записывает разблокировки.
+    if(!enabled||localStorage.getItem('sd2810-host-v3')!=='1'||(i!==0&&i!==1))return;
+    preview[i]=true;
+    syncUI();
+    openTrack(i,i===0);
+  }
   function clearHostPreview(){
     preview=[false,false];
-    if(!getStore().first&&!getStore().last){audio.pause();track=-1;audio.removeAttribute('src');audio.load();}
+    // Не оставлять предпросмотр закрытого трека играть после выхода ведущего.
+    if(track>=0&&!unlocked(track)){
+      audio.pause();track=-1;audio.removeAttribute('src');audio.load();
+    }
     hideOverlay();
     syncUI();
   }
@@ -282,5 +292,5 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)hideOverlay();});
   const libraryBtn=document.getElementById('soundtrack-library');
   if(libraryBtn)libraryBtn.addEventListener('click',openLibrary);
-  window.SecretSoundtrack={revealFirst,openFirst,revealFinal,openLibrary,onPageRender,pause,clearHostPreview};
+  window.SecretSoundtrack={revealFirst,openFirst,revealFinal,previewTrack,openLibrary,onPageRender,pause,clearHostPreview};
 })();
