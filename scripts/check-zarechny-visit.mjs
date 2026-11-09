@@ -6,16 +6,17 @@ const start=html.indexOf("const PARK_KEY='sd2810-zarechny-visit-v1';");
 const end=html.indexOf('function suspectPrankHTML(){',start);
 assert.ok(start>0&&end>start,'Park state implementation must be present');
 const region=html.slice(start,end);
-new Function('localStorage','DATE_KEY','origin','stage','canStart','render',region+'\nreturn {parkState,parkReady,parkAction,parkArriveHTML,parkTogetherHTML,parkCoffeeHTML};');
+new Function('window','localStorage','DATE_KEY','origin','stage','canStart','render',region+'\nreturn {parkState,parkReady,parkAction,parkArriveHTML,parkTogetherHTML,parkCoffeeHTML};');
 const store=new Map([['day','sat']]),storage={
  getItem:k=>store.get(k)??null,
  setItem:(k,v)=>store.set(k,String(v)),
  removeItem:k=>store.delete(k)
 };
-let renders=0;
-const visit=new Function('localStorage','DATE_KEY','origin','stage','canStart','render',
+let renders=0,advances=0;
+const stubWindow={StoryFlow:{next(){advances++;}}};
+const visit=new Function('window','localStorage','DATE_KEY','origin','stage','canStart','render',
  region+'\nreturn {parkState,parkReady,parkAction,parkArriveHTML,parkTogetherHTML,parkCoffeeHTML};'
-)(storage,'day','zap',6,()=>true,()=>renders++);
+)(stubWindow,storage,'day','zap',6,()=>true,()=>renders++);
 assert.equal(visit.parkReady(),false,'The park is not automatically completed');
 assert.equal(visit.parkState().coffee,null);
 visit.parkAction('coffee-yes');
@@ -39,6 +40,10 @@ assert.ok(visit.parkCoffeeHTML().includes('data-park-action="coffee-no"'));
 assert.ok(visit.parkCoffeeHTML().includes('data-park-action="coffee-yes"'));
 assert.ok(visit.parkTogetherHTML().includes('сосен'),'Park stage should include meaningful time together');
 assert.equal(renders,4,'Only four valid actions should rerender park chapter');
+assert.equal(advances,4,'Arrival, shared time, coffee yes or no must each advance the story');
+assert.ok(visit.parkCoffeeHTML().includes('aria-pressed="true"'),'Selected answer must be visually and accessibly marked');
+assert.ok(visit.parkCoffeeHTML().includes('is-selected'),'Selected state must use distinct styling');
+assert.ok(visit.parkCoffeeHTML().includes('data-park-action="coffee-yes"'),'Yes button must remain available to change mind');
 store.set('day','sun');
 assert.equal(visit.parkReady(),false,'Another date should not inherit earlier answers');
 assert.equal(visit.parkState().arrived,false);
