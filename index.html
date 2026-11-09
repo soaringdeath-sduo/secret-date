@@ -246,10 +246,11 @@ that other services will comply. See ai-policy.txt.
       const raw=prompt('Режим ведущего: введите код');
       if((raw||'').trim()!==HOST_CODE)return;
       localStorage.setItem(HOST_KEY,'1');
-      const option=prompt('Проверка: 1 — вопросы, 2 — дата/таймер, 3 — игра, 4 — выйти, 5 — выбор даты','2');
+      const option=prompt('Проверка: 1 — вопросы, 2 — дата/таймер, 3 — игра, 4 — выйти, 5 — выбор даты, 6 — все мини-игры','2');
       if(option==='4'){localStorage.removeItem(HOST_KEY);render();return;}
       if(option==='1'){stage=-1;localStorage.removeItem(INVITE_KEY);render();return;}
       if(option==='3'){localStorage.setItem(INVITE_KEY,'1');window.location.href='secret_date_game_luga.html';return;}
+      if(option==='6'){window.location.href='daily.html';return;}
       if(option==='2'||option==='5'){localStorage.setItem(INVITE_KEY,'1');stage=option==='5'?questions.length+1:(getDay()?questions.length+2:questions.length+1);render();return;}
       render();
     }
