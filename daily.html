@@ -61,6 +61,33 @@ p{line-height:1.65;color:#795d6d}
 .skip-note{font-size:12px;color:#917283;margin-top:12px}
 @media(max-width:370px){.daily-grid .day-card{grid-template-columns:35px 1fr auto;gap:7px;padding:11px 8px}.day-icon{width:35px;font-size:24px}.day-card .day-status{min-width:45px;font-size:10px}.paper{padding:22px 14px}}
 @media(prefers-reduced-motion:reduce){.day-card{transition:none}}
+
+/* Longer daily releases: progress is gentle, large and readable on phones. */
+.daily-progress{height:9px;overflow:hidden;background:#efd6d9;border-radius:99px;margin:17px 0 7px}
+.daily-progress span{height:100%;display:block;background:linear-gradient(95deg,#a54a70,#dfa6b8);transition:width .25s;border-radius:99px}
+.chapter-ribbon{font:italic 22px/1.25 Georgia,serif;display:table;margin:12px auto 18px;background:#f3d6dc;color:#813d59;padding:9px 18px;transform:rotate(-2deg);box-shadow:0 5px 10px #aa6a7930}
+.daily-episode-head{margin:11px 0 3px;font-size:12px;line-height:1.55;color:#986578}
+.daily-episode-head strong{color:#a65274}
+.daily-done-stamp{border:2px dashed #ac607e;background:#fff7f0;padding:10px 14px;margin:18px auto;display:table;transform:rotate(-3deg);color:#994f6c;font-weight:900;font-size:12px;letter-spacing:1px}
+.quiz-question{font:normal 24px/1.24 Georgia,serif;color:#75364f;margin:13px 0 20px}
+.quiz-answer{display:block;margin:10px 0;padding:14px 16px;background:#fffefa;border:1px solid #dcb8c3;border-radius:13px;text-align:left;width:100%;font:700 15px/1.42 system-ui,sans-serif;color:#7e4460;cursor:pointer}
+.quiz-answer:hover:not([disabled]),.quiz-answer:focus-visible{background:#f9e2ea;border-color:#ad6584}
+.quiz-answer:disabled{opacity:.72;cursor:default}
+.quiz-feedback{background:#f9ebed;border-left:4px solid #bb7996;padding:12px 14px;color:#81485f;font-size:13px;line-height:1.5;border-radius:0 9px 9px 0;margin:14px 0}
+.chapter-clues{display:flex;flex-wrap:wrap;gap:5px;margin:12px 0}
+.chapter-clues span{display:grid;place-items:center;min-width:28px;height:34px;border-radius:5px;border:1px solid #d3a4b4;background:#f9e4e6;color:#8d4b66;font:17px Georgia,serif}
+.day-status-note{font-size:12px;line-height:1.55;color:#927186;margin:10px 0}
+.daily-frame{width:min(100%,230px);padding:10px 10px 32px;background:#fffdfa;box-shadow:0 9px 23px #8d5c7230;transform:rotate(3deg);margin:21px auto 22px;border:1px solid #f0e4e0}
+.daily-frame-inner{height:124px;display:grid;place-items:center;font-size:54px;background:linear-gradient(130deg,#c7a1ad,#ddb6b9 53%,#e9ceb7)}
+.daily-frame figcaption{font:italic 16px Georgia,serif;text-align:center;color:#8b4968;margin-top:10px}
+.daily-clock-warning{background:#fff6ed;color:#925773;border:1px dashed #d5a8b7;border-radius:13px;padding:15px;line-height:1.6;font-size:13px;margin:20px 0}
+.paper[data-theme="cream"]{background:linear-gradient(155deg,#fffdf6,#faebdf)}
+.paper[data-theme="lilac"]{background:linear-gradient(155deg,#fffaf4,#efe7f6)}
+.paper[data-theme="peach"]{background:linear-gradient(155deg,#fffaf6,#fbe0de)}
+.paper[data-theme="gold"]{background:linear-gradient(155deg,#fffcf1,#f8ebd2)}
+.paper[data-theme="dusk"]{background:linear-gradient(155deg,#fffaf5,#e8dff0)}
+@media(prefers-reduced-motion:reduce){.daily-progress span{transition:none}}
+
 </style>
 </head>
 <body class="polaroid-site">
@@ -71,115 +98,209 @@ p{line-height:1.65;color:#795d6d}
 </div>
 <script>
 'use strict';
-const DATE_KEY='sd2810-selected-day-v1',INVITE_KEY='sd2810-invite-approved-v3';
-const HOST_KEY='sd2810-host-v3',BASE='sd2810-daily-v1';
-const DATE_STARTS=[9,10,11,12,13,14];
-const TITLES=['Досье подозреваемого','Мини-кросс','Правда или выдумка','Настроение свидания','Финальный допуск','Бонус: последний секрет'];
-const ICONS=['🕵️','✏️','🎞️','💗','🎟️','💌'];
-const DESC=['Три вопроса про Игоря','Три слова — всё просто','Три смешных утверждения','Выбери атмосферу','Одна кнопка — и готово','Маленькая открытка на завтра'];
-const SHORT_DATES=['9 ноября','10 ноября','11 ноября','12 ноября','13 ноября','14 ноября'];
-const QUIZZES=[
- [{q:'Кто организует секретное приключение?',choices:['Игорь','Кот в сапогах','Случайный водитель'],response:'Верно, главный подозреваемый — Игорь! 🕵️'},
-  {q:'Какое у нашего организатора главное увлечение?',choices:['Техника и машины','Выращивание кактусов на Луне'],response:'Официально: техника. Неофициально: придумывать сюрпризы. 🚗'},
-  {q:'Что в этой операции самое важное?',choices:['Провести время вместе','Разгадать всё за 20 секунд'],response:'Именно! Никакой спешки, только приятные моменты. ❤️'}],
- [{q:'Угадай слово: как зовут главную героиню?',choices:['ЛИЗА','ИГОРЬ'],response:'Главная героиня найдена!'},
-  {q:'А организатора?',choices:['ИГОРЬ','ЛИЗА'],response:'Дело раскрыто!'},
-  {q:'Что делает свидание особенным?',choices:['СМЕХ','ПЛАН'],response:'Смех и хорошие воспоминания важнее идеального плана. 💗'}],
- [{q:'Организатор обещает быть загадочным.',choices:['Правда','Выдумка'],response:'Подозрительная правда! 🕶️'},
-  {q:'Чтобы хорошо провести время, обязательно всё разгадать заранее.',choices:['Правда','Выдумка'],response:'Нет, пусть некоторые сюрпризы останутся сюрпризами. 😉'},
-  {q:'Главная цель операции — увидеть твою улыбку.',choices:['Правда','Выдумка'],response:'Совершенно секретно, но это правда. ❤️'}],
- [{q:'Какая атмосфера тебе ближе?',choices:['Уют и разговоры 🫖','Прогулка и приключения 🌷','Немного всего ✨'],response:'Отличный выбор!'},
-  {q:'Что больше поднимет настроение?',choices:['Тёплые слова 💌','Смешной сюрприз 😄','Всё сразу ❤️'],response:'Отлично, записано в секретное досье.'},
-  {q:'Какая музыка подойдёт вашему дню?',choices:['Что-то романтичное','Что-то весёлое','Плейлист от Игоря'],response:'Музыкальные разведданные получены! 🎵'}],
- [{q:'Перед тобой официальное разрешение на секретное свидание. Готова?',choices:['Готова! ❤️','Очень готова! ✨'],response:'Участница прошла подготовку. Добро пожаловать!'}],
- [{q:'Какую маленькую вещь возьмёшь с собой?',choices:['Хорошее настроение ❤️','Улыбку 😄','Любопытство ✨'],response:'Операция ждёт своего часа. Ты готова!'}]
-];
+const DATE_KEY='sd2810-selected-day-v1',INVITE_KEY='sd2810-invite-approved-v3',BASE='sd2810-daily-v1';
+const DAYS=[9,10,11,12,13,14],CAPTIONS=['Досье на Игоря','Мини-кросс про любовь','Правда или выдумка','Свидание твоей мечты','Финальный допуск','Последний секрет'];
+const ICONS=['🕵️','✏️','🎞️','💗','🎟️','💌'],COLORS=['rose','cream','lilac','peach','gold','dusk'];
+const SHORT=['9 ноября','10 ноября','11 ноября','12 ноября','13 ноября','14 ноября'];
 const root=document.getElementById('daily-root');
-let current=-1,sessionStep=0,sessionAnswers=[],doneMessage='';
+let current=-1,episode=null,step=0,answers=[],working=false;
+let clockEpoch=null,clockAnchor=0,clockError='',clockLoading=false;
 const chosen=()=>localStorage.getItem(DATE_KEY);
-const key=()=>BASE;
-const isHost=()=>localStorage.getItem(HOST_KEY)==='1';
-const count=()=>chosen()==='sun'?6:5;
+const numberOfDays=()=>chosen()==='sun'?6:5;
+const isInvited=()=>localStorage.getItem(INVITE_KEY)==='1'&&['sat','sun'].includes(chosen());
+const nowTrusted=()=>clockEpoch===null?null:clockEpoch+(performance.now()-clockAnchor);
+const safe=x=>String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const freshState=()=>({version:2,done:{},answers:{}});
 function state(){
- try{const v=JSON.parse(localStorage.getItem(key())||'null');if(v&&v.done&&typeof v.done==='object'&&v.answers&&typeof v.answers==='object')return v;}catch(e){}
- return {done:{},answers:{}};
+ try{
+  const value=JSON.parse(localStorage.getItem(BASE)||'null');
+  if(value&&value.version===2&&value.done&&typeof value.done==='object'&&value.answers&&typeof value.answers==='object')return value;
+ }catch(e){}
+ return freshState();
 }
-function persist(v){try{localStorage.setItem(key(),JSON.stringify(v))}catch(e){const msg=document.getElementById('save-warning');if(msg)msg.textContent='Не удалось сохранить прогресс — проверь свободное место браузера.'}}
-function isUnlocked(i){return isHost()||Date.now()>=Date.UTC(2026,10,DATE_STARTS[i],6,0,0)}
-function available(i){return i>=0&&i<count()&&isUnlocked(i)}
-function completed(){const st=state();return Object.keys(st.done).filter(i=>+i<count()&&st.done[i]).length}
-function e(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function ribbon(t){return '<div class="scrap-ribbon">'+e(t)+'</div>'}
-function header(){
- return '<div class="kicker">МАЛЕНЬКИЙ СЕРИАЛ ДО СВИДАНИЯ</div><h1>Каждый день —<br><em>маленькая тайна ♡</em></h1>'
- +'<p class="subtitle">Лиза, у нашей операции появились короткие выпуски. Один день — одна забавная игра на минутку. Ошибаться можно, пропускать дни тоже!</p>'
- +'<div class="story-polaroid" aria-hidden="true"><div class="view">♡ ✨</div><div class="caption">Наши маленькие секреты</div></div>';
+function persist(st){
+ try{localStorage.setItem(BASE,JSON.stringify(st));return true}
+ catch(e){const el=document.getElementById('daily-save-status');if(el)el.textContent='Не удалось сохранить ответы. Проверь свободное место браузера.';return false}
+}
+function progressDone(){
+ const st=state();return Array.from({length:numberOfDays()},(_,i)=>st.done[i]===true).filter(Boolean).length;
+}
+function phase(i){
+ if(i<0||i>=numberOfDays())return 'absent';
+ const when=nowTrusted();
+ if(when===null)return 'verifying';
+ const start=Date.UTC(2026,10,DAYS[i],6,0,0);  // 09:00 MSK
+ const end=Date.UTC(2026,10,DAYS[i],21,0,0);  // 00:00 MSK, following day
+ return when<start?'future':when>=end?'past':'today';
+}
+const available=i=>isInvited()&&phase(i)==='today';
+function intro(){
+ return '<div class="kicker">НАШ МАЛЕНЬКИЙ СЕРИАЛ • ОПЕРАЦИЯ 28.10</div>'
+  +'<h1>Каждый день —<br><em>немного любви ♡</em></h1>'
+  +'<p class="subtitle">Лиза, теперь каждый выпуск — это <b>15 лёгких романтических вопросов</b>. Примерно 5–7 минут улыбок и сюрпризов. Правильных ответов не требуем!</p>'
+  +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">♡ ✨</div><figcaption>Наши маленькие истории</figcaption></div>';
 }
 function renderHome(){
- current=-1;
- if(localStorage.getItem(INVITE_KEY)!=='1'||!['sat','sun'].includes(chosen())){
-  root.innerHTML=header()+'<div class="locked">🔒 Сначала открой приглашение, введи ваш пароль и выбери дату свидания.</div>'
-   +'<a class="btn" href="index.html" style="display:block;text-align:center;text-decoration:none">Перейти к приглашению 💌</a>';return;
+ current=-1;episode=null;root.dataset.theme='rose';
+ if(!isInvited()){
+  root.innerHTML=intro()+'<div class="locked">🔒 Сначала открой приглашение, введи вашу дату-пароль и выбери день свидания.</div>'
+  +'<a class="btn" style="display:block;text-align:center;text-decoration:none" href="index.html">Открыть приглашение 💌</a>';
+  return;
  }
- const st=state(),n=count();
- let html=header()+'<div class="day-count"><span class="day-badge">🎟️ Выпусков: '+n+'</span><span class="day-badge">💗 Печатей: '+completed()+' / '+n+'</span></div><div class="daily-grid">';
- for(let i=0;i<n;i++){
-  const locked=!isUnlocked(i),finished=!!st.done[i],when=SHORT_DATES[i];
-  html+='<button type="button" class="day-card" data-open="'+i+'"'+(locked?' disabled':'')+'>'
-   +'<span class="day-icon">'+ICONS[i]+'</span><span><strong>'+when+' · '+TITLES[i]+'</strong>'
-   +'<small>'+(locked?'Откроется 9:00 по Москве':DESC[i])+'</small></span>'
-   +'<span class="day-status">'+(finished?'✓ Готово':locked?'🔒':'Открыть')+'</span></button>';
+ let html=intro()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
+ if(nowTrusted()===null){
+  html+='<div class="daily-clock-warning">🕒 '+safe(clockError||'Проверяем текущее московское время по сайту…')
+   +'<p style="font-size:12px">Чтобы нельзя было открыть все дни сменой даты телефона, вход в игры работает только после проверки времени.</p>'
+   +'<button type="button" id="clock-retry" class="btn">Повторить проверку времени</button></div>';
  }
- html+='</div><p class="skip-note">Все открытые выпуски доступны повторно. Награды появятся в финальном отчёте.</p>'
-  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
+ html+='<div class="daily-grid">';
+ const st=state();
+ for(let i=0;i<numberOfDays();i++){
+  const today=phase(i),done=st.done[i]===true,active=today==='today';
+  const subtitle=active?'15 вопросов · 5–7 минут':today==='past'?(done?'Пройденный выпуск — печать сохранена':'Время выпуска закончилось'):'Только '+SHORT[i]+', с 09:00 до 23:59 МСК';
+  const status=active?(done?'✓ Завершён':'Играть ♡'):today==='past'?(done?'✓ Печать':'Истёк'):today==='future'?'🔒 Скоро':'🔒';
+  html+='<button type="button" class="day-card" data-open="'+i+'"'+(active?'':' disabled')+'>'
+   +'<span class="day-icon">'+ICONS[i]+'</span><span><strong>'+SHORT[i]+' · '+CAPTIONS[i]+'</strong><small>'+subtitle+'</small></span>'
+   +'<span class="day-status">'+status+'</span></button>';
+ }
+ html+='</div><p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
+ +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
- root.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click',()=>openDay(Number(btn.dataset.open))));
+ const retry=root.querySelector('#clock-retry');
+ if(retry)retry.addEventListener('click',()=>syncClock(true));
+ root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open))));
 }
-function openDay(i){
- if(!available(i))return;
- current=i;sessionStep=0;sessionAnswers=[];
- renderDay();
+function showUnavailable(){
+ current=-1;episode=null;renderHome();
+ const note=document.getElementById('daily-status');
+ if(note)note.textContent='Этот выпуск можно проходить только в назначенный день.';
 }
-function renderDay(){
- if(current<0||!available(current)){renderHome();return;}
- const i=current,st=state(),finished=!!st.done[i],questions=QUIZZES[i];
- if(sessionStep>=questions.length){
-  let html='<div class="kicker">ВЫПУСК '+(i+1)+' ЗАВЕРШЁН</div><h1>Миссия<br><em>пройдена! ♡</em></h1>'
-   +'<div class="story-polaroid" aria-hidden="true"><div class="view">'+ICONS[i]+'</div><div class="caption">'+e(TITLES[i])+'</div></div>'
-   +'<p>Ты заработала ещё одну печать в досье. Отличная работа, агент Л-01!</p>'
-   +'<div class="stamp">✓ ВЫПУСК ВЫПОЛНЕН</div>'
-   +'<p id="save-warning" class="skip-note"></p>'
-   +'<button type="button" class="btn" id="back-home">К списку выпусков →</button>';
-  root.innerHTML=html;
-  const saved=state();saved.done[i]=true;saved.answers[i]=sessionAnswers.slice();persist(saved);
-  root.querySelector('#back-home').addEventListener('click',renderHome);return;
+async function openDay(i){
+ if(!available(i))return showUnavailable();
+ if(working)return;
+ working=true;current=i;episode=null;root.dataset.theme=COLORS[i];
+ root.innerHTML='<div class="kicker">ВЫПУСК '+(i+1)+'</div><h2>Загружаем твою главу… ♡</h2><p>Ещё мгновение — и начнём.</p>';
+ try{
+  const response=await fetch('daily-content/day-'+DAYS[i]+'.json?v=2',{cache:'no-store'});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const data=await response.json();
+  if(data.date!==DAYS[i]||!Array.isArray(data.questions)||data.questions.length!==15||
+     data.questions.some(q=>!Array.isArray(q)||typeof q[0]!=='string'||!Array.isArray(q[1])||q[1].length<2))
+   throw new Error('Ошибка загрузки вопросов.');
+  if(!available(i)){working=false;return showUnavailable()}
+  episode=data;
+  const st=state(),saved=Array.isArray(st.answers[i])?st.answers[i]:[];
+  answers=saved.length<=15?saved.slice():[];
+  step=answers.length;working=false;
+  if(step>=15){markComplete();showComplete()}else renderQuestion();
+ }catch(e){
+  working=false;
+  root.innerHTML='<div class="kicker">НЕ ПОЛУЧИЛОСЬ ОТКРЫТЬ</div><h2>Глава пока не загрузилась</h2>'
+   +'<p>Проверь интернет и попробуй ещё раз. Твой прогресс не потеряется.</p>'
+   +'<p class="day-status-note">'+safe(e.message||'Сбой загрузки')+'</p>'
+   +'<button class="btn" id="retry-day" type="button">Попробовать снова</button>'
+   +'<button class="btn alt" id="back-to-list" type="button">К списку дней</button>';
+  root.querySelector('#retry-day').addEventListener('click',()=>{working=false;openDay(i)});
+  root.querySelector('#back-to-list').addEventListener('click',renderHome);
  }
- const q=questions[sessionStep];
- let html='<div class="kicker">'+SHORT_DATES[i]+' · ВЫПУСК '+(i+1)+'</div>'
-  +ribbon(TITLES[i])
-  +'<div class="pill-group"><span class="pill">♥ Без сложных заданий</span><span class="pill">⏱️ 1 минута</span></div>'
-  +(finished?'<div class="stamp">✓ Уже получена печать — можно поиграть ещё!</div>':'')
-  +'<div class="quiz"><p class="question-step">ВОПРОС '+(sessionStep+1)+' / '+questions.length+'</p>'
-  +'<p class="question">'+e(q.q)+'</p>';
- if(i===1)html+='<div class="cross-word">'+String(q.choices[0]).split('').map(()=>'<span>♡</span>').join('')+'</div>';
- html+='<div class="choices">'+q.choices.map((c,n)=>'<button type="button" class="choice" data-answer="'+n+'">'+e(c)+'</button>').join('')+'</div>'
-  +'<p class="feedback" id="daily-feedback" role="status"></p></div>'
-  +'<button type="button" class="btn alt" id="back-home">← Ко всем выпускам</button>';
+}
+function markComplete(){
+ if(current<0||answers.length!==15)return;
+ const st=state();st.answers[current]=answers.slice();st.done[current]=true;st.version=2;persist(st);
+}
+function renderQuestion(){
+ if(!episode||!available(current))return showUnavailable();
+ if(step>=15){markComplete();showComplete();return}
+ root.dataset.theme=COLORS[current];
+ const q=episode.questions[step],kind=episode.kind;
+ const percent=Math.round(step/15*100);
+ let html='<div class="kicker">'+SHORT[current]+' • ВЫПУСК '+(current+1)+'</div>'
+  +'<div class="chapter-ribbon">'+safe(episode.title)+' ♡</div>'
+  +'<div class="daily-episode-head"><strong>Вопрос '+(step+1)+' из 15</strong> · '+safe(episode.subtitle)+'</div>'
+  +'<div class="daily-progress" role="progressbar" aria-valuemin="0" aria-valuemax="15" aria-valuenow="'+step+'"><span style="width:'+percent+'%"></span></div>'
+  +'<p class="question-step">'+(step<5?'ПЕРВАЯ ГЛАВА':step<10?'ПРОДОЛЖАЕМ':'УЖЕ ПОЧТИ ФИНАЛ')+'</p>'
+  +'<div class="quiz"><p class="quiz-question">'+safe(q[0])+'</p>';
+ if(kind==='words')html+='<div class="chapter-clues">'+Array.from({length:Math.max(3,String(q[1][0]).length)},()=>'<span>♡</span>').join('')+'</div>';
+ html+=q[1].map((answer,i)=>'<button type="button" class="quiz-answer" data-answer="'+i+'">'+safe(answer)+'</button>').join('')
+  +'<div id="daily-feedback" role="status"></div><div id="daily-save-status" class="day-status-note" role="status"></div></div>'
+  +'<p class="day-status-note">Ответы сохраняются после каждого вопроса. Можно закрыть страницу и вернуться в этот же день.</p>'
+  +'<button type="button" class="btn alt" id="back-to-list">← Сохранить и выйти</button>';
  root.innerHTML=html;
- root.querySelector('#back-home').addEventListener('click',renderHome);
- root.querySelectorAll('[data-answer]').forEach(btn=>btn.addEventListener('click',()=>answer(Number(btn.dataset.answer))));
+ root.querySelectorAll('[data-answer]').forEach(el=>el.addEventListener('click',()=>chooseAnswer(Number(el.dataset.answer))));
+ root.querySelector('#back-to-list').addEventListener('click',renderHome);
 }
-function answer(choice){
- if(current<0)return;
- const q=QUIZZES[current]?.[sessionStep];if(!q||!q.choices[choice])return;
- const feedback=document.getElementById('daily-feedback');
- sessionAnswers.push(choice);
- if(current===1){const slots=root.querySelectorAll('.cross-word span');q.choices[0].split('').forEach((ch,i)=>{if(slots[i])slots[i].textContent=ch})}
- if(feedback)feedback.textContent=q.response;
- root.querySelectorAll('[data-answer]').forEach(b=>b.disabled=true);
- const next=document.createElement('button');next.type='button';next.className='btn';next.textContent=sessionStep===QUIZZES[current].length-1?'Получить печать ♡':'Дальше →';next.addEventListener('click',()=>{sessionStep++;renderDay()});
- root.querySelector('.quiz')?.appendChild(next);
+function chooseAnswer(choice){
+ if(!episode||!available(current))return showUnavailable();
+ if(answers.length!==step||step>=15)return;
+ const q=episode.questions[step];
+ if(!Number.isInteger(choice)||choice<0||choice>=q[1].length)return;
+ answers.push(choice);
+ const st=state();st.version=2;st.answers[current]=answers.slice();
+ if(answers.length===15)st.done[current]=true;
+ const stored=persist(st);
+ root.querySelectorAll('[data-answer]').forEach(el=>el.disabled=true);
+ const word=episode.kind==='words'?'Загаданное слово: '+q[1][0]+'. ':'';
+ const response=episode.kind==='mood'?'Записано в твоё романтическое досье! ❤️':
+  episode.kind==='truth'?'По версии нашего секретного отдела: '+q[1][0]+'. ♡':
+  episode.kind==='words'?word+'Расшифровка принята. ♡':
+  'Отличный выбор! Ещё одна маленькая частичка вашей истории. ♡';
+ const area=root.querySelector('#daily-feedback');
+ if(area)area.innerHTML='<div class="quiz-feedback">'+safe(response)+(stored?'':' Прогресс пока не сохранился на устройстве.')+'</div>';
+ if(episode.kind==='words'){
+  const slots=root.querySelectorAll('.chapter-clues span');
+  q[1][0].split('').forEach((letter,i)=>{if(slots[i])slots[i].textContent=letter});
+ }
+ const next=document.createElement('button');next.type='button';next.className='btn';
+ next.textContent=answers.length===15?'Получить печать ♡':'Продолжить →';
+ next.addEventListener('click',()=>{
+  if(!available(current))return showUnavailable();
+  step=answers.length;
+  if(step===15){markComplete();showComplete()}else renderQuestion();
+ });
+ if(area)area.appendChild(next);
 }
-renderHome();
+function showComplete(){
+ if(!episode||!available(current))return showUnavailable();
+ markComplete();
+ const i=current;
+ root.dataset.theme=COLORS[i];
+ root.innerHTML='<div class="kicker">ВЫПУСК '+(i+1)+' ЗАВЕРШЁН</div>'
+  +'<h1>Миссия<br><em>пройдена! ♡</em></h1>'
+  +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">'+ICONS[i]+'</div><figcaption>'+safe(CAPTIONS[i])+'</figcaption></div>'
+  +'<p>Все <b>15 вопросов</b> пройдены. Ты получила ещё одну печать в нашем романтическом альбоме!</p>'
+  +'<div class="daily-done-stamp">✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА</div>'
+  +'<p class="day-status-note">Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.</p>'
+  +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>';
+ root.querySelector('#back-to-list').addEventListener('click',renderHome);
+}
+async function syncClock(showLoading){
+ if(clockLoading)return;
+ clockLoading=true;
+ if(showLoading){clockError='';if(current<0)renderHome()}
+ try{
+  const url='daily.html?check='+Date.now();
+  let result=await fetch(url,{method:'HEAD',cache:'no-store'});
+  let dateHeader=result.headers?.get('date');
+  if(!result.ok||!dateHeader){
+   result=await fetch(url+'&retry=1',{cache:'no-store'});
+   dateHeader=result.headers?.get('date');
+  }
+  const value=Date.parse(dateHeader||'');
+  if(!result.ok||!Number.isFinite(value))throw new Error('Сайт не вернул подтверждённое время.');
+  clockEpoch=value;clockAnchor=performance.now();clockError='';
+ }catch(e){
+  if(clockEpoch===null)clockError='Не получается проверить время на сервере. Подключись к интернету и повтори.';
+ }finally{
+  clockLoading=false;
+  if(current>=0 && !available(current))showUnavailable();
+  else if(current<0)renderHome();
+ }
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncClock(false)});
+window.addEventListener('focus',()=>syncClock(false));
+setInterval(()=>{if(current>=0&&phase(current)!=='today')showUnavailable();else if(current<0)renderHome()},30000);
+setInterval(()=>syncClock(false),120000);
+persist(state());renderHome();syncClock(true);
+
 </script>
 </body></html>
