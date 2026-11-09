@@ -149,7 +149,7 @@ async function route(origin,choice='omchino',category='romance'){
   pause(){},onPageRender(){},clearHostPreview(){},
   revealFirst(){w.StoryFlow.mark('firstSong')},
   revealFinal(){w.StoryFlow.mark('finalSong')},
-  previewTrack(){},openLibrary(){}
+  previewTrack(){},openLibrary(){w.__memoryAlbumMusicOpens=(w.__memoryAlbumMusicOpens||0)+1}
  };
  for(const text of inline(source))w.eval(text);
  const storage=w.SDTest.storage;
@@ -269,6 +269,11 @@ async function route(origin,choice='omchino',category='romance'){
  next(w,4,'photo archive');
  const a=doc.querySelector('a[href*="daily-poetry-library"]');
  assert.ok(a,'The finale must have a direct link to the poetry archive');
+ assert.ok(doc.querySelector('#certificate-download'),'Final certificate PNG download must remain');
+ click(doc,'#album-open-soundtrack','Open album soundtrack from final keepsake');
+ assert.equal(w.__memoryAlbumMusicOpens,1,'Final album button should open actual soundtrack library');
+ assert.ok(doc.querySelector('#album-download-status'),'Final album must have download feedback');
+ assert.ok(doc.querySelector('.album-memory-links'),'Music and poems should be grouped within the final keepsake');
  assert.equal(a.hash,'#daily-poetry-library');
  assert.ok(doc.querySelector('.story-screen-count'),'Finale progress must remain visible');
  next(w,5,'embrace');
