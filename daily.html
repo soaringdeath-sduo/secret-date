@@ -354,6 +354,7 @@ document.getElementById('host-daily-button').addEventListener('click',()=>{
  const button=document.getElementById('host-daily-button');
  if(organizerMode){
   organizerMode=false;previewMode=false;
+  localStorage.removeItem(HOST_SESSION_KEY);
   button.textContent='🔧 Просмотр для ведущего';
   renderHome();return;
  }
@@ -363,7 +364,7 @@ document.getElementById('host-daily-button').addEventListener('click',()=>{
   return;
  }
  organizerMode=true;previewMode=false;
- button.textContent='✕ Закрыть просмотр ведущего';
+ button.textContent='✕ Выйти из режима ведущего';
  renderHome();
 });
 persist(state());renderHome();syncClock(true);
