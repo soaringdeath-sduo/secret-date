@@ -96,6 +96,17 @@ p{line-height:1.65;color:#795d6d}
 .daily-custom-form textarea:focus-visible{outline:3px solid #ca91a7}
 .daily-host-link{background:none;border:0;border-top:1px dashed #d8b6be;color:#995d77;padding:13px 9px 5px;font:inherit;font-size:12px;cursor:pointer}
 .daily-preview-note{background:#f9e1e8;color:#874561;border:1px dashed #c0849c;border-radius:11px;padding:12px;margin:12px 0 15px;font-size:12px;font-weight:700;line-height:1.5}
+
+/* Secret romantic compatibility invitation and chapter-specific love postcards. */
+.couple-invite{margin:23px 0;padding:19px 17px;background:linear-gradient(150deg,#ffe7ee,#fff8f1);border:2px solid #e2afc3;border-radius:16px;box-shadow:0 9px 22px #c0819c24}
+.couple-invite h2{font-size:28px;margin:10px 0}
+.couple-invite p{font-size:13px;line-height:1.65}
+.couple-invite .btn{font-size:13px}
+.couple-portrait{margin:15px 0 23px}
+.couple-portrait p{font-size:13px}
+.couple-answer-card{margin:10px 0;background:#fff9f6;border:1px solid #e7c4ce;padding:13px 14px;border-radius:12px}
+.couple-answer-card small{display:block;color:#977085;font-size:12px;line-height:1.45;margin-bottom:6px}
+.couple-answer-card strong{color:#7f4460;font-size:14px}
 </style>
 <link rel="stylesheet" href="host-full-test.css?v=2">
 </head>
@@ -106,12 +117,14 @@ p{line-height:1.65;color:#795d6d}
  <div class="footer">Для Лизы, с любовью и капелькой хитрости ♡<div style="margin-top:14px"><button type="button" id="host-daily-button" class="daily-host-link">🔧 Просмотр для ведущего</button></div></div>
 </div>
 <script src="host-full-test.js?v=1"></script>
+<script src="couple-core.js?v=1"></script>
+<script src="daily-couple.js?v=1"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
 const DATE_KEY='sd2810-selected-day-v1',INVITE_KEY='sd2810-invite-approved-v3',BASE='sd2810-daily-v1';
-const DAYS=[9,10,11,12,13,14],CAPTIONS=['Досье на Игоря','Мини-кросс про любовь','Правда или выдумка','Свидание твоей мечты','Финальный допуск','Последний секрет'];
-const ICONS=['🕵️','✏️','🎞️','💗','🎟️','💌'],COLORS=['rose','cream','lilac','peach','gold','dusk'];
+const DAYS=[9,10,11,12,13,14],CAPTIONS=['Досье на Игоря','Как мы говорим «люблю»','Услышать друг друга','Наш идеальный день','Мы — одна команда','Мечты на двоих'];
+const ICONS=['🕵️','💞','🫶','🌷','🤝','✨'],COLORS=['rose','cream','lilac','peach','gold','dusk'];
 const SHORT=['9 ноября','10 ноября','11 ноября','12 ноября','13 ноября','14 ноября'];
 const root=document.getElementById('daily-root');
 let current=-1,episode=null,step=0,answers=[],working=false;
@@ -152,7 +165,7 @@ const canContinue=()=>window.SDTest.active()||previewMode&&organizerMode||availa
 function intro(){
  return '<div class="kicker">НАШ МАЛЕНЬКИЙ СЕРИАЛ • ОПЕРАЦИЯ 28.10</div>'
   +'<h1>Каждый день —<br><em>немного любви ♡</em></h1>'
-  +'<p class="subtitle">Лиза, теперь каждый выпуск — это <b>15 лёгких романтических вопросов</b>. Примерно 5–7 минут улыбок и сюрпризов. Правильных ответов не требуем!</p>'
+  +'<p class="subtitle">Лиза, первый выпуск — досье на Игоря. А дальше — <b>романтические тесты про вас двоих</b>: чувства, привычки, общение и мечты. В каждом 15 вопросов, и неправильных ответов здесь нет.</p>'
   +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">♡ ✨</div><figcaption>Наши маленькие истории</figcaption></div>';
 }
 function renderHome(){
@@ -179,12 +192,15 @@ function renderHome(){
    +'<span class="day-icon">'+ICONS[i]+'</span><span><strong>'+SHORT[i]+' · '+CAPTIONS[i]+'</strong><small>'+subtitle+'</small></span>'
    +'<span class="day-status">'+status+'</span></button>';
  }
- html+='</div><p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
+ html+='</div>';
+ if(window.DailyCouple.ready(chosen(),state()))html+=window.DailyCouple.invitation();
+ html+='<p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
  const retry=root.querySelector('#clock-retry');
  if(retry)retry.addEventListener('click',()=>syncClock(true));
  root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open),organizerMode)));
+ window.DailyCouple.bind(root,chosen,state);
 }
 function showUnavailable(){
  current=-1;episode=null;renderHome();
@@ -198,7 +214,7 @@ async function openDay(i,asPreview=false){
  working=true;previewMode=isPreview;current=i;episode=null;root.dataset.theme=COLORS[i];
  root.innerHTML='<div class="kicker">ВЫПУСК '+(i+1)+'</div><h2>Загружаем твою главу… ♡</h2><p>Ещё мгновение — и начнём.</p>';
  try{
-  const response=await fetch('daily-content/day-'+DAYS[i]+'.json?v=2',{cache:'no-store'});
+  const response=await fetch('daily-content/day-'+DAYS[i]+'.json?v=3',{cache:'no-store'});
   if(!response.ok)throw new Error('HTTP '+response.status);
   const data=await response.json();
   if(data.date!==DAYS[i]||!Array.isArray(data.questions)||data.questions.length!==15||
@@ -325,9 +341,12 @@ function showComplete(){
   +'<p>'+(previewMode?'Все 15 вопросов просмотрены, результаты Лизы не изменились.':'Все <b>15 вопросов</b> пройдены. Ты получила ещё одну печать в нашем романтическом альбоме!')+'</p>'
   +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
+  +window.DailyCouple.portrait(i===0?null:episode,answers)
+  +(i===numberOfDays()-1&&window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')
   +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>'
   +(window.SDTest.active()?'<button type="button" class="btn" id="sd-next-full-test">'+(i===DAYS.length-1?'🚗 Перейти к полному GPS-квесту':'Следующий выпуск ('+SHORT[i+1]+') →')+'</button>':'');
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
+ window.DailyCouple.bind(root,chosen,state);
  if(window.SDTest.active())root.querySelector('#sd-next-full-test').addEventListener('click',()=>{
    if(i===DAYS.length-1)window.SDTest.navTo('secret_date_game_luga.html');
    else openDay(i+1,false);
@@ -386,7 +405,8 @@ if(window.SDTest.active()){
  else showCompleteFromFullTest();
 }else{renderHome();syncClock(true);}
 function showCompleteFromFullTest(){
- root.innerHTML=intro()+'<div class="daily-preview-note">✓ Все шесть тестовых выпусков пройдены. Можешь продолжать проверку маршрута с самого начала.</div><button type="button" class="btn" id="sd-full-route">🚗 Начать GPS-квест</button>';
+ root.innerHTML=intro()+'<div class="daily-preview-note">✓ Все шесть тестовых выпусков пройдены. Можешь продолжать проверку маршрута с самого начала.</div>'+(window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')+'<button type="button" class="btn" id="sd-full-route">🚗 Начать GPS-квест</button>';
+ window.DailyCouple.bind(root,chosen,state);
  root.querySelector('#sd-full-route').addEventListener('click',()=>window.SDTest.navTo('secret_date_game_luga.html'));
 }
 
