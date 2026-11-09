@@ -16,8 +16,13 @@ for(const [i,p] of data.entries()){
 }
 assert.ok(data[0].text.includes('вскоре'),'First poem should not mistakenly say the date is tomorrow');
 const daily=fs.readFileSync('daily.html','utf8');
-assert.ok(daily.includes('daily-poetry.css?v=2')&&daily.includes('daily-poetry.js?v=3'));
+assert.ok(daily.includes('daily-poetry.css?v=3')&&daily.includes('daily-poetry.js?v=4'));
 assert.ok(daily.includes('window.DailyPoetry.completion('),'Daily ending must reveal poem');
+assert.ok(daily.includes('showComplete(true);'),'Fifteenth answer must automatically reveal its poem');
+assert.ok(daily.includes("if(openPoemNow)window.DailyPoetry.openAfterQuiz(DAYS[i]);"),'Poem should open immediately after chapter completion');
+assert.ok(daily.includes('id="daily-reopen-poem"'),'Completed day must have clear re-open poem control');
+assert.ok(daily.indexOf("+'<div id=\"daily-poetry-card\"></div>'")<daily.indexOf("+'<div class=\"daily-done-stamp\""),'Poem should be before seal in visible completion');
+
 assert.ok(daily.includes('window.DailyPoetry.library('),'Daily page must have permanent poem library');
 assert.ok(daily.includes("window.DailyPoetry.completion(root.querySelector('#daily-poetry-card'),DAYS[i]"),'Chapter card must match its day');
 assert.ok(fs.readFileSync('poems/README.md','utf8').includes('poem-day-9.mp3'));
@@ -90,6 +95,26 @@ assert.ok(modal,'Unlocked poem should open in a Polaroid modal');
 assert.ok(modal.querySelector('.poetry-card'));
 modal.querySelector('.poetry-dialog-close').click();
 assert.ok(!document.querySelector('#poetry-modal'),'Modal should close');
+await api.openAfterQuiz(11);
+await tick();
+const story=document.querySelector('#poetry-modal');
+assert.ok(story,'After quiz poem should open automatically as its own page');
+assert.ok(story.querySelector('.poetry-story-head'),'Poem must indicate the new page');
+assert.ok(story.querySelector('#poetry-story-next'),'Poem must offer clear next page button');
+assert.ok(story.textContent.includes('Когда мы молчим'),'The correct day 11 poem should be visible');
+const dlg=story.querySelector('.poetry-dialog');
+const start=new w.Event('touchstart',{bubbles:true});
+Object.defineProperty(start,'touches',{value:[{clientX:310,clientY:220}]});
+dlg.dispatchEvent(start);
+const end=new w.Event('touchend',{bubbles:true});
+Object.defineProperty(end,'changedTouches',{value:[{clientX:120,clientY:225}]});
+dlg.dispatchEvent(end);
+assert.ok(!document.querySelector('#poetry-modal'),'Horizontal swipe should advance to the chapter seal');
+await api.openAfterQuiz(12);
+await tick();
+assert.ok(document.querySelector('#poetry-story-next'),'Next button must exist as a swipe alternative');
+document.querySelector('#poetry-story-next').click();
+assert.ok(!document.querySelector('#poetry-modal'),'Next button must dismiss story and reveal the seal');
 assert.ok(numHead>=2,'Audio availability should be checked before showing a player');
 assert.ok(rangeGets>=2,'Fallback retrieval must run after false-negative HEAD');
 
@@ -108,4 +133,4 @@ dom.window.close();
 console.log('✓ Six poems, eight lines each, correct 14/15 November windows');
 console.log('✓ Complete-only anthology, host simulation, and previews');
 console.log('✓ Audio plays only when MP3 exists; no dead guest controls');
-console.log('✓ Accessible modal with real Russian poem and easy close');
+console.log('✓ Automatically shown next-page poem, swipe navigation and next button');
