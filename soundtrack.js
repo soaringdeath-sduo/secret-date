@@ -131,12 +131,13 @@
       if(seek){seek.max=Number.isFinite(audio.duration)?audio.duration:TRACKS[Math.max(0,track)].duration;seek.value=audio.currentTime||0;}
     }
     const btn=overlay.querySelector('[data-sc="play"]');
-    if(btn)btn.textContent=track>=0&&!audio.paused?'⏸ Пауза':'▶ Слушать через магнитолу';
-    const pos=overlay.querySelector('[data-sc-position]');if(pos)pos.textContent=fmt(audio.currentTime);
+    const displayed=btn?Number(btn.dataset.scIndex):Math.max(0,track);
+    if(btn)btn.textContent=track===displayed&&!audio.paused?'⏸ Пауза':'▶ Слушать через магнитолу';
+    const pos=overlay.querySelector('[data-sc-position]');if(pos)pos.textContent=fmt(track===displayed?audio.currentTime:0);
     const dur=overlay.querySelector('[data-sc-duration]');
-    if(dur)dur.textContent=fmt(track>=0&&Number.isFinite(audio.duration)?audio.duration:TRACKS[Math.max(0,track)].duration);
+    if(dur)dur.textContent=fmt(track===displayed&&Number.isFinite(audio.duration)?audio.duration:TRACKS[displayed].duration);
     const seek=overlay.querySelector('[data-sc-seek]');
-    if(seek){seek.max=Number.isFinite(audio.duration)?audio.duration:TRACKS[Math.max(0,track)].duration;seek.value=audio.currentTime||0;}
+    if(seek){seek.max=track===displayed&&Number.isFinite(audio.duration)?audio.duration:TRACKS[displayed].duration;seek.value=track===displayed?(audio.currentTime||0):0;}
     syncSession();
   }
   function hideOverlay(){
@@ -150,10 +151,11 @@
     overlay.querySelectorAll('[data-sc="library"]').forEach(b=>b.addEventListener('click',openLibrary));
     overlay.querySelectorAll('[data-sc-open-track]').forEach(b=>b.addEventListener('click',()=>openTrack(Number(b.dataset.scOpenTrack),false)));
     const playBtn=overlay.querySelector('[data-sc="play"]');
-    if(playBtn)playBtn.addEventListener('click',()=>track>=0&&!audio.paused?pause():play(Number(playBtn.dataset.scIndex)));
+    if(playBtn)playBtn.addEventListener('click',()=>{const i=Number(playBtn.dataset.scIndex);if(track===i&&!audio.paused)pause();else play(i);});
     const seek=overlay.querySelector('[data-sc-seek]');
     if(seek)seek.addEventListener('input',e=>{
-      if(track>=0&&Number.isFinite(audio.duration))audio.currentTime=Math.min(Number(e.target.value),audio.duration);
+      if(track>=0&&track===Number(overlay.querySelector('[data-sc="play"]')?.dataset.scIndex)&&Number.isFinite(audio.duration))
+        audio.currentTime=Math.min(Number(e.target.value),audio.duration);
     });
     syncUI();
   }
@@ -161,7 +163,9 @@
     lastFocus=document.activeElement;
     overlay.innerHTML='<div class="sc-dialog"><button type="button" class="sc-close" data-sc="close" aria-label="Закрыть музыкальное послание">×</button>'+html+'</div>';
     overlay.hidden=false;document.body.classList.add('sc-modal-open');
-    bindCommon();
+    if(overlay.querySelector('.sc-reveal-card')){
+      const closeBtn=overlay.querySelector('.sc-close');if(closeBtn)closeBtn.addEventListener('click',hideOverlay);
+    }else bindCommon();
     const close=overlay.querySelector('.sc-close');if(close)close.focus();
   }
   function trackControls(i){
@@ -232,6 +236,12 @@
     syncUI();
     if(!was)openTrack(0,true);
   }
+  function openFirst(isHost){
+    if(!enabled)return;
+    unlock(0,isHost);
+    syncUI();
+    openTrack(0,false);
+  }
   function revealFinal(isHost){
     if(!enabled||stage!==13)return;
     unlock(1,isHost);
@@ -265,5 +275,5 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)hideOverlay();});
   const libraryBtn=document.getElementById('soundtrack-library');
   if(libraryBtn)libraryBtn.addEventListener('click',openLibrary);
-  window.SecretSoundtrack={revealFirst,revealFinal,openLibrary,onPageRender,pause};
+  window.SecretSoundtrack={revealFirst,openFirst,revealFinal,openLibrary,onPageRender,pause};
 })();
