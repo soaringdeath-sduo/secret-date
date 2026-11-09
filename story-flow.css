@@ -1,0 +1,33 @@
+/* Операция 28.10 — последовательные главы, свайпы и прогресс */
+.story-slide[hidden]{display:none!important}
+.story-slide{min-width:0;width:100%;position:relative;flex:1;touch-action:pan-y}
+.story-current.story-swoop{animation:story-swoop .28s cubic-bezier(.2,.7,.2,1) both}
+@keyframes story-swoop{from{opacity:.2;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+.story-flow-head{margin:0 0 18px;position:relative;z-index:2;background:rgba(255,242,251,.06);border:1px solid rgba(255,209,233,.18);border-radius:13px;padding:10px 11px 9px}
+.story-flow-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font:750 12px/1.5 system-ui,sans-serif;color:#ffe5f0}
+.story-screen-title{min-width:0;flex:1;word-wrap:break-word}
+.story-screen-count{font-weight:850;white-space:nowrap;color:#ffcedc}
+.story-progress{height:5px;background:rgba(255,230,240,.17);border-radius:99px;overflow:hidden}
+.story-progress-fill{height:100%;background:linear-gradient(90deg,#ec91bb,#ffe0bf);border-radius:inherit;transition:width .22s ease}
+.story-navigation{position:relative;z-index:2;margin-top:auto;padding-top:22px}
+.story-nav-actions{display:grid;grid-template-columns:1fr 1.7fr;gap:9px}
+.story-navigation button{border:1px solid rgba(255,208,227,.28);min-height:54px;border-radius:13px;font:800 15px/1.3 system-ui,sans-serif;cursor:pointer}
+.story-nav-previous{background:#ffffff14;color:#ffe5f0}
+.story-nav-next{background:linear-gradient(125deg,#d775a0,#a64e79);color:#fff;box-shadow:0 4px 13px rgba(87,29,56,.23)}
+.story-navigation button:disabled{cursor:default;opacity:.42;box-shadow:none}
+.story-nav-status{text-align:center;color:#eec4d8;font:12px/1.55 system-ui,sans-serif;margin:9px 0 0}
+.story-slide .radio-card,.story-slide .mini,.story-slide .coords{max-width:100%}
+.story-slide .spacer{min-height:10px}
+.story-slide .btn{max-width:100%}
+.story-slide .scrap-prank,.story-slide .mission-panel{animation:story-swoop .22s ease both}
+.story-slide .story-song-hint{margin:18px 0 12px;padding:18px 15px;border:1px solid #e7b8cb78;background:linear-gradient(145deg,#3c2544,#271a30);border-radius:17px;text-align:center}
+.story-song-hint h3{font:normal 27px/1.2 Georgia,serif;color:#ffdce9;margin:7px 0}
+.story-song-hint p{color:#efd5e1;font:14px/1.7 system-ui,sans-serif}
+.story-song-hint .btn{width:100%;margin-top:12px}
+.story-song-hint .story-lock-note{font-size:12px;color:#d4abbd}
+#app>.story-slide{display:flex;flex-direction:column}
+#app>.story-slide[hidden]{display:none}
+#app>.story-slide>.spacer{flex:1}
+#app .over>.story-slide{display:flex;flex-direction:column}
+#app .over>.story-slide[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){.story-current.story-swoop,.story-slide .scrap-prank,.story-slide .mission-panel{animation:none!important}.story-progress-fill{transition:none}}
