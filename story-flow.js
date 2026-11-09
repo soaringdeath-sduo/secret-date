@@ -58,42 +58,25 @@
   const d=store();d.steps[key()]=value;persist(d);
  }
  function isElement(node){return node&&node.nodeType===1;}
- function boundary(element,stage){
-  if(!isElement(element))return false;
-  const cls=element.classList;
-  if(cls.contains('story-break'))return true;
-  if(stage===0)return cls.contains('start-hint');
-  if(stage===2)return cls.contains('scanner');
-  if(stage===3)return cls.contains('ticket');
-  if(stage===4)return cls.contains('mini');
-  if(stage===5)return cls.contains('mission-panel')||cls.contains('spacer');
-  if(stage===6)return cls.contains('coords')||cls.contains('scrap-prank')||cls.contains('mission-panel')||cls.contains('spacer');
-  if(stage===7)return cls.contains('mission-panel')||cls.contains('scrap-prank')||cls.contains('mini')||cls.contains('spacer');
-  if(stage===8)return cls.contains('spacer');
-  if(stage===9)return cls.contains('coords')||cls.contains('scrap-prank')||cls.contains('spacer');
-  if(stage===10)return cls.contains('mission-panel')||cls.contains('scrap-prank')||cls.contains('category-options');
-  if(stage===11)return cls.contains('secret-options');
-  if(stage===12){
-   if(cls.contains('ticket')||cls.contains('scanner'))return true;
-   if(cls.contains('mini')||cls.contains('mission-panel'))return true;
-   return false;
-  }
-  if(stage===13)return cls.contains('final-date')||
-      cls.contains('mission-award')||cls.contains('album-final')||cls.contains('spacer')||
-      (!!element.querySelector&&!!element.querySelector('#sc-finale-open'));
-  return false;
+ // Only explicit semantic chapter markers may create a new screen.
+ // Never split by layout classes such as .mini, .scrap-prank, .mission-panel,
+ // .spacer or .scanner: those are parts of one interactive scene.
+ function boundary(element){
+  return isElement(element)&&element.classList.contains('story-break');
  }
  function segment(root,stage){
   const nodes=Array.from(root.childNodes),parts=[];let current=[];
+  let pendingTitle=null;
   function flush(){
    if(!current.some(isElement)){current=[];return;}
-   parts.push(current);current=[];
+   parts.push({nodes:current,title:pendingTitle});current=[];pendingTitle=null;
   }
   for(const node of nodes){
-   if(isElement(node)&&node.classList.contains('story-break')){
-    flush();continue;
+   if(boundary(node)){
+    flush();
+    pendingTitle=node.getAttribute('data-story-label')||null;
+    continue;
    }
-   if(boundary(node,stage)&&current.some(isElement))flush();
    current.push(node);
   }
   flush();
@@ -105,12 +88,21 @@
    panel.className='story-slide';
    panel.setAttribute('data-story-page',String(i));
    panel.setAttribute('aria-label','Экран '+(i+1)+' из '+parts.length);
-   parts[i].forEach(node=>panel.appendChild(node));
+   parts[i].nodes.forEach(node=>panel.appendChild(node));
+   if(parts[i].title)panel.dataset.storyLabel=parts[i].title;
    root.appendChild(panel);result.push(panel);
   }
   return result;
  }
  function defaultTitle(){
+  const panel=panels[position];
+  if(panel?.dataset.storyLabel)return panel.dataset.storyLabel;
+  // Single-screen missions use their actual heading, never a stale
+  // index from a different mission phase (e.g. the spinning wheel).
+  if(config.stage===10){
+   const title=panel?.querySelector('.hero');
+   if(title?.textContent?.trim())return title.textContent.trim().replace(/\s+/g,' ');
+  }
   const labels=LABELS[config.stage]||[];
   return labels[Math.min(position,labels.length-1)]||'Наша история';
  }
@@ -189,6 +181,7 @@
  }
  function mount(app,options){
   config=options;touchStart=null;
+  app.classList.add('story-flow-mounted');
   nav=null;header=null;nextButton=null;prevButton=null;status=null;
   const root=options.stage===13?app.querySelector('.over'):app;
   if(!root)return;
@@ -198,7 +191,7 @@
   show(Math.min(getStep(),panels.length-1),false);
  }
  function cancelSwipeTarget(target){
-  return !!target.closest('button,a,input,textarea,select,label,[role="slider"],.camera-overlay,.wheel-disc');
+  return !!target.closest('button,a,input,textarea,select,label,[role="slider"],.camera-overlay,.wheel-disc,#sc-music-dock');
  }
  function touchBegin(e){
   if(!config||!panels.length||document.body.classList.contains('sc-modal-open'))return;
