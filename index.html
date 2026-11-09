@@ -345,7 +345,7 @@ that other services will comply. See ai-policy.txt.
         const choose=key=>{
           const previous=localStorage.getItem(DATE_KEY);
           localStorage.setItem(DATE_KEY,key);
-          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-route-v6','sd2810-route-origin-v6','sd2810-route-v7','sd2810-route-origin-v7','sd2810-journey-gate-v1','sd2810-quest-v1','sd2810-secret-ending-v1','sd2810-secret-ending-v2','sd2810-secret-category-v1','sd2810-movie-v1'])localStorage.removeItem(k);}
+          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-route-v6','sd2810-route-origin-v6','sd2810-route-v7','sd2810-route-origin-v7','sd2810-journey-gate-v1','sd2810-quest-v1','sd2810-secret-ending-v1','sd2810-secret-ending-v2','sd2810-secret-category-v1','sd2810-movie-v1','sd2810-radio-intercept-v1','sd2810-missions-between-v1'])localStorage.removeItem(k);}
           stage=questions.length+2;render();celebrate();
         };
         document.getElementById('choose-sat').addEventListener('click',()=>choose('sat'));
