@@ -164,6 +164,9 @@
      '<span><strong>Секретное признание</strong><small>Откроется после выпуска '+(i+1)+'</small></span><span aria-hidden="true">🔒</span></div>';
    }).join('');
    grid.querySelectorAll('[data-poetry-open]').forEach(b=>b.addEventListener('click',()=>open(Number(b.dataset.poetryOpen),b,true)));
+   if(location.hash==='#daily-poetry-library'&&host.isConnected){
+    requestAnimationFrame(()=>{if(host.isConnected)host.scrollIntoView({behavior:'smooth',block:'start'});});
+   }
   }catch(e){if(grid?.isConnected)grid.innerHTML='<p class="day-status-note">Альбом пока не удалось загрузить.</p>';}
  }
  global.DailyPoetry={completion,library,daysFor,audioURL};
