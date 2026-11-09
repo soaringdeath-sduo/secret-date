@@ -116,7 +116,7 @@ runner.saveHigh(5000,false);
 assert.equal(runner.read().best,5000);
 
 // Browser canvas controls: start, pause, resume and exit without page reload.
-const ctx={fillRect(){},beginPath(){},arc(){},fill(){},save(){},translate(){},scale(){},restore(){},bezierCurveTo(){},setTransform(){},
+const ctx={fillRect(){},beginPath(){},moveTo(){},arc(){},fill(){},save(){},translate(){},scale(){},restore(){},bezierCurveTo(){},setTransform(){},
  createLinearGradient(){return {addColorStop(){}}}};
 w.HTMLCanvasElement.prototype.getContext=()=>ctx;
 w.requestAnimationFrame=()=>5;w.cancelAnimationFrame=()=>{};
