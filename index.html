@@ -171,7 +171,11 @@ that other services will comply. See ai-policy.txt.
     .date-option strong{font-size:17px;display:block}.date-option small{font-size:12px;color:#d9bed0;display:block;margin-top:3px}
     .date-confirm{margin-top:14px;width:100%;padding:14px;border:1px solid rgba(255,194,220,.2);background:rgba(255,194,220,.08);border-radius:17px}
     .date-confirm p{font-size:13px;line-height:1.6;color:#ffe1ed;margin:7px 0}.date-confirm .button{display:block;width:100%;margin:12px auto;padding:16px 9px;font-size:14px;text-align:center;text-decoration:none}
-    .date-confirm small{font-size:11px;color:#d1b5c8}.change-date{background:none;border:0;color:#ffcade;text-decoration:underline;padding:11px 5px;cursor:pointer;font:inherit;font-size:12px}
+    .story-return{padding:17px 13px;margin:17px 0;border:1px solid rgba(255,210,233,.44);border-radius:16px;background:linear-gradient(130deg,rgba(146,63,105,.32),rgba(255,209,227,.10));text-align:center}
+.story-return .story-return-kicker{letter-spacing:2px;font-size:10px;color:#ffc3da;font-weight:850}
+.story-return .story-return-hint{margin:0 auto 11px;font-size:13px;line-height:1.55;color:#f0d6e1}
+.story-return .button{min-height:53px}
+.date-confirm small{font-size:11px;color:#d1b5c8}.change-date{background:none;border:0;color:#ffcade;text-decoration:underline;padding:11px 5px;cursor:pointer;font:inherit;font-size:12px}
   </style>
   <link rel="stylesheet" href="polaroid-theme.css?v=3">
 <link rel="stylesheet" href="host-full-test.css?v=2">
@@ -204,6 +208,30 @@ that other services will comply. See ai-policy.txt.
     const HOST_CODE = '2114-2810'; // только для тестирования — виден в HTML
     const isHost = () => localStorage.getItem(HOST_KEY) === '1';
     const isOpen = () => isHost() || (!!getDay() && Date.now() >= getDay().startUTC);
+    const MEMORY_KEY='sd2810-final-memory-v1';
+    function completedMemory(){
+      try{
+       const v=JSON.parse(localStorage.getItem(MEMORY_KEY)||'null');
+       return !!(v?.done&&v.day===localStorage.getItem(DATE_KEY)&&v.ending===localStorage.getItem('sd2810-secret-ending-v2')
+        &&['zap','luga'].includes(v.origin));
+      }catch(e){return false}
+    }
+    function resumeData(){
+      if(completedMemory())return {url:'our-day.html',title:'📖 Открыть альбом «Наш день»',hint:'Наше приключение осталось с нами. Перечитай и переслушай всё на память.'};
+      if(window.SDTest.active()){
+       let complete=false;
+       try{const d=JSON.parse(localStorage.getItem('sd2810-daily-v1')||'null');complete=[0,1,2,3,4,5].every(i=>d?.done?.[i]===true)}catch(e){}
+       if(!complete)return {url:'daily.html',title:'💌 Продолжить ежедневную историю',hint:'Вернёмся к следующему непройденному выпуску.'};
+      }
+      if(isOpen())return {url:'secret_date_game_luga.html',title:'🚗 Продолжить наше приключение',hint:'Вернёмся к сохранённой главе реального свидания.'};
+      return {url:'daily.html',title:'💌 Продолжить наш сериал',hint:'Откроется твой следующий доступный ежедневный выпуск.'};
+    }
+    function resumeHTML(){
+      const r=resumeData();
+      return '<div class="story-return" id="resume-story"><div class="story-return-kicker">НУ ЧТО, ПРОДОЛЖИМ? ♡</div>'+
+       '<a class="button yes launch-btn" id="resume-story-link" href="'+r.url+'">'+r.title+'</a>'+
+       '<p class="story-return-hint" id="resume-story-hint">'+r.hint+'</p></div>';
+    }
     const formatWait = ms => {
       const total = Math.max(0, Math.ceil(ms / 1000));
       const days = Math.floor(total / 86400);
@@ -230,6 +258,8 @@ that other services will comply. See ai-policy.txt.
       const box=document.getElementById('unlock-box');
       const chosen=getDay();
       if(!box||!chosen)return;
+      const link=document.getElementById('resume-story-link'),hint=document.getElementById('resume-story-hint');
+      if(link&&hint){const target=resumeData();link.href=target.url;link.textContent=target.title;hint.textContent=target.hint;}
       if(isOpen()){
         box.innerHTML=`<p class="unlock-title">✨ Время приключения пришло!</p>
           <p class="unlock-description">Открой следующую главу, когда встретишься с Игорем.</p>
@@ -353,7 +383,7 @@ that other services will comply. See ai-policy.txt.
         const choose=key=>{
           const previous=localStorage.getItem(DATE_KEY);
           localStorage.setItem(DATE_KEY,key);
-          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-route-v6','sd2810-route-origin-v6','sd2810-route-v7','sd2810-route-origin-v7','sd2810-journey-gate-v1','sd2810-quest-v1','sd2810-secret-ending-v1','sd2810-secret-ending-v2','sd2810-secret-category-v1','sd2810-movie-v1','sd2810-radio-intercept-v1','sd2810-missions-between-v1','sd2810-six-story-pranks-v1','sd2810-route-visits-v1'])localStorage.removeItem(k);}
+          if(previous!==key){for(const k of ['sd2810-route-v4','sd2810-route-origin-v4','sd2810-route-v5','sd2810-route-origin-v5','sd2810-route-v6','sd2810-route-origin-v6','sd2810-route-v7','sd2810-route-origin-v7','sd2810-journey-gate-v1','sd2810-quest-v1','sd2810-secret-ending-v1','sd2810-secret-ending-v2','sd2810-secret-category-v1','sd2810-movie-v1','sd2810-radio-intercept-v1','sd2810-missions-between-v1','sd2810-six-story-pranks-v1','sd2810-route-visits-v1','sd2810-final-memory-v1'])localStorage.removeItem(k);}
           stage=questions.length+2;render();celebrate();
         };
         document.getElementById('choose-sat').addEventListener('click',()=>choose('sat'));
@@ -376,6 +406,7 @@ that other services will comply. See ai-policy.txt.
           <div class="detail"><div class="ico">📍</div><div><span class="label">город</span><strong>${CITY}</strong></div></div>
         </div>
         <div class="heartline" aria-hidden="true">♡ ♥ ♡</div>
+        ${resumeHTML()}
         ${window.SDTest.active()?'<a href="daily.html" class="scrap-daily-link" id="sd-full-daily-next"><span class="scrap-icon">🔧</span><span><strong>Полный тест: все 90 вопросов по порядку</strong><small>Пройди шесть дней без ограничений, затем откроется GPS-квест</small></span><span aria-hidden="true">›</span></a>':''}
         <a href="daily.html" class="scrap-daily-link" id="daily-story-link">
           <span class="scrap-icon">📸</span><span><strong>Маленький сериал до свидания</strong>
