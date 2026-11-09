@@ -41,3 +41,11 @@
 .poetry-dialog-content{padding-bottom:10px}
 @media(max-width:375px){.poetry-card{padding:13px 9px}.poetry-stanza{font-size:14px;line-height:1.72}.poetry-library{padding:15px 11px}.poetry-dialog{padding:8px}}
 @media(prefers-reduced-motion:reduce){.poetry-polaroid,.poetry-library-icon{transform:none}}
+
+/* A discoverable, working refresh path while GitHub Pages deploys new MP3s. */
+.poetry-audio-pending{margin:17px 0;padding:15px;border-radius:13px;background:#fff8f3;border:1px dashed #d4aabb;color:#88516e}
+.poetry-audio-pending p{font:13px/1.55 system-ui,sans-serif;margin:0 0 12px}
+.poetry-audio-pending small{display:block;margin-top:10px;font:11px/1.55 system-ui,sans-serif;overflow-wrap:anywhere}
+.poetry-retry{display:block;width:100%;min-height:43px;padding:10px 12px;background:#945174;color:#fff;border:0;border-radius:11px;font:800 13px/1.4 system-ui,sans-serif;cursor:pointer;margin-top:10px}
+.poetry-retry:disabled{opacity:.6;cursor:wait}
+.poetry-retry:focus-visible{outline:3px solid #d691a9;outline-offset:3px}
