@@ -71,9 +71,6 @@
 /* 10k score unlocks a slightly harder but fair turbo mode. */
 .daily-dino-difficulty{margin:11px 0 12px;padding:10px 13px;text-align:center;border-radius:12px;background:#ecf5ed;border:1px solid #a4c5b6;color:#4d8273;font-size:12px;font-weight:850;letter-spacing:.1px}
 .daily-dino-difficulty.is-turbo{background:linear-gradient(100deg,#ffe5d5,#ffdaea);border-color:#d990a8;color:#a3406c;box-shadow:0 3px 15px #b86a8a24}
-.daily-dino-turbo-toast{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:4;min-width:min(94%,320px);padding:12px 15px;text-align:center;background:#793b60;color:#fff7ea;border:2px solid #f7cd8a;border-radius:14px;box-shadow:0 8px 25px #4b253a66;font-size:14px;font-weight:900;line-height:1.45;animation:dino-turbo-bounce .38s ease-out;pointer-events:none}
-.daily-dino-turbo-toast[hidden]{display:none!important}
-@keyframes dino-turbo-bounce{from{opacity:0;transform:translate(-50%,-13px) scale(.92)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
 /* The personal voucher is styled like an illustrated gold-edged romantic letter.
    Its PDF export uses the same palette and fully offline canvas artwork. */
 .dino-certificate-unlocked{margin:20px 0 0}
@@ -96,7 +93,6 @@
 .dino-certificate-downloads .btn{margin:0;min-height:53px;font-size:14px}
 .dino-certificate-unlocked .day-status-note{font-size:11px;line-height:1.6}
 @media(max-width:350px){.dino-certificate{padding:18px 11px}.dino-certificate-top{font-size:8px}.dino-certificate-bottom{font-size:8px}.dino-certificate-amount{font-size:49px}}
-@media(prefers-reduced-motion:reduce){.daily-dino-turbo-toast{animation:none}}
 
 
 .dino-home-claimed{border:1px solid #d4a6ba;border-radius:15px;background:#fff5f0;margin:16px 0;box-shadow:0 6px 18px #a76a8533}
