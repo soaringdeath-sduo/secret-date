@@ -3,6 +3,7 @@
  * Свайп влево — дальше; вправо — вернуться к предыдущей странице главы. */
 (function(){
  'use strict';
+ const localStorage=window.SDTest.storage;
  const KEY='sd2810-story-swipe-v1';
  const LABELS={
   0:['Приглашение','Определить точку старта'],
@@ -37,7 +38,7 @@
   try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}
  }
  function mark(flag){
-  if(!config||config.host())return;
+  if(!config||(config.host()&&!window.SDTest.active()))return;
   const data=store();
   data.flags[flag]=true;
   persist(data);
@@ -53,7 +54,7 @@
   return Number.isInteger(v)&&v>=0?v:0;
  }
  function saveStep(value){
-  if(config.host())return; // тестовый переход ведущего не меняет маршрут Лизы
+  if(config.host()&&!window.SDTest.active())return; // обычный предпросмотр ведущего не меняет маршрут
   const d=store();d.steps[key()]=value;persist(d);
  }
  function isElement(node){return node&&node.nodeType===1;}
@@ -115,7 +116,7 @@
  }
  function allowed(){
   if(!config)return false;
-  if(config.host())return true;
+  if(config.host()&&!window.SDTest.active())return true;
   return config.allow(position);
  }
  function isLast(){return position>=panels.length-1;}
