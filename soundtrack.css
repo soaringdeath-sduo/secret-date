@@ -1,0 +1,60 @@
+/* Операция 28.10 — музыкальные Polaroid-открытки и мини-плеер */
+#sc-music-overlay[hidden],#sc-music-dock[hidden],#soundtrack-library[hidden],.sc-reveal-card[hidden]{display:none!important}
+body.sc-modal-open{overflow:hidden}
+body.sc-music-available .shell{padding-bottom:max(110px,env(safe-area-inset-bottom))!important}
+#sc-music-overlay{position:fixed;inset:0;z-index:9999;padding:12px;display:flex;align-items:center;justify-content:center;background:rgba(31,17,30,.87);backdrop-filter:blur(9px);overscroll-behavior:contain}
+#sc-music-overlay .sc-dialog{position:relative;overflow:auto;max-height:96dvh;width:min(100%,490px);background:radial-gradient(circle at 8% 0%,#ffe4de,transparent 40%),#f8ece5;border-radius:20px;padding:24px 17px 20px;box-shadow:0 25px 70px #0007;color:#63374e;animation:sc-arrive .5s ease both}
+.sc-close{position:sticky;top:0;margin-left:auto;display:block;z-index:3;width:38px;height:38px;border:0;border-radius:99px;background:#fff9f7;color:#864967;font-size:28px;line-height:1;box-shadow:0 2px 14px #80556935;cursor:pointer}
+.sc-letter{position:relative;background:#fffdf8;padding:13px 13px 16px;border-radius:5px;box-shadow:0 8px 27px #a8788845;transform:rotate(-1deg);margin:0 3px 19px}
+.sc-card-final{transform:rotate(1deg)}
+.sc-photo{background:linear-gradient(145deg,#eac9d7,#edd9cd);border:1px solid #e4bcca;text-align:center;padding:25px 13px 20px;color:#65364e}
+.sc-card-final .sc-photo{background:linear-gradient(140deg,#edddda,#dabacb)}
+.sc-photo-kicker{display:block;letter-spacing:1.7px;font:800 9px/1.5 system-ui,sans-serif;color:#9e5c76}
+.sc-photo-heart{margin:15px auto 7px;font:72px/.9 Georgia,serif;color:#b46686;text-shadow:0 3px 15px #fff7}
+.sc-photo h2{font:normal 29px/1.1 Georgia,serif;letter-spacing:-.4px;margin:8px 0;color:#69374d}
+.sc-photo>span:last-child{font:italic 14px/1.4 Georgia,serif;color:#96596f}
+.sc-letter-message{padding:13px 8px 0;font:17px/1.6 Georgia,serif;text-align:center;color:#78495f}
+.sc-letter-footer{color:#a65a79;font:italic 19px Georgia,serif;text-align:right;padding:10px 8px 3px}
+.sc-player{background:#fffaf6;border:1px solid #e9cbd2;border-radius:16px;padding:15px;box-shadow:0 5px 16px #a8788820}
+.sc-player-head,.sc-times{display:flex;justify-content:space-between;gap:9px;color:#945e76;font:800 10px/1.4 system-ui,sans-serif;letter-spacing:1px}
+.sc-player-time{margin:13px 0 14px}
+.sc-player input[type=range],#sc-music-dock input[type=range]{display:block;accent-color:#ad5b7c;width:100%;margin:6px 0;cursor:pointer}
+.sc-times{font:600 11px system-ui,sans-serif;letter-spacing:0}
+.sc-play{min-height:51px;padding:12px 14px;width:100%;border:0;border-radius:12px;background:#a85c7a;color:#fff;font:800 15px system-ui,sans-serif;cursor:pointer}
+.sc-play:focus-visible,.sc-close:focus-visible,.sc-dock-toggle:focus-visible{outline:3px solid #5f3051;outline-offset:3px}
+.sc-help{text-align:center;color:#926579;font:12px/1.55 system-ui,sans-serif;margin:12px 0}
+.sc-download{display:block;text-align:center;padding:11px;color:#904b6a;font:800 13px system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px}
+.sc-error{font:12px/1.4 system-ui,sans-serif;color:#ae4763;min-height:0;text-align:center}
+.sc-action-row{display:flex;gap:8px;margin-top:7px}
+.sc-action-row button{flex:1;border:1px solid #dcbac7;border-radius:10px;min-height:43px;background:#fff5f4;color:#8b4d67;font:700 12px/1.3 system-ui,sans-serif;cursor:pointer}
+#sc-music-dock{position:fixed;z-index:9000;bottom:max(12px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(calc(100% - 20px),490px);background:#fffaf5;color:#6a384d;border:1px solid #e7bbc9;border-radius:18px;padding:11px 14px 7px;box-shadow:0 9px 27px #41213655}
+.sc-dock-main{display:flex;align-items:center;gap:10px}
+.sc-dock-album{height:41px;min-width:41px;border:0;border-radius:11px;background:#f3dce4;color:#a45576;font-size:23px;cursor:pointer}
+.sc-dock-label{display:flex;flex-direction:column;flex:1;min-width:0}
+.sc-dock-label b{font:800 13px/1.4 system-ui,sans-serif;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sc-dock-label small{font:12px system-ui,sans-serif;color:#9c7183}
+.sc-dock-toggle{border:0;border-radius:12px;background:#a85c7a;color:#fff;width:43px;height:43px;font-size:20px;cursor:pointer}
+.sc-dock-expand{background:none;border:0;color:#a65e7b;font-size:24px;cursor:pointer}
+#sc-music-dock input[type=range]{height:4px;margin:9px 0 2px}
+.sc-album-head{text-align:center;padding:6px 7px 12px}
+.sc-album-head h2{font:normal 32px/1.2 Georgia,serif;color:#784157;margin:8px 0}
+.sc-album-head p{color:#996a80;font:14px/1.5 system-ui,sans-serif}
+.sc-tracks{display:grid;gap:11px}
+.sc-track-button,.sc-track-locked{display:flex;align-items:center;gap:12px;width:100%;padding:15px 10px;border-radius:12px;background:#fffefa;border:1px solid #e2bfc9;color:#78445d;text-align:left;font:inherit}
+.sc-track-button{cursor:pointer}
+.sc-track-locked{opacity:.64}
+.sc-track-num{color:#ba7793;font:800 15px Georgia,serif}
+.sc-track-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
+.sc-track-copy b{font:750 14px system-ui,sans-serif}
+.sc-track-copy small{color:#92768a;font:11px system-ui,sans-serif}
+.sc-album-note{text-align:center;color:#98728a;font:12px/1.5 system-ui,sans-serif;margin-top:20px}
+.sc-intercept{min-height:290px;background:#201a2b;position:relative;overflow:hidden;display:grid;align-content:center;justify-items:center;gap:18px;padding:40px 10px;border-radius:14px;text-align:center;color:#ffe3ee}
+.sc-intercept-logo{position:relative;z-index:1;font:800 13px system-ui,sans-serif;letter-spacing:2px;color:#f8b2d1}
+.sc-intercept-text{position:relative;z-index:1;font:16px/1.75 monospace}
+.sc-static{position:absolute;inset:0;background:repeating-linear-gradient(0deg,#ffeff30a 0 2px,transparent 3px 7px),radial-gradient(ellipse,#ac66802c,transparent);animation:sc-noise .15s infinite;opacity:.8}
+.sc-intercept-active .sc-reveal-card{display:none}
+#soundtrack-library{font:inherit;color:#f4d8e3;cursor:pointer}
+@keyframes sc-arrive{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes sc-noise{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(7px)}}
+@media(max-width:365px){#sc-music-overlay{padding:5px}#sc-music-overlay .sc-dialog{padding:13px 9px}.sc-photo h2{font-size:24px}.sc-letter-message{font-size:15px}.sc-action-row{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){#sc-music-overlay .sc-dialog,.sc-static{animation:none!important}}
