@@ -9,7 +9,7 @@ assert.ok(html.includes('function renderSeriesMenu()'),'Daily page needs a dedic
 assert.ok(html.includes('if(menuRequested()&&!window.SDTest.active())'),'Normal entry should display the menu');
 assert.ok(html.includes('href="#daily-poetry-library"'),'Poems need a dedicated entry');
 assert.ok(html.includes('href="#quests"'),'Quests need a dedicated entry');
-assert.ok(html.includes("gameReady?'#dino'"),'Game menu entry must route to dino only when available');
+assert.ok(html.includes('href="#dino"'),'Game menu choice must always show its own access status, not open quests');
 assert.ok(html.includes("const resumeRequested=()=>window.location.hash==='#resume'"),'Existing chapter-resume link must survive');
 assert.ok(css.includes('.series-menu-tile')&&html.includes('daily-play.css?v=5'),'Polaroid menu and fresh CSS must load');
 assert.ok(file('index.html').includes('id="daily-story-link"'),'Invitation must still lead to the mini-series');
