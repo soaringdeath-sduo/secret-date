@@ -18,7 +18,9 @@
  const probes=new Map();
  let activeCard=null;
  function daysFor(selected){return selected==='sat'?totalDays.slice(0,5):totalDays;}
- function audioURL(day){return ASSETS+String(day).padStart(2,'0')+'.mp3'}
+ // Day 9 is a personal recording by Igor. Keep the older 09 version as
+ // a fallback until the new file is uploaded to the public main/assets folder.
+ function audioURL(day){return ASSETS+(Number(day)===9?'9':String(day).padStart(2,'0'))+'.mp3'}
  function backupURL(day){return RAW_ASSETS+'poem-day-'+String(day).padStart(2,'0')+'.mp3'}
  function goodAudioResponse(response){
   if(!response?.ok)return false;
