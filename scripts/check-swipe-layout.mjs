@@ -80,22 +80,26 @@ const park=mount(6,[
  marker('Едем в Заречный парк'),el('coords'),el('mini'),
  marker('Мы уже на месте'),el('mini'),
  marker('Время только для нас'),el('mini'),
- marker('Кофейная пауза'),el('mini'),
+ marker('Выбор кофейной остановки'),el('mini'),
+ marker('Остановка в Terrazza'),el('hero'),el('coords'),el('mini'),
  marker('Проверка Игоря'),el('mini scrap-prank'),
  marker('Фотоохота в парке'),el('mission-panel'),
  marker('Продолжаем свидание'),el('mini'),el('btn')
 ]);
-assert.equal(park.length,8,'Zarechny park chapter should have 8 coherent screens');
+assert.equal(park.length,9,'Zarechny plus the separate Terrazza cafe stop should have 9 screens');
 assert.equal(park[1].childNodes.length,2,'Driving instructions and map stay together');
 assert.equal(park[4].childNodes.length,1,'Optional coffee choice is a separate screen');
-assert.equal(park[7].childNodes.length,2,'Final action should stay with its description');
+assert.equal(park[5].childNodes.length,3,'Terrazza destination, map and buttons stay on one page');
+assert.equal(park[8].childNodes.length,2,'Final action should stay with its description');
 assert.ok(html.includes('Заречный парк, Луга'),'New destination should be in the itinerary');
 assert.ok(html.includes('Terrazza'),'Coffee should be grounded in real cafe in the park');
 assert.ok(!html.includes('Лужский городской Дом культуры'),'Old House of Culture destination should be removed');
-assert.ok(html.includes("if(stage===6)return 'park-v1';"),'Old slide state must not skip new park screens');
+assert.ok(html.includes("if(stage===6)return 'park-v2-terrazza-stop';"),'Old slide state must not skip new park screens');
 assert.ok(html.includes("if(index===2)return parkState().arrived;"),'Do not skip arriving at park');
 assert.ok(html.includes("if(index===3)return parkState().together;"),'Do not skip spending time together');
 assert.ok(html.includes("if(index===4)return parkState().coffee!==null;"),'Both coffee choices should advance');
-console.log('✓ Semantic slide grouping: wheel, meal, radio, eight-stage park chapter');
+assert.ok(html.includes("if(index===5)return parkState().coffeeDone;"),'Cannot leave Terrazza without completing or skipping');
+assert.ok(html.includes('data-story-label="Остановка в Terrazza"'),'Terrazza must be separate from suspect page');
+console.log('✓ Semantic slide grouping: wheel, meal, radio, nine-screen park and Terrazza stop');
 console.log('✓ No empty stretched slide or player/button overlap selectors');
 console.log('✓ Quest JavaScript syntax and required progression gates');
