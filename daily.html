@@ -228,11 +228,23 @@ function renderQuestion(){
   +'<div class="quiz"><p class="quiz-question">'+safe(q[0])+'</p>';
  if(kind==='words')html+='<div class="chapter-clues">'+Array.from({length:Math.max(3,String(q[1][0]).length)},()=>'<span>♡</span>').join('')+'</div>';
  html+=q[1].map((answer,i)=>'<button type="button" class="quiz-answer" data-answer="'+i+'">'+safe(answer)+'</button>').join('')
+  +'<button type="button" class="quiz-answer daily-custom-choice" id="daily-custom-toggle">✍️ Свой вариант ответа</button>'
+  +'<form class="daily-custom-form" id="daily-custom-form" hidden><label for="daily-custom-input">Напиши свой ответ</label>'
+  +'<textarea id="daily-custom-input" maxlength="180" required placeholder="Твой ответ… ♡" aria-describedby="daily-custom-error"></textarea>'
+  +'<div class="day-status-note" id="daily-custom-error" role="status">До 180 символов.</div>'
+  +'<button class="btn" type="submit">Сохранить мой ответ ♡</button></form>'
   +'<div id="daily-feedback" role="status"></div><div id="daily-save-status" class="day-status-note" role="status"></div></div>'
   +'<p class="day-status-note">Ответы сохраняются после каждого вопроса. Можно закрыть страницу и вернуться в этот же день.</p>'
   +'<button type="button" class="btn alt" id="back-to-list">← Сохранить и выйти</button>';
  root.innerHTML=html;
  root.querySelectorAll('[data-answer]').forEach(el=>el.addEventListener('click',()=>chooseAnswer(Number(el.dataset.answer))));
+ root.querySelector('#daily-custom-toggle').addEventListener('click',()=>{
+  const form=root.querySelector('#daily-custom-form');form.hidden=!form.hidden;
+  if(!form.hidden)root.querySelector('#daily-custom-input').focus();
+ });
+ root.querySelector('#daily-custom-form').addEventListener('submit',event=>{
+  event.preventDefault();chooseCustomAnswer(root.querySelector('#daily-custom-input').value);
+ });
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
 }
 function chooseAnswer(choice){
