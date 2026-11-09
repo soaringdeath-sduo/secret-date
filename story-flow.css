@@ -72,3 +72,28 @@ html{scroll-padding-bottom:160px}
  #app.story-flow-mounted .story-nav-actions{grid-template-columns:1fr 1.5fr;gap:7px}
  #app.story-flow-mounted .story-navigation button{min-height:48px;font-size:13px}
 }
+
+
+/* Sealed chapter envelope — romantic Polaroid paper over the night theme. */
+.envelope-gate{position:relative;overflow:hidden;margin:18px 0 12px;padding:25px 18px 20px;border:1px solid #efc9bc;border-radius:21px;background:linear-gradient(165deg,#fff8ec 0%,#fff0e9 56%,#fce0e7 100%);box-shadow:0 13px 35px rgba(15,8,23,.24);color:#63334c;text-align:center}
+.envelope-gate::before{content:"";position:absolute;inset:0;opacity:.14;background:repeating-linear-gradient(0deg,transparent 0 21px,#c18f91 22px,transparent 23px);pointer-events:none}
+.envelope-gate>*{position:relative;z-index:1}
+.envelope-gate-stamp{display:grid;place-items:center;width:70px;height:70px;margin:0 auto 13px;border-radius:50%;background:linear-gradient(135deg,#be4e7e,#843858);border:5px double #ffd9c8;box-shadow:0 7px 22px #7e3b5c5c;color:#fff3ed;font:39px Georgia,serif;transform:rotate(-9deg);animation:envelope-breathe 2.5s ease-in-out infinite}
+.envelope-kicker{font:900 10px/1.5 system-ui,sans-serif;letter-spacing:1.7px;color:#a75d7a;margin-bottom:8px}
+.envelope-gate h3{font:normal 29px/1.15 Georgia,serif;color:#5b2c45;margin:8px auto 12px}
+.envelope-gate p{color:#724b5f;font:14px/1.65 system-ui,sans-serif;margin:5px auto 17px;max-width:36ch}
+.envelope-gate>.btn{width:100%;margin:3px auto 10px;background:linear-gradient(115deg,#a34a74,#ce7599);color:white}
+.envelope-gate small{display:block;margin-top:9px;color:#806477;font:12px/1.5 system-ui,sans-serif}
+.envelope-codebox{display:grid;gap:9px;margin:12px 0 0;text-align:left;background:#fff9f3d9;border:1px dashed #ca8da7;border-radius:13px;padding:12px}
+.envelope-codebox.hidden{display:none!important}
+.envelope-codebox label{font:800 12px/1.5 system-ui,sans-serif;color:#884c6d}
+.envelope-codebox input{width:100%;min-height:46px;padding:11px;border-radius:10px;border:1px solid #c38ca5;background:#fff;color:#472b3d;font-size:16px}
+.envelope-codebox .btn{margin:1px 0 0;width:100%;color:#fff;background:#8d4d71}
+.envelope-feedback{min-height:12px;font:12px/1.5 system-ui,sans-serif;color:#a12855}
+.envelope-open{margin:16px 0;padding:15px 14px;border:1px solid #d4a4be;border-radius:16px;background:linear-gradient(115deg,#ffe9f0,#f1d7e5);color:#733656;text-align:center;animation:envelope-release .45s both}
+.envelope-open span{display:block;font-size:29px;margin-bottom:2px}
+.envelope-open strong{font:750 19px Georgia,serif}
+.envelope-open p{font:13px/1.5 system-ui,sans-serif;margin:5px 0 0;color:#794a66}
+@keyframes envelope-breathe{50%{transform:rotate(-6deg) scale(1.07);box-shadow:0 10px 29px #b44e7d7a}}
+@keyframes envelope-release{from{opacity:.3;transform:scale(.94) rotate(-1deg)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.envelope-gate-stamp,.envelope-open{animation:none}}

@@ -155,6 +155,7 @@ async function route(origin,choice='omchino',category='romance'){
  const storage=w.SDTest.storage;
  const state=()=>Number(storage.getItem('sd2810-route-v7')||0);
  const tap=(sel)=>click(doc,sel,'Route '+origin+' stage '+state());
+ const unseal=id=>{tap('[data-envelope-reveal="'+id+'"]');tap('[data-envelope-approve="'+id+'"]');};
  assert.equal(state(),0);
  next(w,1,'Start GPS screen');
  click(doc,'#check','mock GPS start');
@@ -176,6 +177,8 @@ async function route(origin,choice='omchino',category='romance'){
  tap('#check');
  assert.equal(state(),3);
  next(w,1,'economy ticket');
+ assert.equal(state(),3,'Economy chapter stays sealed');
+ unseal('chocolate');
  tap('#go');
  assert.equal(state(),4);
  next(w,1,'economy receipt');
@@ -186,7 +189,7 @@ async function route(origin,choice='omchino',category='romance'){
  tap('#go');assert.equal(state(),6);
  next(w,1,'drive to Zarechny');
  next(w,2,'park arrival');
- tap('[data-park-action="arrive"]');
+ tap('#park-gps-arrive');
  assert.equal(pageIndex(w),3,'Arrival must advance automatically to shared time');
  tap('[data-park-action="together"]');
  assert.equal(pageIndex(w),4,'Shared time must advance automatically to coffee');
@@ -219,6 +222,7 @@ async function route(origin,choice='omchino',category='romance'){
  next(w,7,'photo hunt');
  tap('[data-mission-action="photo-skip"]');
  next(w,8,'continue date');
+ unseal('letter');
  tap('#go');assert.equal(state(),7);
  tap('[data-prank="time"]');
  tap('[data-mission-action="letter-open"]');
@@ -226,6 +230,7 @@ async function route(origin,choice='omchino',category='romance'){
  tap('#lunch-go');assert.equal(state(),9);
  next(w,1,'lunch check');
  tap('[data-prank="parcel"]');
+ unseal('lunch');
  tap('#go');assert.equal(state(),10);
  tap('[data-mission-action="glitch-restore"]');
  tap('[data-mission-action="glitch-finish"]');
@@ -237,6 +242,9 @@ async function route(origin,choice='omchino',category='romance'){
  if(category==='romance'){
   next(w,1,'arrive final location');
   tap('#check');
+  assert.equal(state(),12,'GPS alone cannot unlock finale');
+  unseal('final');
+  tap('#final-open');
  }else if(choice==='minigame'){
   tap('[data-quest-action="start"]');
   for(let i=0;i<3;i++){
@@ -250,6 +258,9 @@ async function route(origin,choice='omchino',category='romance'){
   tap('[data-quest-action="openEnvelope"][data-value="0"]');
   tap('[data-quest-action="completeEnvelope"]');
   tap('[data-quest-action="finishQuest"]');
+  assert.equal(state(),12,'Quest alone cannot unlock finale');
+  unseal('final');
+  tap('[data-quest-action="openFinal"]');
  }else if(category==='adventure'){
   next(w,1,'manual ending');
   tap('#manual-finish');
