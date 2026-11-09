@@ -140,10 +140,15 @@
  }
  function refresh(){
   if(!config||!nextButton||!prevButton)return;
-  const can=allowed();
+  const can=allowed(),hasNext=config.hasNext(),last=isLast();
   prevButton.disabled=position===0;
-  nextButton.disabled=!can||(!config.hasNext()&&isLast());
-  nextButton.textContent=isLast()?(config.hasNext()?'Следующая глава →':'Заверши действие ↗'):'Далее →';
+  // When a single screen already has its own action (spin, photo, GPS),
+  // do not show a second, disabled "Next" control underneath it.
+  nextButton.hidden=last&&!hasNext;
+  prevButton.hidden=position===0;
+  if(nav)nav.hidden=nextButton.hidden&&prevButton.hidden;
+  nextButton.disabled=!can||(last&&!hasNext);
+  nextButton.textContent=last?'Следующая глава →':'Далее →';
   if(status)status.textContent=statusText();
  }
  function next(){
