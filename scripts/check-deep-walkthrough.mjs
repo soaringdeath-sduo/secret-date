@@ -20,6 +20,8 @@ function readStore(dom){
 function browser(html,url,values,options={}){
  const dom=new JSDOM(html,{url,runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window;
+ w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;
+ w.CompressionStream=undefined;w.DecompressionStream=undefined;
  w.scrollTo=()=>{};
  w.HTMLElement.prototype.scrollIntoView=function(){};
  w.HTMLMediaElement.prototype.pause=function(){};
