@@ -38,12 +38,12 @@ w.fetch=async (url,options={})=>{
  if(options.method==='HEAD'){
   numHead++;
   const exists=/poem-day-10\.mp3/.test(src);
-  if(retryReady&&/poem-day-09\.mp3/.test(src))throw new Error('Embedded Android HEAD request rejected');
+  if(retryReady&&/poem-day-9\.mp3/.test(src))throw new Error('Embedded Android HEAD request rejected');
   return {ok:exists,headers:{get:()=>exists?'audio/mpeg':'text/html'}};
  }
  if(options.method==='GET'&&options.headers?.Range==='bytes=0-0'){
   rangeGets++;
-  const exists=retryReady&&/poem-day-09\.mp3/.test(src);
+  const exists=retryReady&&/poem-day-9\.mp3/.test(src);
   return {ok:exists,headers:{get:()=>exists?'audio/mpeg':'text/html'},body:{cancel:async()=>{}}};
  }
  throw new Error('Unexpected fetch '+src);
