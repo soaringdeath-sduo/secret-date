@@ -110,7 +110,7 @@ p{line-height:1.65;color:#795d6d}
 </style>
 <link rel="stylesheet" href="host-full-test.css?v=2">
 <link rel="stylesheet" href="daily-poetry.css?v=3">
-<link rel="stylesheet" href="daily-play.css?v=4">
+<link rel="stylesheet" href="daily-play.css?v=5">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -319,7 +319,7 @@ function renderHome(){
  html+='<p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
- const arcade=root.querySelector('#open-dino');if(arcade)arcade.addEventListener('click',()=>{window.location.hash='#dino';openDino()});
+ const arcade=root.querySelector('#open-dino');if(arcade)arcade.addEventListener('click',()=>{window.location.hash='#dino';if(window.SDTest.active())openDino();});
  window.DailyDinoCertificate.bind(root,{
   preview:organizerMode&&!window.SDTest.active(),
   unlocked:()=>window.DailyDino.read().best>=15000&&isInvited()
