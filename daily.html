@@ -350,6 +350,22 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncClock(
 window.addEventListener('focus',()=>syncClock(false));
 setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0)renderHome()},30000);
 setInterval(()=>syncClock(false),120000);
+document.getElementById('host-daily-button').addEventListener('click',()=>{
+ const button=document.getElementById('host-daily-button');
+ if(organizerMode){
+  organizerMode=false;previewMode=false;
+  button.textContent='🔧 Просмотр для ведущего';
+  renderHome();return;
+ }
+ if(localStorage.getItem(HOST_SESSION_KEY)!=='1'){
+  const go=window.confirm('Сначала активируй режим ведущего по коду в приглашении. Нажми подпись внизу страницы приглашения и введи код. Перейти туда?');
+  if(go)window.location.href='index.html?replay=1';
+  return;
+ }
+ organizerMode=true;previewMode=false;
+ button.textContent='✕ Закрыть просмотр ведущего';
+ renderHome();
+});
 persist(state());renderHome();syncClock(true);
 
 </script>
