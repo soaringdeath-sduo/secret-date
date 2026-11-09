@@ -130,6 +130,22 @@ const ICONS=['🕵️','💞','🫶','🌷','🤝','✨'],COLORS=['rose','cream'
 const SHORT=['9 ноября','10 ноября','11 ноября','12 ноября','13 ноября','14 ноября'];
 const root=document.getElementById('daily-root');
 const archiveRequested=()=>window.location.hash==='#daily-poetry-library'||window.location.hash==='#our-poems';
+const resumeRequested=()=>window.location.hash==='#resume';
+let resumeAttempted=false;
+function resumeSavedDaily(){
+ if(!resumeRequested()||resumeAttempted||window.SDTest.active())return false;
+ // Only resume the current unlocked day after trusted time verification.
+ if(!isInvited()||nowTrusted()===null)return false;
+ const st=state();
+ const i=DAYS.slice(0,numberOfDays()).findIndex((_,i)=>
+  phase(i)==='today'&&st.done[i]!==true&&
+  Array.isArray(st.answers[i])&&st.answers[i].length>0&&st.answers[i].length<15);
+ resumeAttempted=true;
+ if(i<0)return false;
+ try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+ openDay(i,false);
+ return true;
+}
 function openPoetryArchive(){
  current=-1;episode=null;previewMode=false;
  renderHome();
@@ -407,7 +423,7 @@ async function syncClock(showLoading){
  }finally{
   clockLoading=false;
   if(current>=0 && !canContinue())showUnavailable();
-  else if(current<0)renderHome();
+  else if(current<0&&!resumeSavedDaily())renderHome();
  }
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncClock(false)});

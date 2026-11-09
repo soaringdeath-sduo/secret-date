@@ -32,7 +32,7 @@ const base={'sd2810-selected-day-v1':'sat','sd2810-invite-approved-v3':'1'};
  const x=boot({...base,'sd2810-daily-v1':JSON.stringify(state)});
  const link=x.root.querySelector('#story-resume-link');
  assert.ok(link.textContent.includes('Продолжить мой дэйлик'),'Saved unfinished questions should have an understandable CTA');
- assert.ok(link.href.endsWith('/daily.html'));
+ assert.ok(link.href.endsWith('/daily.html#resume'),'Unfinished question must deep-link to resume');
  x.close();
 }
 {
@@ -68,6 +68,47 @@ const base={'sd2810-selected-day-v1':'sat','sd2810-invite-approved-v3':'1'};
   'Changing date must clear a completed park visit from the previous date');
  x.close();
 }
+async function dailyFromBookmark({clock,invite=true}){
+ const daily=read('daily.html');
+ const dom=new JSDOM(daily,{
+  url:'https://soaringdeath-sduo.github.io/secret-date/daily.html#resume',
+  runScripts:'outside-only',pretendToBeVisual:true
+ });
+ const w=dom.window;
+ w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;
+ w.CompressionStream=undefined;w.DecompressionStream=undefined;
+ w.scrollTo=()=>{};
+ w.HTMLMediaElement.prototype.pause=function(){};
+ w.HTMLElement.prototype.scrollIntoView=function(){};
+ const progress={version:2,done:{},answers:{0:[0,1]}};
+ w.localStorage.setItem('sd2810-selected-day-v1','sat');
+ if(invite)w.localStorage.setItem('sd2810-invite-approved-v3','1');
+ w.localStorage.setItem('sd2810-daily-v1',JSON.stringify(progress));
+ w.fetch=async (url,options={})=>{
+  const href=String(url);
+  if(href.includes('poetry-data.json'))return {ok:true,json:async()=>JSON.parse(read('poetry-data.json'))};
+  if(href.includes('daily-content/day-9.json'))return {ok:true,json:async()=>JSON.parse(read('daily-content/day-9.json'))};
+  if(href.includes('daily.html?check='))return {ok:true,headers:{get:()=>new Date(clock).toUTCString()}};
+  if(options.method==='HEAD')return {ok:true,headers:{get:()=> 'audio/mpeg'}};
+  throw new Error('Unexpected fetch: '+href);
+ };
+ for(const path of ['host-full-test.js','couple-core.js','daily-couple.js','daily-poetry.js'])w.eval(read(path));
+ for(const script of daily.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))w.eval(script[1]);
+ await new Promise(resolve=>setTimeout(resolve,60));
+ const text=w.document.getElementById('daily-root').textContent;
+ const hash=w.location.hash;
+ dom.window.close();
+ return {text,hash};
+}
+const today=await dailyFromBookmark({clock:Date.UTC(2026,10,9,13,0,0)});
+assert.ok(today.text.includes('Вопрос 3 из 15'),'Resume must load the third question from the saved answers');
+assert.equal(today.hash,'','Successful deep-link should be consumed to avoid repeated auto-opening');
+const tooEarly=await dailyFromBookmark({clock:Date.UTC(2026,10,8,13,0,0)});
+assert.ok(!tooEarly.text.includes('Вопрос 3 из 15'),'Resume may never bypass future daily gate');
+const noInvitation=await dailyFromBookmark({clock:Date.UTC(2026,10,9,13,0,0),invite:false});
+assert.ok(noInvitation.text.includes('Сначала открой приглашение'),'Uninvited visitor must not auto-resume questions');
+console.log('✓ Last saved daily question opens automatically only after trusted day/time verification');
+
 const quest=read('secret_date_game_luga.html');
 const a=quest.indexOf('function albumPhotoDownloadHTML(){'),b=quest.indexOf('function photoCertificateHTML(){',a);
 assert.ok(a>=0&&b>a,'Individual photo export helper must exist');
