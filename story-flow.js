@@ -23,6 +23,37 @@
  };
  let config=null, panels=[],position=0,nav=null,header=null,status=null,nextButton=null,prevButton=null;
  let touchStart=null;
+
+ let confirmationDialog=null,confirmationDepth=0;
+ function confirmAdvance(action,title='Перейти к следующему этапу?'){
+  if(typeof action!=='function')return;
+  if(confirmationDepth>0||window.SDTest.active()||!document.body?.appendChild){action();return;}
+  if(confirmationDialog?.isConnected)return;
+  const overlay=document.createElement('div');
+  overlay.className='story-confirm-overlay';
+  overlay.innerHTML='<div class="story-confirm-card" role="dialog" aria-modal="true" aria-labelledby="story-confirm-heading" aria-describedby="story-confirm-text">'+
+   '<div class="story-confirm-seal" aria-hidden="true">♡</div>'+
+   '<div class="story-confirm-kicker">ОПЕРАЦИЯ 28.10 · ПРОВЕРКА ПЕРЕХОДА</div>'+
+   '<h3 id="story-confirm-heading"></h3>'+
+   '<p id="story-confirm-text">Уже готова узнать, что ждёт дальше? Ничего не потеряется, если решишь остаться на этой странице.</p>'+
+   '<div class="story-confirm-actions"><button type="button" class="story-confirm-cancel">Пока остаюсь</button><button type="button" class="story-confirm-yes">Да, продолжить →</button></div></div>';
+  overlay.querySelector('#story-confirm-heading').textContent=title;
+  confirmationDialog=overlay;
+  const close=approved=>{
+   if(confirmationDialog!==overlay)return;
+   document.removeEventListener('keydown',escape);
+   overlay.remove();confirmationDialog=null;
+   if(approved){confirmationDepth++;try{action();}finally{confirmationDepth--;}}
+  };
+  const escape=e=>{if(e.key==='Escape'){e.preventDefault();close(false);}};
+  document.addEventListener('keydown',escape);
+  overlay.querySelector('.story-confirm-cancel').addEventListener('click',()=>close(false));
+  overlay.querySelector('.story-confirm-yes').addEventListener('click',()=>close(true));
+  overlay.addEventListener('click',e=>{if(e.target===overlay)close(false)});
+  document.body.appendChild(overlay);
+  overlay.querySelector('.story-confirm-cancel').focus();
+ }
+
  function store(){
   const data={day:config?.day||null,origin:config?.origin||null,steps:{},flags:{}};
   try{
@@ -38,7 +69,7 @@
   try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}
  }
  function mark(flag){
-  if(!config||(config.host()&&!window.SDTest.active()))return;
+  if(!config)return;
   const data=store();
   data.flags[flag]=true;
   persist(data);
@@ -54,7 +85,7 @@
   return Number.isInteger(v)&&v>=0?v:0;
  }
  function saveStep(value){
-  if(config.host()&&!window.SDTest.active())return; // обычный предпросмотр ведущего не меняет маршрут
+  // A normal host follows the same saved progress as the participant.
   const d=store();d.steps[key()]=value;persist(d);
  }
  function isElement(node){return node&&node.nodeType===1;}
@@ -108,7 +139,6 @@
  }
  function allowed(){
   if(!config)return false;
-  if(config.host()&&!window.SDTest.active())return true;
   return config.allow(position);
  }
  function isLast(){return position>=panels.length-1;}
@@ -154,8 +184,11 @@
  function next(){
   if(!config||!allowed())return;
   if(position<panels.length-1){
-   saveStep(position+1);
-   show(position+1);
+   confirmAdvance(()=>{
+    if(!config||!allowed())return;
+    saveStep(position+1);
+    show(position+1);
+   },'Открыть следующий мини-этап?');
    return;
   }
   if(config.hasNext())config.advance();
@@ -196,9 +229,7 @@
   // A previously saved swipe is never authority to jump over a newly locked screen.
   const requested=Math.min(getStep(),panels.length-1);
   let safe=requested;
-  if(!(options.host()&&!window.SDTest.active())){
-   for(let i=0;i<requested;i++){if(!options.allow(i)){safe=i;break;}}
-  }
+  for(let i=0;i<requested;i++){if(!options.allow(i)){safe=i;break;}}
   show(safe,false);
  }
  function cancelSwipeTarget(target){
@@ -221,5 +252,5 @@
  document.addEventListener('touchend',e=>{
   if(e.target.closest('#app'))touchFinish(e);
  },{passive:true});
- window.StoryFlow={mount,mark,marked,refresh,next,previous};
+ window.StoryFlow={mount,mark,marked,refresh,next,previous,confirmAdvance};
 })();
