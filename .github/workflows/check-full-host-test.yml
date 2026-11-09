@@ -23,6 +23,7 @@ on:
       - "host-full-test.css"
       - "scripts/check-swipe-layout.mjs"
       - "scripts/check-zarechny-visit.mjs"
+      - "scripts/check-deep-walkthrough.mjs"
       - "soundtrack.js"
       - "host-full-test.js"
       - "daily-content/**"
@@ -54,3 +55,4 @@ jobs:
           node scripts/check-couple-tests.mjs
           node scripts/check-couple-browser.mjs
           node scripts/check-daily-poetry.mjs
+          node scripts/check-deep-walkthrough.mjs
