@@ -28,6 +28,15 @@
   get(INVITE)==='1'&&get(ROUTE)==='13'&&
   gate?.day===day&&gate?.max===13&&gate?.finalProof===ending&&localProof
  );
+ let previouslyClosed=[];
+ window.addEventListener('beforeprint',()=>{
+  previouslyClosed=[...document.querySelectorAll('details.memory-poem:not([open])')];
+  for(const item of previouslyClosed)item.open=true;
+ });
+ window.addEventListener('afterprint',()=>{
+  for(const item of previouslyClosed){if(item.isConnected)item.open=false;}
+  previouslyClosed=[];
+ });
  function safePhoto(index){
   const data=get(PHOTO+':'+(day||'test')+':'+(origin||'zap')+':'+index);
   return typeof data==='string'&&data.length<1300000&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(data)?data:null;
