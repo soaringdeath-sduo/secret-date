@@ -85,7 +85,7 @@ async function quizAll(){
   click(d.document,'#poetry-story-next','Poem next');
   assert.ok(r.querySelector('#daily-reopen-poem'),'Poem must be clearly accessible on completion');
   rounds.push({day,answers:15,poem:true,seal:true});
-  if(day<14)click(r,'#sd-next-full-test','Host next day');
+  if(day<14){click(r,'#sd-next-full-test','Host next day');await tick(25);}
  }
  assert.ok(r.querySelector('#sd-next-full-test'),'Final day must link to GPS route');
  const preserved=readStore(d.dom);
