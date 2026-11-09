@@ -97,3 +97,20 @@ html{scroll-padding-bottom:160px}
 @keyframes envelope-breathe{50%{transform:rotate(-6deg) scale(1.07);box-shadow:0 10px 29px #b44e7d7a}}
 @keyframes envelope-release{from{opacity:.3;transform:scale(.94) rotate(-1deg)}to{opacity:1;transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.envelope-gate-stamp,.envelope-open{animation:none}}
+
+
+/* Explicit confirmation before revealing each mini-chapter. */
+.story-confirm-overlay{position:fixed;inset:0;z-index:2147483500;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(20,12,27,.82);backdrop-filter:blur(9px);animation:story-confirm-fade .2s ease}
+.story-confirm-card{width:min(100%,420px);padding:25px 22px;border-radius:23px;border:1px solid #e7bdb6;background:linear-gradient(155deg,#fff8f0,#fce9ea 65%,#efdce8);box-shadow:0 23px 80px #07020e8a;color:#5c314c;text-align:center;max-height:calc(100dvh - 40px);overflow:auto}
+.story-confirm-seal{width:65px;height:65px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#b14873,#7e355b);border:4px double #ffe5cd;color:#fff;font:44px Georgia,serif;box-shadow:0 7px 22px #a4487655}
+.story-confirm-kicker{font:850 10px/1.55 system-ui,sans-serif;letter-spacing:1.7px;color:#a35d7f}
+.story-confirm-card h3{font:normal 29px/1.22 Georgia,serif;color:#583046;margin:12px 0}
+.story-confirm-card p{font:14px/1.65 system-ui,sans-serif;color:#714b61;margin:0 0 20px}
+.story-confirm-actions{display:grid;grid-template-columns:1fr 1.15fr;gap:10px}
+.story-confirm-actions button{min-height:54px;border-radius:13px;font:800 13px/1.35 system-ui,sans-serif;padding:9px;cursor:pointer}
+.story-confirm-cancel{background:#ffffff;border:1px solid #d5a4b8;color:#71455d}
+.story-confirm-yes{background:linear-gradient(130deg,#b54c80,#87365f);border:1px solid #b84f7f;color:#fff}
+.story-confirm-actions button:focus-visible{outline:3px solid #6b3b70;outline-offset:3px}
+@keyframes story-confirm-fade{from{opacity:0}to{opacity:1}}
+@media(max-width:360px){.story-confirm-actions{grid-template-columns:1fr}.story-confirm-actions button{min-height:48px}}
+@media(prefers-reduced-motion:reduce){.story-confirm-overlay{animation:none}}
