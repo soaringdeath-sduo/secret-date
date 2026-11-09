@@ -13,6 +13,7 @@ const dom=new JSDOM('<!doctype html><html lang="ru"><body><main id="host"></main
  url:'https://soaringdeath-sduo.github.io/secret-date/daily.html',runScripts:'outside-only',pretendToBeVisual:true
 });
 const w=dom.window;
+w.TextEncoder=TextEncoder;
 w.alert=message=>{throw Error('Certificate download error: '+message)};
 w.eval(js);
 const gift=w.DailyDinoCertificate;
