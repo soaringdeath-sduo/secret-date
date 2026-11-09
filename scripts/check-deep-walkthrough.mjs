@@ -91,7 +91,7 @@ function invitation(day){
 }
 async function quizAll(){
  const d=browser(daily,'https://soaringdeath-sduo.github.io/secret-date/daily.html',isolatedSeed('sun'));
- d.loadScripts(['couple-core.js','daily-couple.js','daily-poetry.js']);
+ d.loadScripts(['couple-core.js','daily-couple.js','daily-poetry.js','daily-play.js','daily-dino.js']);
  await tick(35);
  const r=d.document.getElementById('daily-root');
  const rounds=[];
@@ -115,7 +115,7 @@ async function quizAll(){
  // Final archive route from the GPS game should not force daily day one again.
  d.dom.window.close();
  const archive=browser(daily,'https://soaringdeath-sduo.github.io/secret-date/daily.html#daily-poetry-library',preserved);
- archive.loadScripts(['couple-core.js','daily-couple.js','daily-poetry.js']);
+ archive.loadScripts(['couple-core.js','daily-couple.js','daily-poetry.js','daily-play.js','daily-dino.js']);
  await tick(30);
  const root=archive.document.getElementById('daily-root');
  assert.ok(root.querySelector('.poetry-library'),'Finale link must open poem archive');
@@ -124,7 +124,7 @@ async function quizAll(){
  assert.ok(!root.querySelector('.daily-grid'),'Archive should open directly, not below chapter list');
  archive.dom.window.close();
  const partial=browser(daily,'https://soaringdeath-sduo.github.io/secret-date/daily.html#daily-poetry-library',isolatedSeed('sat'));
- partial.loadScripts(['couple-core.js','daily-couple.js','daily-poetry.js']);
+ partial.loadScripts(['couple-core.js','daily-couple.js','daily-poetry.js','daily-play.js','daily-dino.js']);
  await tick(30);
  assert.ok(partial.document.querySelector('.poetry-library'),'An unfinished host test should also open archive without jumping to day 1');
  assert.equal(partial.document.querySelectorAll('[data-poetry-open]').length,0,'An unfinished host must not see locked poems');
