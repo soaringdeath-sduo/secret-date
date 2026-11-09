@@ -16,11 +16,11 @@ for(const [i,p] of data.entries()){
 }
 assert.ok(data[0].text.includes('вскоре'),'First poem should not mistakenly say the date is tomorrow');
 const daily=fs.readFileSync('daily.html','utf8');
-assert.ok(daily.includes('daily-poetry.css?v=2')&&daily.includes('daily-poetry.js?v=2'));
+assert.ok(daily.includes('daily-poetry.css?v=2')&&daily.includes('daily-poetry.js?v=3'));
 assert.ok(daily.includes('window.DailyPoetry.completion('),'Daily ending must reveal poem');
 assert.ok(daily.includes('window.DailyPoetry.library('),'Daily page must have permanent poem library');
 assert.ok(daily.includes("window.DailyPoetry.completion(root.querySelector('#daily-poetry-card'),DAYS[i]"),'Chapter card must match its day');
-assert.ok(fs.readFileSync('poems/README.md','utf8').includes('poem-day-09.mp3'));
+assert.ok(fs.readFileSync('poems/README.md','utf8').includes('poem-day-9.mp3'));
 assert.ok(fs.readFileSync('poems/README.md','utf8').includes('poem-day-14.mp3'));
 const js=fs.readFileSync('daily-poetry.js','utf8');
 new Function(js);
@@ -74,7 +74,7 @@ assert.ok(retry,'If even fallback cannot play, visitor can manually retry');
 retryReady=true;
 retry.click();await tick();
 assert.ok(card.querySelector('audio'),'Retry should find uploaded MP3 after deployment');
-assert.ok(card.querySelector('audio').src.endsWith('/assets/poem-day-09.mp3'),'Retry should switch back to Pages when available');
+assert.ok(card.querySelector('audio').src.endsWith('/assets/poem-day-9.mp3'),'Retry should switch back to Pages when available');
 assert.ok(!card.querySelector('audio').src.includes('raw.githubusercontent.com'),'Preferred origin should be own Pages host');
 assert.ok(rangeGets>=2,'Android HEAD failures must fall back to ranged GET');
 
