@@ -184,6 +184,15 @@ function renderHome(){
   +'<a class="btn" style="display:block;text-align:center;text-decoration:none" href="index.html">Открыть приглашение 💌</a>';
   return;
  }
+ if(archiveRequested()){
+  root.innerHTML='<div class="kicker">НАШИ ПРИЗНАНИЯ · ЛИЧНЫЙ АЛЬБОМ</div>'+
+   '<h1>Стихи для тебя ♡</h1>'+
+   '<p class="subtitle">Все открытые аудиооткрытки в одном месте. Здесь всегда можно услышать голос Игоря.</p>'+
+   '<div id="daily-poetry-library"></div>'+
+   '<a class="btn alt" href="daily.html" style="display:block;text-decoration:none;text-align:center">← К ежедневным главам</a>';
+  window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),organizerMode);
+  return;
+ }
  let html=intro()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
  if(window.SDTest.active())html+='<div class="daily-preview-note">🔧 ПОЛНЫЙ ПРОХОД: пройди все 90 вопросов по очереди. Ответы сохраняются отдельно от данных Лизы. После последней главы откроется маршрут.</div>';
  if(nowTrusted()===null&&!window.SDTest.active()){
@@ -403,7 +412,7 @@ async function syncClock(showLoading){
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncClock(false)});
 window.addEventListener('focus',()=>syncClock(false));
-setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0)renderHome()},30000);
+setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0&&!archiveRequested())renderHome()},30000);
 setInterval(()=>syncClock(false),120000);
 document.getElementById('host-daily-button').addEventListener('click',()=>{
  if(window.SDTest.active()){window.alert('Полное тестовое прохождение уже активно. Для выхода используй панель сверху.');return;}
