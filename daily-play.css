@@ -66,3 +66,43 @@
 .daily-replay-games h3{margin:0 0 7px;color:#80415f}
 .daily-replay-games p{font-size:12px;line-height:1.6;margin:0 0 13px}
 .daily-replay-games .btn{margin:5px 0}
+
+
+/* 10k score unlocks a slightly harder but fair turbo mode. */
+.daily-dino-difficulty{margin:11px 0 12px;padding:10px 13px;text-align:center;border-radius:12px;background:#ecf5ed;border:1px solid #a4c5b6;color:#4d8273;font-size:12px;font-weight:850;letter-spacing:.1px}
+.daily-dino-difficulty.is-turbo{background:linear-gradient(100deg,#ffe5d5,#ffdaea);border-color:#d990a8;color:#a3406c;box-shadow:0 3px 15px #b86a8a24}
+.daily-dino-turbo-toast{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:4;min-width:min(94%,320px);padding:12px 15px;text-align:center;background:#793b60;color:#fff7ea;border:2px solid #f7cd8a;border-radius:14px;box-shadow:0 8px 25px #4b253a66;font-size:14px;font-weight:900;line-height:1.45;animation:dino-turbo-bounce .38s ease-out;pointer-events:none}
+.daily-dino-turbo-toast[hidden]{display:none!important}
+@keyframes dino-turbo-bounce{from{opacity:0;transform:translate(-50%,-13px) scale(.92)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+/* The personal voucher is styled like an illustrated gold-edged romantic letter.
+   Its PDF export uses the same palette and fully offline canvas artwork. */
+.dino-certificate-unlocked{margin:20px 0 0}
+.dino-certificate-celebrate{text-align:center;font:700 15px/1.5 Georgia,serif;color:#914d6f;margin:8px 0 16px}
+.dino-certificate{position:relative;overflow:hidden;padding:22px 15px 19px;margin:10px 0 15px;color:#754461;text-align:center;border:4px double #be965d;border-radius:16px;box-shadow:0 10px 32px #85436b3b, inset 0 0 0 5px #fff6ef;background:radial-gradient(ellipse at 15% 8%,#fffef7 0,transparent 50%),linear-gradient(138deg,#fff9ef 5%,#fbe1e9 70%,#eee0ed 100%)}
+.dino-certificate:before{content:"";position:absolute;inset:9px;pointer-events:none;border:1px solid #e2b9ad;border-radius:9px}
+.dino-certificate-top{display:flex;justify-content:space-between;gap:6px;font-size:9px;font-weight:900;letter-spacing:1.1px;color:#9c6680}
+.dino-certificate-stars{font:24px Georgia,serif;color:#b89055;margin:11px 0 12px}
+.dino-certificate-eyebrow{font-size:9px;font-weight:900;letter-spacing:1px;color:#9c5e79}
+.dino-certificate h3{font:italic clamp(31px,8vw,44px)/1.12 Georgia,serif;color:#74374d;margin:12px 0 9px}
+.dino-certificate-store{font:650 15px/1.45 system-ui,sans-serif;color:#86526b;margin:6px 0 17px}
+.dino-certificate-caption{font-size:10px;letter-spacing:1.5px;font-weight:900;color:#a27465}
+.dino-certificate-amount{font:900 clamp(49px,15vw,75px)/1.2 Georgia,serif;color:#7e3c58;text-shadow:0 2px #fffaf7;margin:6px 0 11px}
+.dino-certificate-amount span{font-size:.7em;color:#b18451}
+.dino-certificate>p:not(.dino-certificate-disclaimer){font:13px/1.58 Georgia,serif;color:#8a536d;max-width:290px;margin:8px auto 15px}
+.dino-certificate-bottom{display:flex;justify-content:space-between;gap:7px;border-top:1px solid #d6a8aa;padding-top:11px;font-size:9px;font-weight:850;color:#8b526a;letter-spacing:.3px}
+.dino-certificate-disclaimer{font-size:9px;line-height:1.5;color:#997487;margin:13px 0 0}
+.dino-certificate-preview{position:absolute;top:53%;left:50%;transform:translate(-50%,-50%) rotate(-13deg);width:110%;font-weight:1000;font-size:20px;color:#ac477eae;border:3px solid #b25b88aa;padding:9px 3px;pointer-events:none;background:#fff3f2ac}
+.dino-certificate-downloads{display:grid;gap:8px}
+.dino-certificate-downloads .btn{margin:0;min-height:53px;font-size:14px}
+.dino-certificate-unlocked .day-status-note{font-size:11px;line-height:1.6}
+@media(max-width:350px){.dino-certificate{padding:18px 11px}.dino-certificate-top{font-size:8px}.dino-certificate-bottom{font-size:8px}.dino-certificate-amount{font-size:49px}}
+@media(prefers-reduced-motion:reduce){.daily-dino-turbo-toast{animation:none}}
+
+
+.dino-home-claimed{border:1px solid #d4a6ba;border-radius:15px;background:#fff5f0;margin:16px 0;box-shadow:0 6px 18px #a76a8533}
+.dino-home-claimed summary{padding:17px 15px;cursor:pointer;color:#844762;font:850 14px/1.45 system-ui,sans-serif;list-style:none}
+.dino-home-claimed summary::-webkit-details-marker{display:none}
+.dino-home-claimed summary:after{content:"⌄";float:right;color:#a45b7c}
+.dino-home-claimed[open] summary:after{content:"⌃"}
+.dino-home-claimed[open] summary{border-bottom:1px dashed #ddafc1}
+.dino-home-claimed>.dino-certificate-unlocked{margin:14px}

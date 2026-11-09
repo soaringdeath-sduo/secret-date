@@ -110,7 +110,7 @@ p{line-height:1.65;color:#795d6d}
 </style>
 <link rel="stylesheet" href="host-full-test.css?v=2">
 <link rel="stylesheet" href="daily-poetry.css?v=3">
-<link rel="stylesheet" href="daily-play.css?v=2">
+<link rel="stylesheet" href="daily-play.css?v=3">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -123,7 +123,8 @@ p{line-height:1.65;color:#795d6d}
 <script src="daily-couple.js?v=1"></script>
 <script src="daily-poetry.js?v=4"></script>
 <script src="daily-play.js?v=1"></script>
-<script src="daily-dino.js?v=1"></script>
+<script src="daily-dino-certificate.js?v=1"></script>
+<script src="daily-dino.js?v=2"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
@@ -196,9 +197,16 @@ function dinoHomeCard(){
  if(!canOpenArcade())return '';
  const best=window.DailyDino.read().best;
  return '<div class="daily-arcade-home"><div class="kicker">НОВАЯ ИГРА · БОНУС ДЛЯ ЛИЗЫ</div>'+
- '<h3>🦕 Динолюбик ♡</h3><p>Прыгай, собирай сердца и заработай настоящие подарки! <b>2 000</b> очков — шоколадка, <b>5 000</b> — сутки твоих пожеланий.</p>'+
- '<div class="daily-mini-marks"><span>Рекорд: '+best+'</span><span>🍫 2 000</span><span>💝 5 000</span></div>'+
+ '<h3>🦕 Динолюбик ♡</h3><p>Прыгай, собирай сердца и заработай настоящие подарки! <b>2 000</b> — шоколадка, <b>5 000</b> — сутки пожеланий, а <b>15 000</b> — сертификат на 5 000 ₽ в «Магнит Косметик». После 10 000 игра станет сложнее!</p>'+
+ '<div class="daily-mini-marks"><span>Рекорд: '+best+'</span><span>🍫 2 000</span><span>💝 5 000</span><span>🔥 10 000 · сложнее</span><span>🌸 15 000 · сертификат</span></div>'+
  '<button type="button" class="btn" id="open-dino">🎮 Играть за сердечки →</button></div>';
+}
+function dinoGiftHomeCard(){
+ // The earned certificate remains downloadable after the arcade season ends.
+ if(!isInvited()||window.DailyDino.read().best<15000)return '';
+ return '<details class="dino-home-claimed"><summary>🌸 Мой выигранный сертификат · Магнит Косметик · 5 000 ₽</summary>'+
+  window.DailyDinoCertificate.certificateControls(organizerMode&&!window.SDTest.active())+
+  '</details>';
 }
 function openDino(){
  if(!canOpenArcade())return;
@@ -240,7 +248,7 @@ function renderHome(){
   window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),organizerMode);
   return;
  }
- let html=intro()+dinoHomeCard()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
+ let html=intro()+dinoHomeCard()+dinoGiftHomeCard()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
  if(window.SDTest.active())html+='<div class="daily-preview-note">🔧 ПОЛНЫЙ ПРОХОД: пройди все 90 вопросов по очереди. Ответы сохраняются отдельно от данных Лизы. После последней главы откроется маршрут.</div>';
  if(nowTrusted()===null&&!window.SDTest.active()){
   html+='<div class="daily-clock-warning">🕒 '+safe(clockError||'Проверяем текущее московское время по сайту…')
@@ -264,6 +272,10 @@ function renderHome(){
  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
  const arcade=root.querySelector('#open-dino');if(arcade)arcade.addEventListener('click',openDino);
+ window.DailyDinoCertificate.bind(root,{
+  preview:organizerMode&&!window.SDTest.active(),
+  unlocked:()=>window.DailyDino.read().best>=15000&&isInvited()
+ });
  const retry=root.querySelector('#clock-retry');
  if(retry)retry.addEventListener('click',()=>syncClock(true));
  root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open),organizerMode)));

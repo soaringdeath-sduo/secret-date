@@ -92,7 +92,7 @@ async function dailyFromBookmark({clock,invite=true}){
   if(options.method==='HEAD')return {ok:true,headers:{get:()=> 'audio/mpeg'}};
   throw new Error('Unexpected fetch: '+href);
  };
- for(const path of ['host-full-test.js','couple-core.js','daily-couple.js','daily-poetry.js','daily-play.js','daily-dino.js'])w.eval(read(path));
+ for(const path of ['host-full-test.js','couple-core.js','daily-couple.js','daily-poetry.js','daily-play.js','daily-dino-certificate.js','daily-dino.js'])w.eval(read(path));
  for(const script of daily.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))w.eval(script[1]);
  await new Promise(resolve=>setTimeout(resolve,60));
  const text=w.document.getElementById('daily-root').textContent;
