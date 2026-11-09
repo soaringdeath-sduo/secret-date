@@ -74,6 +74,7 @@
       audio.load();
     }
     try{
+      document.dispatchEvent(new Event('soundtrack:play'));
       await audio.play();
       const err=overlay.querySelector('[data-sc-error]');
       if(err)err.textContent='';
@@ -248,6 +249,12 @@
     syncUI();
     openTrack(1,false);
   }
+  function clearHostPreview(){
+    preview=[false,false];
+    if(!getStore().first&&!getStore().last){audio.pause();track=-1;audio.removeAttribute('src');audio.load();}
+    hideOverlay();
+    syncUI();
+  }
   function onPageRender(currentStage,canAccess){
     stage=currentStage;enabled=!!canAccess;
     if(!enabled)pause();
@@ -275,5 +282,5 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)hideOverlay();});
   const libraryBtn=document.getElementById('soundtrack-library');
   if(libraryBtn)libraryBtn.addEventListener('click',openLibrary);
-  window.SecretSoundtrack={revealFirst,openFirst,revealFinal,openLibrary,onPageRender,pause};
+  window.SecretSoundtrack={revealFirst,openFirst,revealFinal,openLibrary,onPageRender,pause,clearHostPreview};
 })();
