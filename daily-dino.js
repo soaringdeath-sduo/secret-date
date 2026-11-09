@@ -4,9 +4,17 @@
  const storage=window.SDTest.storage;
  const KEY='sd2810-dino-heart-v1';
  const W=720,H=280,FLOOR=226;
+ const TURBO_AT=10000,PREMIUM_AT=15000;
+ // At 10,000 points the SAME run becomes slightly harder:
+ // faster movement, 12% denser obstacles and taller hazards.
+ function difficulty(score){
+  const turbo=Number(score)>=TURBO_AT;
+  return {turbo,speedBonus:turbo?44:0,spawnMultiplier:turbo?.88:1,heightBonus:turbo?4:0};
+ }
  const GIFTS=[
   {at:2000,title:'🍫 Шоколадка от Игоря',detail:'Покажи купон Игорю — он должен тебе шоколадку.'},
-  {at:5000,title:'💝 24 часа твоих пожеланий',detail:'Игорь исполняет твои пожелания целые сутки — в разумных пределах, по взаимному согласию и без опасных заданий.'}
+  {at:5000,title:'💝 24 часа твоих пожеланий',detail:'Игорь исполняет твои пожелания целые сутки — в разумных пределах, по взаимному согласию и без опасных заданий.'},
+  {at:15000,title:'🌸 Магнит Косметик — покупки на 5 000 ₽',detail:'Один совместный поход до 31.12.2026 включительно. Лиза выбирает покупки, Игорь оплачивает до 5 000 ₽. Это личный подарок, не сертификат магазина.'}
  ];
  function read(){
   try{const a=JSON.parse(storage.getItem(KEY)||'null');if(a&&Number.isFinite(a.best))return {best:Math.max(0,Math.floor(a.best))};}catch(e){}
@@ -40,10 +48,11 @@
   let best=previous.best;
   host.innerHTML='<div class="kicker">СЕКРЕТНЫЙ АРКАДНЫЙ БОНУС · ОПЕРАЦИЯ 28.10</div>'+
    '<div class="daily-dino-title">🦕 <span>Динолюбик</span> 💗</div>'+
-   '<p class="subtitle">Прыгай через препятствия и собирай сердечки! Очки за расстояние и сердца суммируются <b>в одном забеге</b>. Можешь пробовать сколько угодно раз.</p>'+
+   '<p class="subtitle">Прыгай через препятствия и собирай сердечки! Очки за расстояние и сердца суммируются <b>в одном забеге</b>. После <b>10 000 очков</b> включится турбо-режим: препятствия станут чуть чаще и быстрее. За <b>15 000 очков</b> — подарок на 5 000 ₽ в «Магнит Косметик»! ♡</p>'+
    (opts.preview?'<p class="daily-preview-note">🔧 Тестовый просмотр: награды и рекорд Лизы не сохраняются.</p>':'')+
    '<div class="daily-dino-scores"><span>Очки <b id="dino-score">0</b></span><span>Рекорд <b id="dino-best">'+best+'</b></span><span>Сердечки <b id="dino-hearts">0</b></span></div>'+
-   '<div class="daily-dino-surface"><canvas id="dino-canvas" width="720" height="280" tabindex="0" role="img" aria-label="Игра Динолюбик: нажми кнопку Прыжок или пробел, чтобы перепрыгивать препятствия и собирать сердца"></canvas>'+
+   '<div class="daily-dino-difficulty" id="dino-difficulty" aria-live="polite">🌷 Нежный режим · усложнение после 10 000 очков</div>'+
+   '<div class="daily-dino-surface"><div id="dino-turbo-toast" class="daily-dino-turbo-toast" hidden>🔥 10 000! ТУРБО-РЕЖИМ АКТИВИРОВАН</div><canvas id="dino-canvas" width="720" height="280" tabindex="0" role="img" aria-label="Игра Динолюбик: нажми кнопку Прыжок или пробел, чтобы перепрыгивать препятствия и собирать сердца"></canvas>'+
    '<div id="dino-overlay" class="daily-dino-overlay" role="status"><strong id="dino-title">Готова играть? ♡</strong><small id="dino-hint">Коснись экрана или нажми «Начать». Затем прыгай касанием, пробелом или ↑.</small></div></div>'+
    '<div class="daily-dino-controls"><button type="button" id="dino-jump" class="btn">▶ Начать игру</button>'+
    '<button type="button" id="dino-pause" class="btn alt" disabled>Пауза</button></div>'+
@@ -54,6 +63,20 @@
   const scoreEl=host.querySelector('#dino-score'),bestEl=host.querySelector('#dino-best'),heartEl=host.querySelector('#dino-hearts');
   const overlay=host.querySelector('#dino-overlay'),title=host.querySelector('#dino-title'),hint=host.querySelector('#dino-hint');
   const jumpBtn=host.querySelector('#dino-jump'),pauseBtn=host.querySelector('#dino-pause'),rewardEl=host.querySelector('#dino-rewards');
+  const difficultyEl=host.querySelector('#dino-difficulty'),turboToast=host.querySelector('#dino-turbo-toast');
+  let turboToastTimer=null;
+  function refreshDifficulty(){
+   if(!difficultyEl)return;
+   const turbo=difficulty(points).turbo;
+   difficultyEl.classList.toggle('is-turbo',turbo);
+   difficultyEl.textContent=turbo?'🔥 ТУРБО-РЕЖИМ · БЫСТРЕЕ И СЛОЖНЕЕ':'🌷 Нежный режим · усложнение после 10 000 очков';
+  }
+  function announceTurbo(){
+   if(!turboToast)return;
+   turboToast.hidden=false;
+   if(turboToastTimer!==null)clearTimeout(turboToastTimer);
+   turboToastTimer=setTimeout(()=>{turboToast.hidden=true;turboToastTimer=null;},2400);
+  }
   if(!ctx){host.innerHTML='<p>Эта версия браузера не поддерживает игру. Попробуй другой браузер на телефоне.</p><button class="btn" id="dino-exit">Назад</button>';host.querySelector('#dino-exit').addEventListener('click',()=>opts.onExit?.());return;}
   const pixelRatio=Math.max(1,Math.min(2,window.devicePixelRatio||1));
   cv.width=W*pixelRatio;cv.height=H*pixelRatio;
@@ -119,7 +142,11 @@
    const shown=Math.max(best,Math.floor(points));
    rewardEl.innerHTML=GIFTS.map(g=>'<div class="daily-dino-gift'+(shown>=g.at?' is-unlocked':'')+'"><strong>'+
     (shown>=g.at?'✅ ':'🔒 ')+g.at+' очков · '+g.title+'</strong><span>'+
-    (shown>=g.at?g.detail:'Пока закрыто. Ещё '+Math.max(0,g.at-shown)+' очков до награды.')+'</span></div>').join('');
+    (shown>=g.at?g.detail:'Пока закрыто. Ещё '+Math.max(0,g.at-shown)+' очков до награды.')+'</span></div>').join('')+
+    (shown>=PREMIUM_AT&&window.DailyDinoCertificate?window.DailyDinoCertificate.certificateControls(opts.preview):'');
+   if(shown>=PREMIUM_AT&&window.DailyDinoCertificate)window.DailyDinoCertificate.bind(rewardEl,{
+    preview:opts.preview,unlocked:()=>read().best>=PREMIUM_AT
+   });
   }
   function hud(force=false){
    if(!force&&Math.floor(points/25)===lastHud)return;
@@ -140,7 +167,9 @@
   function reset(){
    points=0;heartCount=0;spawnObstacle=1.5;spawnHeart=1.0;
    player.y=FLOOR-player.h;player.vy=0;obstacles=[];hearts=[];lastTime=0;lastHud=-100;
-   hud(true);awards();
+   hud(true);awards();refreshDifficulty();
+   if(turboToastTimer!==null){clearTimeout(turboToastTimer);turboToastTimer=null;}
+   if(turboToast)turboToast.hidden=true;
   }
   function canPlay(){return opts.canPlay?opts.canPlay():true;}
   function jump(){
@@ -165,15 +194,16 @@
    lastTime=ms;
    if(delta>0){
     const last=points;points+=delta*82;
-    const speed=195+Math.min(125,Math.floor(points/800)*10);
+    const level=difficulty(points);
+    const speed=195+Math.min(125,Math.floor(points/800)*10)+level.speedBonus;
     player.vy+=delta*1570;player.y+=player.vy*delta;
     if(player.y>=FLOOR-player.h){player.y=FLOOR-player.h;player.vy=0;}
     spawnObstacle-=delta;spawnHeart-=delta;
     if(spawnObstacle<=0){
      const type=Math.random()<.5?0:1;
-     const height=type===0?37+Math.random()*17:34+Math.random()*18;
+     const height=(type===0?37+Math.random()*17:34+Math.random()*18)+level.heightBonus;
      obstacles.push({x:W+10,w:37,h:height,type});
-     spawnObstacle=Math.max(1.04,1.6+Math.random()*.66-Math.floor(points/1400)*.08);
+     spawnObstacle=Math.max(.80,Math.max(1.04,1.6+Math.random()*.66-Math.floor(points/1400)*.08)*level.spawnMultiplier);
     }
     if(spawnHeart<=0){
      hearts.push({x:W+15,y:140+Math.random()*29});
@@ -192,7 +222,8 @@
      persistBest();setState('over','Ой, препятствие! ♡','Собрано '+Math.floor(points)+' очков. Можно попробовать снова — лучшие награды останутся.');
      draw();return;
     }
-    if((last<2000&&points>=2000)||(last<5000&&points>=5000))persistBest();
+    if(last<TURBO_AT&&points>=TURBO_AT){refreshDifficulty();announceTurbo();}
+    if([2000,5000,PREMIUM_AT].some(at=>last<at&&points>=at))persistBest();
     if(points>best+250)persistBest();
     clouds.forEach(c=>{c.x-=delta*6*c.scale;if(c.x<-50)c.x=W+40;});
    }
@@ -216,6 +247,7 @@
    if(frame!==null){cancelAnimationFrame(frame);frame=null;}
    document.removeEventListener('keydown',onKeyboard);
    document.removeEventListener('visibilitychange',onVisibility);
+   if(turboToastTimer!==null){clearTimeout(turboToastTimer);turboToastTimer=null;}
    cv.removeEventListener('pointerdown',jumpClick);
    if(points>best)saveHigh(points,opts.preview);
   }
@@ -223,5 +255,5 @@
   reset();setState('ready','Готова играть? ♡','Прыгай через препятствия, собирай сердечки и набирай очки.');
   draw();
  }
- window.DailyDino={mount,stop,read,saveHigh,rewardStatus,gameAvailable};
+ window.DailyDino={mount,stop,read,saveHigh,rewardStatus,gameAvailable,difficulty,TURBO_AT,PREMIUM_AT};
 })();
