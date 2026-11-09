@@ -118,7 +118,7 @@ function next(w,expected,reason){
  w.StoryFlow.next();
  if(expected!==undefined)assert.equal(pageIndex(w),expected,reason+' (was '+prior+')');
 }
-async function route(origin,choice='omchino'){
+async function route(origin,choice='omchino',category='romance'){
  const d=browser(source,'https://soaringdeath-sduo.github.io/secret-date/secret_date_game_luga.html',isolatedSeed('sat'),{fastTimers:true});
  d.loadScripts(['story-flow.js']);
  const w=d.w,doc=d.document;
@@ -185,11 +185,37 @@ async function route(origin,choice='omchino'){
  tap('[data-mission-action="glitch-finish"]');
  tap('#wheel-spin');
  await tick(25);
- tap('[data-cat="romance"]');assert.equal(state(),11);
+ tap('[data-cat="'+category+'"]');assert.equal(state(),11);
  next(w,1,'choose secret ending');
  tap('[data-ending="'+choice+'"]');assert.equal(state(),12);
- next(w,1,'arrive final location');
- tap('#check');assert.equal(state(),13);
+ if(category==='romance'){
+  next(w,1,'arrive final location');
+  tap('#check');
+ }else if(choice==='minigame'){
+  tap('[data-quest-action="start"]');
+  for(let i=0;i<3;i++){
+   tap('[data-quest-action="answerL"][data-value="1"]');
+   tap('[data-quest-action="handoff"]');
+   tap('[data-quest-action="answerI"][data-value="1"]');
+   tap('[data-quest-action="nextRound"]');
+  }
+  tap('[data-quest-action="chooseTruth"][data-value="skip"]');
+  tap('[data-quest-action="finishTruth"]');
+  tap('[data-quest-action="openEnvelope"][data-value="0"]');
+  tap('[data-quest-action="completeEnvelope"]');
+  tap('[data-quest-action="finishQuest"]');
+ }else if(category==='adventure'){
+  next(w,1,'manual ending');
+  tap('#manual-finish');
+ }else if(category==='cinema'){
+  next(w,1,'movie details');
+  const title=doc.querySelector('#movie-title'),time=doc.querySelector('#movie-time');
+  assert.ok(title&&time,'Cinema details form should appear');
+  title.value='Тестовый фильм';time.value='17:20';
+  tap('#movie-confirm');
+  tap('#movie-finish');
+ }
+ assert.equal(state(),13,'All final ending types should reach romantic finale');
  next(w,1,'real date');
  next(w,2,'final song');
  tap('#sc-finale-open');
@@ -202,11 +228,14 @@ async function route(origin,choice='omchino'){
  next(w,5,'embrace');
  tap('#hug');
  assert.ok(doc.querySelector('#hug-text').textContent.includes('обнимай'));
- const results={origin,stages:14,ending:choice,radio:origin==='zap'?'radio-zap-v2.mp3':'radio-luga-v2.mp3',archiveLink:a.href};
+ const results={origin,stages:14,ending:choice,category,radio:origin==='zap'?'radio-zap-v2.mp3':'radio-luga-v2.mp3',archiveLink:a.href};
  d.dom.window.close();
  return results;
 }
 await quizAll();
 const zap=await route('zap');
 const luga=await route('luga');
-console.log('✓ Full 14-stage route in both starting towns:',JSON.stringify({zap,luga}));
+const arcade=await route('zap','minigame','adventure');
+const activity=await route('luga','anticafe','adventure');
+const cinema=await route('zap','thriller','cinema');
+console.log('✓ Route all the way through three finale types, custom quest, and both origins:',JSON.stringify({zap,luga,arcade,activity,cinema}));
