@@ -60,3 +60,9 @@
 .daily-dino-gift.is-unlocked strong{color:#874061}
 @media(max-width:390px){.daily-hunt-grid,.daily-memory-grid{gap:7px}.daily-hunt-cell{font-size:23px;border-width:3px}.daily-memory-cell{font-size:23px}.daily-emoji-clue{font-size:31px}.daily-dino-scores{gap:3px}.daily-dino-scores span{padding:5px;font-size:10px}.daily-dino-scores b{font-size:17px}}
 @media(prefers-reduced-motion:reduce){.daily-arcade-home,.daily-mini-stage,.daily-secret-event{transition:none}}
+
+
+.daily-replay-games{margin:19px 0;border:1px dashed #d8aabe;background:#fff9f4;border-radius:14px;padding:15px}
+.daily-replay-games h3{margin:0 0 7px;color:#80415f}
+.daily-replay-games p{font-size:12px;line-height:1.6;margin:0 0 13px}
+.daily-replay-games .btn{margin:5px 0}
