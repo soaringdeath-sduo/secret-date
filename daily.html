@@ -186,10 +186,11 @@ function showUnavailable(){
  const note=document.getElementById('daily-status');
  if(note)note.textContent='Этот выпуск можно проходить только в назначенный день.';
 }
-async function openDay(i){
- if(!available(i))return showUnavailable();
+async function openDay(i,asPreview=false){
+ const isPreview=asPreview&&organizerMode&&Number.isInteger(i)&&i>=0&&i<DAYS.length;
+ if(!isPreview&&!available(i))return showUnavailable();
  if(working)return;
- working=true;current=i;episode=null;root.dataset.theme=COLORS[i];
+ working=true;previewMode=isPreview;current=i;episode=null;root.dataset.theme=COLORS[i];
  root.innerHTML='<div class="kicker">ВЫПУСК '+(i+1)+'</div><h2>Загружаем твою главу… ♡</h2><p>Ещё мгновение — и начнём.</p>';
  try{
   const response=await fetch('daily-content/day-'+DAYS[i]+'.json?v=2',{cache:'no-store'});
@@ -198,10 +199,10 @@ async function openDay(i){
   if(data.date!==DAYS[i]||!Array.isArray(data.questions)||data.questions.length!==15||
      data.questions.some(q=>!Array.isArray(q)||typeof q[0]!=='string'||!Array.isArray(q[1])||q[1].length<2))
    throw new Error('Ошибка загрузки вопросов.');
-  if(!available(i)){working=false;return showUnavailable()}
+  if(!canContinue()){working=false;return showUnavailable()}
   episode=data;
   const st=state(),saved=Array.isArray(st.answers[i])?st.answers[i]:[];
-  answers=saved.length<=15?saved.slice():[];
+  answers=previewMode?[]:(saved.length<=15?saved.slice():[]);
   step=answers.length;working=false;
   if(step>=15){markComplete();showComplete()}else renderQuestion();
  }catch(e){
@@ -216,11 +217,11 @@ async function openDay(i){
  }
 }
 function markComplete(){
- if(current<0||answers.length!==15)return;
+ if(previewMode||current<0||answers.length!==15)return;
  const st=state();st.answers[current]=answers.slice();st.done[current]=true;st.version=2;persist(st);
 }
 function renderQuestion(){
- if(!episode||!available(current))return showUnavailable();
+ if(!episode||!canContinue())return showUnavailable();
  if(step>=15){markComplete();showComplete();return}
  root.dataset.theme=COLORS[current];
  const q=episode.questions[step],kind=episode.kind;
@@ -253,7 +254,7 @@ function renderQuestion(){
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
 }
 function chooseCustomAnswer(raw){
- if(!episode||!available(current))return showUnavailable();
+ if(!episode||!canContinue())return showUnavailable();
  const value=String(raw||'').trim().replace(/\s+/g,' ').slice(0,180);
  if(!value){
   const warning=root.querySelector('#daily-custom-error');
@@ -263,13 +264,13 @@ function chooseCustomAnswer(raw){
  recordAnswer({custom:value});
 }
 function chooseAnswer(choice){
- if(!episode||!available(current))return showUnavailable();
+ if(!episode||!canContinue())return showUnavailable();
  const q=episode.questions[step];
  if(!q||!Number.isInteger(choice)||choice<0||choice>=q[1].length)return;
  recordAnswer(choice);
 }
 function recordAnswer(value){
- if(!episode||!available(current))return showUnavailable();
+ if(!episode||!canContinue())return showUnavailable();
  if(answers.length!==step||step>=15)return;
  const custom=value&&typeof value==='object'&&typeof value.custom==='string';
  const q=episode.questions[step];
@@ -298,14 +299,14 @@ function recordAnswer(value){
  const next=document.createElement('button');next.type='button';next.className='btn';
  next.textContent=answers.length===15?'Получить печать ♡':'Продолжить →';
  next.addEventListener('click',()=>{
-  if(!available(current))return showUnavailable();
+  if(!canContinue())return showUnavailable();
   step=answers.length;
   if(step===15){markComplete();showComplete()}else renderQuestion();
  });
  if(area)area.appendChild(next);
 }
 function showComplete(){
- if(!episode||!available(current))return showUnavailable();
+ if(!episode||!canContinue())return showUnavailable();
  markComplete();
  const i=current;
  root.dataset.theme=COLORS[i];
