@@ -15,8 +15,6 @@
    return new Map(list.map(p=>[p.day,p]));
   });
  const probes=new Map();
- const audioPlayer=document.createElement('audio');
- audioPlayer.preload='none';
  let activeCard=null;
  function daysFor(selected){return selected==='sat'?totalDays.slice(0,5):totalDays;}
  function audioURL(day){return ASSETS+String(day).padStart(2,'0')+'.mp3'}
@@ -28,7 +26,14 @@
   probes.set(day,promise);return promise;
  }
  function isPreview(){
-  return !!global.SDTest?.active() || localStorage.getItem('sd2810-host-v3')==='1';
+  // In full walk-through we must unlock poems one by one, like for Lisa.
+  return localStorage.getItem('sd2810-host-v3')==='1'&&!global.SDTest?.active();
+ }
+ function hostToolsVisible(){
+  return isPreview()||!!global.SDTest?.active();
+ }
+ function pauseAll(container){
+  container?.querySelectorAll('audio').forEach(player=>{try{player.pause();}catch(e){}});
  }
  function verse(text){
   return text.trim().split(/\n\s*\n/).map(stanza=>'<p class="poetry-stanza">'+
@@ -61,8 +66,8 @@
   }
  }
  function closeModal(){
-  audioPlayer.pause();
   const modal=document.getElementById('poetry-modal');
+  pauseAll(modal);
   if(modal)modal.remove();
   document.body.classList.remove('poetry-dialog-open');
   document.removeEventListener('keydown',focusModal);
@@ -114,8 +119,7 @@
  }
  async function open(day,trigger,canOpen){
   if(!canOpen)return;
-  audioPlayer.pause();
-  const old=document.getElementById('poetry-modal');if(old)old.remove();
+  const old=document.getElementById('poetry-modal');pauseAll(old);if(old)old.remove();
   activeCard=trigger;
   const modal=document.createElement('div');
   modal.id='poetry-modal';modal.className='poetry-modal';modal.setAttribute('role','dialog');
@@ -130,15 +134,15 @@
   document.addEventListener('keydown',focusModal);
   close.focus();
   const container=modal.querySelector('.poetry-dialog-content');
-  await populate(container,day,isPreview());
+  await populate(container,day,hostToolsVisible());
  }
  function completion(host,day,asPreview=false){
   if(!host)return;
-  populate(host,day,asPreview||isPreview());
+  populate(host,day,asPreview||hostToolsVisible());
  }
  async function library(host,state,selected,asPreview=false){
   if(!host)return;
-  const preview=asPreview||isPreview(),days=daysFor(selected);
+  const preview=(asPreview||isPreview())&&!global.SDTest?.active(),days=daysFor(selected);
   const unlocked=days.filter(d=>preview||state?.done?.[Number(d)-9]===true);
   const label=unlocked.length===1?'признание':unlocked.length>=2&&unlocked.length<=4?'признания':'признаний';
   host.innerHTML='<section class="poetry-library"><div class="kicker">АУДИОАЛЬБОМ 28.10</div>'+
