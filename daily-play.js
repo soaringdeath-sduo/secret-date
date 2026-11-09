@@ -176,7 +176,8 @@
   }
   return true;
  }
- function surpriseFor(day){
+ function surpriseFor(day,preview=false){
+  if(preview)return (day+2)%EVENT.length;
   const data=read(),id=String(day);
   if(Number.isInteger(data.event[id])&&data.event[id]>=0&&data.event[id]<EVENT.length)return data.event[id];
   // Once picked, the event is stable across reloads and reopens.
@@ -185,7 +186,7 @@
  }
  function mountSecret(host,day,opts={}){
   if(!host||!DAYS.includes(day))return;
-  const id=String(day),data=read(),chosen=surpriseFor(day);
+  const id=String(day),chosen=surpriseFor(day,opts.preview===true);
   const render=()=>{
    const revealed=read().revealed[id]===true,ev=EVENT[chosen];
    host.innerHTML='<div class="daily-secret-event"><div class="kicker">НЕОЖИДАННЫЙ БОНУС · СЕКРЕТНАЯ КАРТОЧКА</div>'+
