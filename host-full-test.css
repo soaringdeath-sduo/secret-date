@@ -1,0 +1,7 @@
+#sd-full-test-bar{position:sticky;top:0;z-index:9600;margin:0 auto;padding:9px 12px;background:#24182f;color:#ffe8f2;border-bottom:2px solid #e4a0be;box-shadow:0 5px 16px #160e2370;font:12px/1.45 system-ui,sans-serif;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;text-align:center}
+#sd-full-test-bar strong{font-size:12px;letter-spacing:.5px}
+#sd-full-test-bar span{color:#e9c5d4;max-width:330px}
+#sd-full-test-bar>div{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+#sd-full-test-bar button{min-height:35px;border-radius:8px;background:#714862;border:1px solid #e9a8c3;color:#fff;font:700 11px/1.2 system-ui,sans-serif;padding:7px 10px;cursor:pointer}
+#sd-full-test-bar button:focus-visible{outline:3px solid #fff}
+@media(min-width:730px){#sd-full-test-bar{border-radius:0 0 12px 12px}}
