@@ -31,7 +31,7 @@
    '</div><p class="day-status-note">Действителен до 31 декабря 2026 года включительно. Покажи сертификат Игорю и выберите удобный день. Это личное обещание оплатить покупки, не официальный сертификат торговой сети.</p>'+
    '</div>';
  }
- function makeCanvas(){
+ function makeCanvas(preview=false){
   const canvas=document.createElement('canvas');
   canvas.width=1600;canvas.height=1132;
   const c=canvas.getContext('2d');
@@ -81,6 +81,12 @@
   c.textAlign='center';c.font='20px Arial,sans-serif';c.fillStyle='#8d6579';
   c.fillText('Личное обещание Игоря. Не является подарочной картой или сертификатом сети «Магнит Косметик».',W/2,1036);
   c.font='italic 18px Georgia,serif';c.fillStyle='#b07a86';c.fillText('Разблокировано за 15 000 очков в игре «Динолюбик»',W/2,1076);
+  if(preview){
+   c.save();c.translate(W/2,H/2);c.rotate(-.28);
+   c.globalAlpha=.58;c.fillStyle='#a95474';c.font='bold 65px Arial,sans-serif';
+   c.fillText('ТЕСТОВЫЙ ОБРАЗЕЦ · НЕ ЯВЛЯЕТСЯ ПРИЗОМ',0,0);
+   c.restore();
+  }
   return canvas;
  }
  // Straightforward one-page PDF: canvas artwork is embedded as a high-quality
@@ -116,7 +122,7 @@
   if(format!=='pdf'&&format!=='png')return false;
   let anchor=null,blobUrl=null;
   try{
-   const image=makeCanvas();
+   const image=makeCanvas(!!opts.preview);
    anchor=document.createElement('a');
    anchor.download='Лиза_Магнит_Косметик_5000_подарок_Игоря.'+format;
    if(format==='pdf'){
