@@ -249,10 +249,9 @@ that other services will comply. See ai-policy.txt.
       const raw=prompt('Режим ведущего: введите код');
       if((raw||'').trim()!==HOST_CODE)return;
       localStorage.setItem(HOST_KEY,'1');
-      const option=prompt('Проверка: 1 — вопросы, 2 — дата/таймер, 3 — игра, 4 — выйти, 5 — выбор даты, 6 — все мини-игры, 7 — музыкальные открытки, 8 — ПОЛНЫЙ ПРОХОД С НУЛЯ, 9 — продолжить полный тест','8');
+      const option=prompt('Проверка: 1 — вопросы, 2 — дата/таймер, 3 — игра, 4 — выйти, 5 — выбор даты, 6 — все мини-игры, 7 — музыкальные открытки, 8 — ПОЛНЫЙ ПРОХОД С НУЛЯ','8');
       if(option==='4'){if(window.SDTest.active()){window.SDTest.stop();return;}localStorage.removeItem(HOST_KEY);render();return;}
       if(option==='8'){window.SDTest.start();return;}
-      if(option==='9'){window.SDTest.resume();return;}
       if(option==='1'){stage=-1;localStorage.removeItem(INVITE_KEY);render();return;}
       if(option==='3'){localStorage.setItem(INVITE_KEY,'1');window.location.href='secret_date_game_luga.html';return;}
       if(option==='6'){window.location.href='daily.html';return;}
