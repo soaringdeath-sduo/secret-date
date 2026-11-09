@@ -110,6 +110,7 @@ p{line-height:1.65;color:#795d6d}
 </style>
 <link rel="stylesheet" href="host-full-test.css?v=2">
 <link rel="stylesheet" href="daily-poetry.css?v=3">
+<link rel="stylesheet" href="daily-play.css?v=1">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -121,6 +122,8 @@ p{line-height:1.65;color:#795d6d}
 <script src="couple-core.js?v=1"></script>
 <script src="daily-couple.js?v=1"></script>
 <script src="daily-poetry.js?v=4"></script>
+<script src="daily-play.js?v=1"></script>
+<script src="daily-dino.js?v=1"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
@@ -153,6 +156,7 @@ function openPoetryArchive(){
 }
 window.addEventListener('hashchange',()=>{if(archiveRequested())openPoetryArchive();});
 let current=-1,episode=null,step=0,answers=[],working=false;
+let arcadeOpen=false,previewInterludes=new Set();
 let organizerMode=false,previewMode=false;
 const HOST_SESSION_KEY='sd2810-host-v3';
 let clockEpoch=null,clockAnchor=0,clockError='',clockLoading=false;
@@ -187,13 +191,40 @@ function phase(i){
 }
 const available=i=>window.SDTest.active()||isInvited()&&phase(i)==='today';
 const canContinue=()=>window.SDTest.active()||previewMode&&organizerMode||available(current);
+const canOpenArcade=()=>window.DailyDino.gameAvailable(nowTrusted(),chosen(),isInvited(),window.SDTest.active()||organizerMode);
+function dinoHomeCard(){
+ if(!canOpenArcade())return '';
+ const best=window.DailyDino.read().best;
+ return '<div class="daily-arcade-home"><div class="kicker">НОВАЯ ИГРА · БОНУС ДЛЯ ЛИЗЫ</div>'+
+ '<h3>🦕 Динолюбик ♡</h3><p>Прыгай, собирай сердца и заработай настоящие подарки! <b>2 000</b> очков — шоколадка, <b>5 000</b> — сутки твоих пожеланий.</p>'+
+ '<div class="daily-mini-marks"><span>Рекорд: '+best+'</span><span>🍫 2 000</span><span>💝 5 000</span></div>'+
+ '<button type="button" class="btn" id="open-dino">🎮 Играть за сердечки →</button></div>';
+}
+function openDino(){
+ if(!canOpenArcade())return;
+ current=-1;episode=null;arcadeOpen=true;root.dataset.theme='peach';
+ window.DailyDino.mount(root,{canPlay:canOpenArcade,preview:organizerMode&&!window.SDTest.active(),onExit:renderHome});
+}
+function showInterludeIfReady(){
+ if(!episode||!canContinue()||window.SDTest.active()||![5,10].includes(step))return false;
+ const day=DAYS[current],stamp=day+':'+step;
+ if(window.DailyPlay.hasPlayed(day,step)||previewInterludes.has(stamp))return false;
+ return window.DailyPlay.mountInterlude(root,{day,slot:step,preview:previewMode,
+  onResume:()=>{
+   if(!canContinue())return showUnavailable();
+   previewInterludes.add(stamp);
+   renderQuestion();
+  }
+ });
+}
 function intro(){
  return '<div class="kicker">НАШ МАЛЕНЬКИЙ СЕРИАЛ • ОПЕРАЦИЯ 28.10</div>'
   +'<h1>Каждый день —<br><em>немного любви ♡</em></h1>'
-  +'<p class="subtitle">Лиза, первый выпуск — досье на Игоря. А дальше — <b>романтические тесты про вас двоих</b>: чувства, привычки, общение и мечты. В каждом 15 вопросов, и неправильных ответов здесь нет.</p>'
+  +'<p class="subtitle">Лиза, первый выпуск — досье на Игоря. А дальше — <b>романтические тесты про вас двоих</b>: чувства, привычки, общение и мечты. В каждом выпуске 15 вопросов, две маленькие игры и неожиданный бонус. Неправильных чувств здесь нет.</p>'
   +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">♡ ✨</div><figcaption>Наши маленькие истории</figcaption></div>';
 }
 function renderHome(){
+ window.DailyDino.stop();arcadeOpen=false;
  current=-1;episode=null;previewMode=false;root.dataset.theme='rose';
  if(!isInvited()&&!organizerMode&&!window.SDTest.active()){
   root.innerHTML=intro()+'<div class="locked">🔒 Сначала открой приглашение, введи вашу дату-пароль и выбери день свидания.</div>'
@@ -209,7 +240,7 @@ function renderHome(){
   window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),organizerMode);
   return;
  }
- let html=intro()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
+ let html=intro()+dinoHomeCard()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
  if(window.SDTest.active())html+='<div class="daily-preview-note">🔧 ПОЛНЫЙ ПРОХОД: пройди все 90 вопросов по очереди. Ответы сохраняются отдельно от данных Лизы. После последней главы откроется маршрут.</div>';
  if(nowTrusted()===null&&!window.SDTest.active()){
   html+='<div class="daily-clock-warning">🕒 '+safe(clockError||'Проверяем текущее московское время по сайту…')
@@ -220,7 +251,7 @@ function renderHome(){
  const st=state();
  for(let i=0;i<numberOfDays();i++){
   const today=phase(i),done=st.done[i]===true,active=organizerMode||today==='today';
-  const subtitle=window.SDTest.active()?'Тестовый выпуск · ответы в отдельном хранилище':organizerMode?'Пробный просмотр · без сохранения':active?'15 вопросов · 5–7 минут':today==='past'?(done?'Пройденный выпуск — печать сохранена':'Время выпуска закончилось'):'Только '+SHORT[i]+', с 09:00 до 23:59 МСК';
+  const subtitle=window.SDTest.active()?'Тестовый выпуск · ответы в отдельном хранилище':organizerMode?'Пробный просмотр · без сохранения':active?'15 вопросов + 2 игры':today==='past'?(done?'Пройденный выпуск — печать сохранена':'Время выпуска закончилось'):'Только '+SHORT[i]+', с 09:00 до 23:59 МСК';
   const status=window.SDTest.active()?(done?'✓ Пройдено':'🔧 Играть'):organizerMode?'👁 Смотреть':active?(done?'✓ Завершён':'Играть ♡'):today==='past'?(done?'✓ Печать':'Истёк'):today==='future'?'🔒 Скоро':'🔒';
   html+='<button type="button" class="day-card" data-open="'+i+'"'+(active?'':' disabled')+'>'
    +'<span class="day-icon">'+ICONS[i]+'</span><span><strong>'+SHORT[i]+' · '+CAPTIONS[i]+'</strong><small>'+subtitle+'</small></span>'
@@ -232,6 +263,7 @@ function renderHome(){
  html+='<p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
+ const arcade=root.querySelector('#open-dino');if(arcade)arcade.addEventListener('click',openDino);
  const retry=root.querySelector('#clock-retry');
  if(retry)retry.addEventListener('click',()=>syncClock(true));
  root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open),organizerMode)));
@@ -247,6 +279,7 @@ async function openDay(i,asPreview=false){
  const isPreview=asPreview&&organizerMode&&Number.isInteger(i)&&i>=0&&i<DAYS.length;
  if(!isPreview&&!available(i))return showUnavailable();
  if(working)return;
+ window.DailyDino.stop();arcadeOpen=false;previewInterludes=new Set();
  working=true;previewMode=isPreview;current=i;episode=null;root.dataset.theme=COLORS[i];
  root.innerHTML='<div class="kicker">ВЫПУСК '+(i+1)+'</div><h2>Загружаем твою главу… ♡</h2><p>Ещё мгновение — и начнём.</p>';
  try{
@@ -261,7 +294,7 @@ async function openDay(i,asPreview=false){
   const st=state(),saved=Array.isArray(st.answers[i])?st.answers[i]:[];
   answers=previewMode?[]:(saved.length<=15?saved.slice():[]);
   step=answers.length;working=false;
-  if(step>=15){markComplete();showComplete()}else renderQuestion();
+  if(step>=15){markComplete();showComplete()}else if(!showInterludeIfReady())renderQuestion();
  }catch(e){
   working=false;
   root.innerHTML='<div class="kicker">НЕ ПОЛУЧИЛОСЬ ОТКРЫТЬ</div><h2>Глава пока не загрузилась</h2>'
@@ -369,7 +402,7 @@ function recordAnswer(value){
  next.addEventListener('click',()=>{
   if(!canContinue())return showUnavailable();
   step=answers.length;
-  if(step===15){markComplete();showComplete()}else renderQuestion();
+  if(step===15){markComplete();showComplete()}else if(!showInterludeIfReady())renderQuestion();
  });
  if(area)area.appendChild(next);
 }
@@ -387,6 +420,7 @@ function showComplete(openPoemNow=false){
    '<button type="button" class="btn" id="daily-reopen-poem">🎧 Открыть моё стихотворение ♡</button>'+
    '<span>В конце игры оно появляется само. Потом его всегда можно открыть здесь снова.</span></div>'
   +'<div id="daily-poetry-card"></div>'
+  +'<div id="daily-secret-host"></div>'
   +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
   +window.DailyCouple.portrait(i===0?null:episode,answers)
@@ -395,6 +429,7 @@ function showComplete(openPoemNow=false){
   +(window.SDTest.active()?'<button type="button" class="btn" id="sd-next-full-test">'+(i===DAYS.length-1?'🚗 Перейти к полному GPS-квесту':'Следующий выпуск ('+SHORT[i+1]+') →')+'</button>':'');
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
  window.DailyCouple.bind(root,chosen,state);
+ window.DailyPlay.mountSecret(root.querySelector('#daily-secret-host'),DAYS[i],{preview:previewMode,canPlay:canContinue});
  window.DailyPoetry.completion(root.querySelector('#daily-poetry-card'),DAYS[i],previewMode||organizerMode);
  root.querySelector('#daily-reopen-poem').addEventListener('click',()=>window.DailyPoetry.openAfterQuiz(DAYS[i]));
  if(openPoemNow)window.DailyPoetry.openAfterQuiz(DAYS[i]);
@@ -423,12 +458,12 @@ async function syncClock(showLoading){
  }finally{
   clockLoading=false;
   if(current>=0 && !canContinue())showUnavailable();
-  else if(current<0&&!resumeSavedDaily())renderHome();
+  else if(current<0&&!arcadeOpen&&!resumeSavedDaily())renderHome();
  }
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncClock(false)});
 window.addEventListener('focus',()=>syncClock(false));
-setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0&&!archiveRequested())renderHome()},30000);
+setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0&&!arcadeOpen&&!archiveRequested())renderHome()},30000);
 setInterval(()=>syncClock(false),120000);
 document.getElementById('host-daily-button').addEventListener('click',()=>{
  if(window.SDTest.active()){window.alert('Полное тестовое прохождение уже активно. Для выхода используй панель сверху.');return;}
