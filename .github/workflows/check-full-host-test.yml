@@ -13,6 +13,7 @@ on:
       - "couple-app.js"
       - "daily-couple.js"
       - "scripts/check-couple-tests.mjs"
+      - "scripts/check-couple-browser.mjs"
       - "story-flow.css"
       - "host-full-test.css"
       - "scripts/check-swipe-layout.mjs"
@@ -37,8 +38,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install temporary DOM test environment
+        run: npm install --no-save --no-package-lock jsdom@26.1.0
       - name: Verify isolated complete walkthrough
         run: |
           node scripts/check-full-host-test.mjs
           node scripts/check-swipe-layout.mjs
           node scripts/check-couple-tests.mjs
+          node scripts/check-couple-browser.mjs
