@@ -21,7 +21,7 @@ for(const part of [
  "confirmMini(()=>missionAction(", "confirmMini(()=>completePrank(", "confirmMini(()=>questAction(",
  "const importantChapter=[2,3,5,7].includes(stage);",
  "el.addEventListener('click',()=>parkAction(el.dataset.parkAction))",
- "el.addEventListener('click',()=>chooseRadioAnswer('yes'))"
+ "radioYes.addEventListener('click',()=>chooseRadioAnswer('yes'))"
  ]) assert.ok(html.includes(part),'Missing selective confirmation rule: '+part);
 assert.ok(flow.includes("last?'Перейти к следующей главе →':'Далее →'"),'Last page must say next chapter');
 assert.ok(flow.includes("duplicate.hidden=last&&hasNext"),'The legacy forward button must not duplicate navigation');
