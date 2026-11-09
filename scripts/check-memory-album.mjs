@@ -86,19 +86,21 @@ function landing(seed){
  return e;
 }
 const before=landing({[K.date]:'sat',[K.invite]:'1'});
-assert.equal(before.doc.querySelector('#resume-story-link')?.getAttribute('href'),'daily.html');
+assert.equal(before.doc.querySelector('#story-resume-link')?.getAttribute('href'),'daily.html');
+assert.ok(before.doc.querySelector('#story-resume-link')?.textContent.includes('Продолжить нашу историю'));
+
 before.dom.window.close();
-const during=landing({[K.date]:'sat',[K.invite]:'1','sd2810-host-v3':'1'});
-assert.equal(during.doc.querySelector('#resume-story-link')?.getAttribute('href'),'secret_date_game_luga.html');
+const during=landing({[K.date]:'sat',[K.invite]:'1',[K.route]:'6','sd2810-host-v3':'1'});
+assert.equal(during.doc.querySelector('#story-resume-link')?.getAttribute('href'),'secret_date_game_luga.html');
 during.dom.window.close();
 const after=landing({...done(),'sd2810-host-v3':'1'});
-assert.equal(after.doc.querySelector('#resume-story-link')?.getAttribute('href'),'our-day.html');
+assert.equal(after.doc.querySelector('#story-resume-link')?.getAttribute('href'),'our-day.html');
 after.dom.window.close();
 const testSeed={'sd2810-host-v3':'1','sd2810-full-host-test-v1':'1',
  ['sd2810-full-test-data:'+K.date]:'sun',
  ['sd2810-full-test-data:'+K.invite]:'1'};
 const hostStart=landing(testSeed);
-assert.equal(hostStart.doc.querySelector('#resume-story-link')?.getAttribute('href'),'daily.html');
+assert.equal(hostStart.doc.querySelector('#story-resume-link')?.getAttribute('href'),'daily.html');
 hostStart.dom.window.close();
 const game=read('secret_date_game_luga.html');
 assert.ok(game.includes('completeMemory()'));
