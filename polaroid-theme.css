@@ -100,3 +100,26 @@ body.polaroid-site .footer .scrap-daily-link{font-size:12px}
 @media(min-width:720px){body.polaroid-site .shell{width:min(100%,570px)}body.polaroid-site main:not(#app){width:min(100%,505px)}}
 @media(max-width:370px){body.polaroid-site .shell{padding-left:12px;padding-right:12px}body.polaroid-site .card{padding:25px 17px!important}body.polaroid-site .scrap-rows{gap:6px}body.polaroid-site .photo-certificate{padding:10px}}
 @media(prefers-reduced-motion:reduce){body.polaroid-site .ambient,body.polaroid-site .petal,body.polaroid-site .bloom{animation:none}}
+
+
+/* Route category selection, endgame, and forms use paper cards too. */
+body.polaroid-site .category-option,body.polaroid-site .secret-option{color:#703b53;background:linear-gradient(115deg,#fffaf6,#fae8e9);border:1px solid #dcb8c0;box-shadow:0 4px 15px #a97a8915;border-radius:13px}
+body.polaroid-site .category-option:hover,body.polaroid-site .category-option:focus-visible,body.polaroid-site .secret-option:hover,body.polaroid-site .secret-option:focus-visible{background:#f6dce4}
+body.polaroid-site .category-option strong,body.polaroid-site .secret-option strong{color:#733a53}
+body.polaroid-site .category-option small,body.polaroid-site .secret-option small{color:#8b6477}
+body.polaroid-site .start-hint{background:#fce9e8;color:#804761;border-color:#dcb7ba}
+body.polaroid-site .gate-counter{color:#9b5573}
+body.polaroid-site .host-config label{color:#70415a}
+body.polaroid-site .host-config .group-name{color:#95506c}
+body.polaroid-site .host-config button{background:#e8c7d2;color:#6e304a;border-color:#c893a7}
+body.polaroid-site .host-buttons button:last-child{background:#f0d3df;color:#71374f}
+body.polaroid-site .status{color:#975775}
+body.polaroid-site #manual-code,body.polaroid-site #movie-title,body.polaroid-site #movie-time,body.polaroid-site #movie-finish-code{background:#fffaf5!important;color:#663b51!important;border:1px solid #d0a3b5!important}
+body.polaroid-site #manual-code::placeholder,body.polaroid-site #movie-title::placeholder,body.polaroid-site #movie-finish-code::placeholder{color:#967083}
+body.polaroid-site .radio-card .status{color:#98516e}
+body.polaroid-site .scanner{background:radial-gradient(circle,#f6dfe6,#fff9f3);border-color:#dfbbc6}
+body.polaroid-site .scanner:before{border-color:#bc87a1;box-shadow:0 0 0 18px #c17e971c,0 0 0 34px #c17e970d}
+body.polaroid-site .host-buttons button:focus-visible,body.polaroid-site .category-option:focus-visible,body.polaroid-site .secret-option:focus-visible{outline:3px solid #a85678}
+body.polaroid-site .secret-input,body.polaroid-site .form-label{color:#753d59}
+body.polaroid-site .progress .dot.done{background:#d58fab}
+body.polaroid-site .stamp,.polaroid-site .mission-stamp{color:#aa5976}
