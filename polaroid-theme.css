@@ -1,0 +1,102 @@
+/* Операция 28.10 — warm scrapbook + Polaroid shared visual system */
+:root{color-scheme:light;--scrap-cream:#fff7ef;--scrap-paper:#fffaf4;--scrap-ink:#55283d;--scrap-rose:#a94c70;--scrap-rose2:#d37596;--scrap-rose-soft:#f8dce2;--scrap-gold:#b28158;--scrap-muted:#806575;--scrap-line:#d6afb8;--scrap-shadow:0 21px 55px rgba(93,44,60,.16)}
+body.polaroid-site{color:var(--scrap-ink);background:radial-gradient(ellipse at 8% 0%,#f9d4d3b0,transparent 42%),radial-gradient(ellipse at 98% 94%,#f1c0c9a6,transparent 42%),repeating-linear-gradient(0deg,transparent 0 12px,#dfb1b111 12px 13px),#f7ede6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+body.polaroid-site:before{z-index:0;opacity:.16;background-image:radial-gradient(#975064 0.7px,transparent .7px);background-size:18px 18px;mask-image:none}
+body.polaroid-site .ambient{opacity:.13;filter:blur(88px)}
+body.polaroid-site .a1{background:#cb718e}
+body.polaroid-site .a2{background:#c59b8c}
+body.polaroid-site .petal{color:#c6688c;opacity:.40}
+body.polaroid-site .shell,body.polaroid-site main{position:relative;z-index:1}
+body.polaroid-site .brand,body.polaroid-site .monogram{color:#8d4e67;font-weight:850;letter-spacing:2px}
+body.polaroid-site .brand:before,body.polaroid-site .brand:after{background:#c998a7}
+body.polaroid-site .tag{border-color:#d7a8b6;background:#fff5eccc;color:#88536a}
+body.polaroid-site .card{color:var(--scrap-ink)!important;background:linear-gradient(145deg,#fffbf7 0%,#fff0ee 52%,#fcf6ec 100%)!important;border:1px solid #ddb2bc!important;border-radius:19px!important;box-shadow:var(--scrap-shadow),0 0 0 8px rgba(255,250,244,.46)!important;backdrop-filter:none!important}
+body.polaroid-site .card:before{pointer-events:none;background:radial-gradient(circle,#facbd155,transparent 67%);opacity:.7}
+body.polaroid-site .card:after{color:#c57b98!important;opacity:.52}
+body.polaroid-site .eyebrow,body.polaroid-site .label{color:#a65370}
+body.polaroid-site .hero,body.polaroid-site h1,body.polaroid-site h2,body.polaroid-site h3{color:#57263c}
+body.polaroid-site .hero em,body.polaroid-site .accent{color:#a34c6f}
+body.polaroid-site .lead,body.polaroid-site .desc,body.polaroid-site .small,body.polaroid-site .hint{color:#765667}
+body.polaroid-site .serif{font-family:Georgia,"Times New Roman",serif}
+body.polaroid-site .button.yes,body.polaroid-site .btn.primary{background:linear-gradient(135deg,#b34b73,#934363)!important;color:#fff9f6!important;box-shadow:0 9px 22px rgba(164,63,99,.21)!important;border:1px solid #ac6181}
+body.polaroid-site .button.no,body.polaroid-site .btn.second,body.polaroid-site .btn.ghost{background:#fffaf3!important;color:#884760!important;border:1px solid #dbadbe!important}
+body.polaroid-site .btn,body.polaroid-site .button{border-radius:13px!important;min-height:49px;box-shadow:none}
+body.polaroid-site .btn:focus-visible,body.polaroid-site button:focus-visible,body.polaroid-site input:focus-visible{outline:3px solid #be7296;outline-offset:2px}
+body.polaroid-site .mini,body.polaroid-site .details,body.polaroid-site .coords,body.polaroid-site .date-confirm{background:#fff9f2!important;color:#61384b!important;border:1px solid #e7c9c4!important;border-radius:15px!important;box-shadow:0 6px 20px #9f6b6a0d}
+body.polaroid-site .mini p,body.polaroid-site .coords p{color:#765668}
+body.polaroid-site .note{background:#ffeaf0;color:#8b5068;border-left-color:#bb6e87}
+body.polaroid-site .route-tag{background:#f5e1e4;color:#844760;border-color:#d8adba}
+body.polaroid-site .hline{background:#debdbe}
+body.polaroid-site .seal{background:radial-gradient(circle at 30% 24%,#ffb9ca,#b55379 76%)}
+body.polaroid-site .bloom{filter:drop-shadow(0 6px 7px #bf8a9b34)}
+body.polaroid-site .footer,body.polaroid-site footer{color:#82596b}
+body.polaroid-site .footer a,body.polaroid-site .footer button,body.polaroid-site .link,body.polaroid-site .change-date{color:#a44b70}
+body.polaroid-site .progress .dot,body.polaroid-site .dot{background:#d9bdc4}
+body.polaroid-site .dot.on,body.polaroid-site .progress .dot.active{background:#ae557a;border-color:#ae557a}
+body.polaroid-site .q-number{background:#f8dfe6;color:#a54870;border-color:#e3b8c7}
+body.polaroid-site .secret-input,body.polaroid-site .code-row input,body.polaroid-site .host-config input{background:#fffdfa!important;color:#5d3145!important;border:1px solid #d5aabd!important}
+body.polaroid-site .date-option{background:#fffbf4;color:#5a3545;border-color:#dcbdc3}
+body.polaroid-site .date-option strong,body.polaroid-site .detail strong{color:#5c2b44}
+body.polaroid-site .detail + .detail{border-color:#ead0d1}
+body.polaroid-site .stamp{border-color:#bb6a86;color:#a14e6b;background:#fff3ed}
+body.polaroid-site .unlock{background:linear-gradient(125deg,#fffbf5,#f6dee5);border:1px dashed #c48a9e;color:#713e54;border-radius:15px}
+body.polaroid-site .unlock-description,body.polaroid-site .countdown{color:#875a6f}
+body.polaroid-site .mini.mission-panel{background:linear-gradient(135deg,#fff7f2,#fbe5e8)!important;border:1px solid #deb3bf!important}
+body.polaroid-site .mission-panel p,body.polaroid-site .mission-note{color:#775467!important}
+body.polaroid-site .mission-eyebrow{color:#af587b}
+body.polaroid-site .mission-letter{background:linear-gradient(130deg,#fffefa,#faefdc);border-color:#d6aa83;color:#6d4655;box-shadow:0 10px 18px #9c71741c}
+body.polaroid-site .mission-stamp{color:#a85776;border-color:#a85776}
+body.polaroid-site .ticket{box-shadow:0 13px 32px #a7797a30;background:linear-gradient(120deg,#fffbf6,#f7d8df)}
+body.polaroid-site .ticket:before,body.polaroid-site .ticket:after{background:#fff4ec}
+body.polaroid-site .photo-certificate{background:linear-gradient(145deg,#fffaf5,#f9e5e5);border-color:#d29dab;box-shadow:0 10px 25px #bb809329}
+body.polaroid-site .photo-certificate-head,body.polaroid-site .photo-certificate-head h3,body.polaroid-site .photo-certificate-foot{color:#6b3049}
+body.polaroid-site .photo-certificate-head p{color:#9a6e7e}
+body.polaroid-site .photo-tile{border:8px solid #fffdfa;background:#fffdfa;border-bottom-width:0;border-radius:2px;box-shadow:0 5px 13px #75445a2c}
+body.polaroid-site .photo-tile b{color:#835268}
+body.polaroid-site .photo-tile.empty{border:2px dashed #c99eac;border-radius:10px}
+body.polaroid-site .photo-tile button{background:#fff2ef;color:#8f5270;border-color:#ead2cd}
+body.polaroid-site .photo-backup{background:#fff6f1;color:#8e506c;border-color:#ca9fae}
+body.polaroid-site .camera-frame{background:#fffbf6;color:#65394e;border-color:#d6a9b6}
+body.polaroid-site .camera-head{color:#6d354e}
+body.polaroid-site .camera-help{color:#7b596b}
+body.polaroid-site .camera-close{background:#a65574;color:white}
+body.polaroid-site .camera-shutter{background:#a34e71;color:white}
+body.polaroid-site .camera-flip{background:#fbe8eb;color:#753b57;border-color:#d0a1b1}
+body.polaroid-site .host-bar,body.polaroid-site .host-config{background:#fff7f0;color:#6b4054;border-color:#d0a0ad}
+body.polaroid-site .host-buttons button{background:#f6e4e7;color:#7b3a57;border-color:#d7abba}
+body.polaroid-site .host-bar .label{color:#8c5369}
+body.polaroid-site .heart-rain i{color:#b85c80}
+body.polaroid-site .final-date{background:#fff6ed!important;color:#6e3a53!important;border-color:#dfbec0!important}
+body.polaroid-site .final-date b,body.polaroid-site .final-date span{color:#704056!important}
+body.polaroid-site .mission-award-line{color:#61364e}
+body.polaroid-site .mission-award-line .award-sub{color:#8d6c7b}
+body.polaroid-site .radio-card{background:linear-gradient(120deg,#fff5ec,#f9e3e8)!important;color:#5d3047!important;border-color:#d1a4b4!important}
+body.polaroid-site .radio-screen{background:#2d2438!important;color:#f9dfea!important}
+body.polaroid-site .radio-screen p,body.polaroid-site .radio-screen strong{color:#ffe2ef!important}
+body.polaroid-site .radio-head,body.polaroid-site .radio-led{color:#985275}
+body.polaroid-site .radio-answers .btn.second{color:#874b64}
+body.polaroid-site .mission-terminal{background:#2c2533;color:#f3c8d9}
+body.polaroid-site .mission-glitch{color:#9a4365;text-shadow:2px 1px #f5b7ce,-2px -1px #bca7c9}
+body.polaroid-site #app[data-chapter="radio"]{background:linear-gradient(150deg,#fffbf7,#fae9e3,#f6eef0)!important}
+body.polaroid-site #app[data-chapter="photo"]{background:linear-gradient(160deg,#fffdfa,#ffe7e7 62%,#fff6eb)!important}
+body.polaroid-site #app[data-chapter="letter"]{background:linear-gradient(150deg,#fffcf7,#fcf1df)!important}
+body.polaroid-site #app[data-chapter="glitch"]{background:linear-gradient(145deg,#fffcf8,#eee2eb)!important}
+body.polaroid-site #app[data-chapter="finale"]{background:linear-gradient(145deg,#fffcf5,#ffdee8)!important}
+body.polaroid-site .scrap-ribbon{display:block;position:relative;margin:4px auto 18px;padding:10px 15px;width:fit-content;background:#f2d1d7;color:#803a56;box-shadow:2px 5px 7px #aa789420;transform:rotate(-2deg);font:italic 19px/1.2 Georgia,serif}
+body.polaroid-site .scrap-ribbon:before{content:"";position:absolute;width:37px;height:14px;background:#d1a9a085;top:-8px;left:-10px;transform:rotate(-27deg)}
+body.polaroid-site .scrap-polaroid{padding:12px 12px 33px;background:#fffefa;box-shadow:0 10px 27px #9b657236;transform:rotate(3deg);width:min(100%,255px);margin:5px auto 20px;border:1px solid #f0e5df}
+body.polaroid-site .scrap-polaroid .scrap-photo{height:150px;border-radius:1px;background:radial-gradient(circle at 75% 25%,#ffd4c1,transparent 20%),linear-gradient(155deg,#e2a3b4,#b58aa8 45%,#6e6b8a);display:grid;place-items:center;font-size:55px;color:#fff8ec}
+body.polaroid-site .scrap-polaroid figcaption{font:italic 17px Georgia,serif;color:#81485e;text-align:center;margin-top:12px}
+body.polaroid-site .scrap-stamp{border:2px dashed #b76d83;color:#994a68;background:#fff7ed;padding:7px 12px;transform:rotate(2deg);display:inline-block;border-radius:5px;font-size:11px;font-weight:800;letter-spacing:1.3px}
+body.polaroid-site .scrap-badge{background:#fae3e7;border:1px solid #d8adba;border-radius:999px;padding:6px 10px;color:#914965;font-size:11px;font-weight:800;display:inline-flex;gap:6px;align-items:center}
+body.polaroid-site .scrap-rows{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+body.polaroid-site .scrap-rows>div{padding:11px;background:#fff7ed;border:1px dashed #dbb8b6;border-radius:11px;font-size:12px}
+body.polaroid-site .scrap-rows strong{display:block;font:18px Georgia,serif;color:#843e59;margin-top:4px}
+body.polaroid-site .scrap-daily-link{display:flex;align-items:center;gap:12px;justify-content:center;width:100%;text-decoration:none;color:#76344e;background:linear-gradient(125deg,#fbe8e5,#fffaf1);border:1px solid #d7aeb8;border-radius:16px;padding:16px 13px;margin:14px 0 18px;box-shadow:0 6px 17px #ba8c9b25}
+body.polaroid-site .scrap-daily-link strong{display:block;font-size:15px;color:#7c3d55}
+body.polaroid-site .scrap-daily-link small{display:block;margin-top:4px;font-size:11px;color:#906878}
+body.polaroid-site .scrap-daily-link .scrap-icon{font-size:28px}
+body.polaroid-site .footer .scrap-daily-link{font-size:12px}
+@media(min-width:720px){body.polaroid-site .shell{width:min(100%,570px)}body.polaroid-site main:not(#app){width:min(100%,505px)}}
+@media(max-width:370px){body.polaroid-site .shell{padding-left:12px;padding-right:12px}body.polaroid-site .card{padding:25px 17px!important}body.polaroid-site .scrap-rows{gap:6px}body.polaroid-site .photo-certificate{padding:10px}}
+@media(prefers-reduced-motion:reduce){body.polaroid-site .ambient,body.polaroid-site .petal,body.polaroid-site .bloom{animation:none}}
