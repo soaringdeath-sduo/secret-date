@@ -2,6 +2,7 @@
    Аудио сохраняется вне #app и продолжает играть при смене экранов. */
 (function () {
   'use strict';
+  const localStorage=window.SDTest.storage;
   const STORE='sd2810-soundtrack-v1';
   const DATE='sd2810-selected-day-v1';
   const TRACKS=[
