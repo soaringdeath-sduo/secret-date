@@ -6,6 +6,10 @@ on:
     paths:
       - "index.html"
       - "daily.html"
+      - "our-day.html"
+      - "our-day.css"
+      - "our-day.js"
+      - "scripts/check-memory-album.mjs"
       - "daily-poetry.js"
       - "daily-poetry.css"
       - "poetry-data.json"
@@ -58,3 +62,4 @@ jobs:
           node scripts/check-daily-poetry.mjs
           node scripts/check-deep-walkthrough.mjs
           node scripts/check-resume-memory.mjs
+          node scripts/check-memory-album.mjs
