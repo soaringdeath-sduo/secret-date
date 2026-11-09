@@ -97,6 +97,7 @@ p{line-height:1.65;color:#795d6d}
 .daily-host-link{background:none;border:0;border-top:1px dashed #d8b6be;color:#995d77;padding:13px 9px 5px;font:inherit;font-size:12px;cursor:pointer}
 .daily-preview-note{background:#f9e1e8;color:#874561;border:1px dashed #c0849c;border-radius:11px;padding:12px;margin:12px 0 15px;font-size:12px;font-weight:700;line-height:1.5}
 </style>
+<link rel="stylesheet" href="host-full-test.css?v=1">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -104,8 +105,10 @@ p{line-height:1.65;color:#795d6d}
  <main id="daily-root" class="paper" aria-live="polite"></main>
  <div class="footer">Для Лизы, с любовью и капелькой хитрости ♡<div style="margin-top:14px"><button type="button" id="host-daily-button" class="daily-host-link">🔧 Просмотр для ведущего</button></div></div>
 </div>
+<script src="host-full-test.js?v=1"></script>
 <script>
 'use strict';
+const localStorage=window.SDTest.storage;
 const DATE_KEY='sd2810-selected-day-v1',INVITE_KEY='sd2810-invite-approved-v3',BASE='sd2810-daily-v1';
 const DAYS=[9,10,11,12,13,14],CAPTIONS=['Досье на Игоря','Мини-кросс про любовь','Правда или выдумка','Свидание твоей мечты','Финальный допуск','Последний секрет'];
 const ICONS=['🕵️','✏️','🎞️','💗','🎟️','💌'],COLORS=['rose','cream','lilac','peach','gold','dusk'];
@@ -116,7 +119,7 @@ let organizerMode=false,previewMode=false;
 const HOST_SESSION_KEY='sd2810-host-v3';
 let clockEpoch=null,clockAnchor=0,clockError='',clockLoading=false;
 const chosen=()=>localStorage.getItem(DATE_KEY);
-const numberOfDays=()=>organizerMode?6:chosen()==='sun'?6:5;
+const numberOfDays=()=>window.SDTest.active()||organizerMode?6:chosen()==='sun'?6:5;
 const isInvited=()=>localStorage.getItem(INVITE_KEY)==='1'&&['sat','sun'].includes(chosen());
 const nowTrusted=()=>clockEpoch===null?null:clockEpoch+(performance.now()-clockAnchor);
 const safe=x=>String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -137,14 +140,15 @@ function progressDone(){
 }
 function phase(i){
  if(i<0||i>=numberOfDays())return 'absent';
+ if(window.SDTest.active())return 'today';
  const when=nowTrusted();
  if(when===null)return 'verifying';
  const start=Date.UTC(2026,10,DAYS[i],6,0,0);  // 09:00 MSK
  const end=Date.UTC(2026,10,DAYS[i],21,0,0);  // 00:00 MSK, following day
  return when<start?'future':when>=end?'past':'today';
 }
-const available=i=>isInvited()&&phase(i)==='today';
-const canContinue=()=>previewMode&&organizerMode||available(current);
+const available=i=>window.SDTest.active()||isInvited()&&phase(i)==='today';
+const canContinue=()=>window.SDTest.active()||previewMode&&organizerMode||available(current);
 function intro(){
  return '<div class="kicker">НАШ МАЛЕНЬКИЙ СЕРИАЛ • ОПЕРАЦИЯ 28.10</div>'
   +'<h1>Каждый день —<br><em>немного любви ♡</em></h1>'
@@ -159,7 +163,8 @@ function renderHome(){
   return;
  }
  let html=intro()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
- if(nowTrusted()===null){
+ if(window.SDTest.active())html+='<div class="daily-preview-note">🔧 ПОЛНЫЙ ПРОХОД: пройди все 90 вопросов по очереди. Ответы сохраняются отдельно от данных Лизы. После последней главы откроется маршрут.</div>';
+ if(nowTrusted()===null&&!window.SDTest.active()){
   html+='<div class="daily-clock-warning">🕒 '+safe(clockError||'Проверяем текущее московское время по сайту…')
    +'<p style="font-size:12px">Чтобы нельзя было открыть все дни сменой даты телефона, вход в игры работает только после проверки времени.</p>'
    +'<button type="button" id="clock-retry" class="btn">Повторить проверку времени</button></div>';
@@ -168,8 +173,8 @@ function renderHome(){
  const st=state();
  for(let i=0;i<numberOfDays();i++){
   const today=phase(i),done=st.done[i]===true,active=organizerMode||today==='today';
-  const subtitle=organizerMode?'Пробный просмотр · без сохранения':active?'15 вопросов · 5–7 минут':today==='past'?(done?'Пройденный выпуск — печать сохранена':'Время выпуска закончилось'):'Только '+SHORT[i]+', с 09:00 до 23:59 МСК';
-  const status=organizerMode?'👁 Смотреть':active?(done?'✓ Завершён':'Играть ♡'):today==='past'?(done?'✓ Печать':'Истёк'):today==='future'?'🔒 Скоро':'🔒';
+  const subtitle=window.SDTest.active()?'Тестовый выпуск · ответы в отдельном хранилище':organizerMode?'Пробный просмотр · без сохранения':active?'15 вопросов · 5–7 минут':today==='past'?(done?'Пройденный выпуск — печать сохранена':'Время выпуска закончилось'):'Только '+SHORT[i]+', с 09:00 до 23:59 МСК';
+  const status=window.SDTest.active()?(done?'✓ Пройдено':'🔧 Играть'):organizerMode?'👁 Смотреть':active?(done?'✓ Завершён':'Играть ♡'):today==='past'?(done?'✓ Печать':'Истёк'):today==='future'?'🔒 Скоро':'🔒';
   html+='<button type="button" class="day-card" data-open="'+i+'"'+(active?'':' disabled')+'>'
    +'<span class="day-icon">'+ICONS[i]+'</span><span><strong>'+SHORT[i]+' · '+CAPTIONS[i]+'</strong><small>'+subtitle+'</small></span>'
    +'<span class="day-status">'+status+'</span></button>';
@@ -314,14 +319,19 @@ function showComplete(){
  markComplete();
  const i=current;
  root.dataset.theme=COLORS[i];
- root.innerHTML='<div class="kicker">'+(previewMode?'ПРОВЕРКА ВЕДУЩЕГО · ВЫПУСК '+(i+1):'ВЫПУСК '+(i+1)+' ЗАВЕРШЁН')+'</div>'
+ root.innerHTML='<div class="kicker">'+(window.SDTest.active()?'ПОЛНЫЙ ТЕСТ · ВЫПУСК '+(i+1):previewMode?'ПРОВЕРКА ВЕДУЩЕГО · ВЫПУСК '+(i+1):'ВЫПУСК '+(i+1)+' ЗАВЕРШЁН')+'</div>'
   +'<h1>'+(previewMode?'Проверка<br><em>завершена ♡</em>':'Миссия<br><em>пройдена! ♡</em>')+'</h1>'
   +'<div class="daily-frame" aria-hidden="true"><div class="daily-frame-inner">'+ICONS[i]+'</div><figcaption>'+safe(CAPTIONS[i])+'</figcaption></div>'
   +'<p>'+(previewMode?'Все 15 вопросов просмотрены, результаты Лизы не изменились.':'Все <b>15 вопросов</b> пройдены. Ты получила ещё одну печать в нашем романтическом альбоме!')+'</p>'
   +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
-  +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>';
+  +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>'
+  +(window.SDTest.active()?'<button type="button" class="btn" id="sd-next-full-test">'+(i===DAYS.length-1?'🚗 Перейти к полному GPS-квесту':'Следующий выпуск ('+SHORT[i+1]+') →')+'</button>':'');
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
+ if(window.SDTest.active())root.querySelector('#sd-next-full-test').addEventListener('click',()=>{
+   if(i===DAYS.length-1)window.SDTest.navTo('secret_date_game_luga.html');
+   else openDay(i+1,false);
+ });
 }
 async function syncClock(showLoading){
  if(clockLoading)return;
@@ -351,6 +361,7 @@ window.addEventListener('focus',()=>syncClock(false));
 setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0)renderHome()},30000);
 setInterval(()=>syncClock(false),120000);
 document.getElementById('host-daily-button').addEventListener('click',()=>{
+ if(window.SDTest.active()){window.alert('Полное тестовое прохождение уже активно. Для выхода используй панель сверху.');return;}
  const button=document.getElementById('host-daily-button');
  if(organizerMode){
   organizerMode=false;previewMode=false;
@@ -367,7 +378,17 @@ document.getElementById('host-daily-button').addEventListener('click',()=>{
  button.textContent='✕ Выйти из режима ведущего';
  renderHome();
 });
-persist(state());renderHome();syncClock(true);
+persist(state());
+if(window.SDTest.active()){
+ organizerMode=false;previewMode=false;renderHome();
+ const st=state();const first=DAYS.findIndex((_,i)=>st.done[i]!==true);
+ if(first>=0)openDay(first,false);
+ else showCompleteFromFullTest();
+}else{renderHome();syncClock(true);}
+function showCompleteFromFullTest(){
+ root.innerHTML=intro()+'<div class="daily-preview-note">✓ Все шесть тестовых выпусков пройдены. Можешь продолжать проверку маршрута с самого начала.</div><button type="button" class="btn" id="sd-full-route">🚗 Начать GPS-квест</button>';
+ root.querySelector('#sd-full-route').addEventListener('click',()=>window.SDTest.navTo('secret_date_game_luga.html'));
+}
 
 </script>
 </body></html>
