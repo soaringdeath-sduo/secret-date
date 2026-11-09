@@ -5,7 +5,7 @@ import {JSDOM} from 'jsdom';
 const src=p=>fs.readFileSync(p,'utf8');
 const page=src('daily.html'),mini=src('daily-play.js'),dino=src('daily-dino.js'),css=src('daily-play.css');
 new Function(mini);new Function(dino);
-assert.ok(page.includes('daily-play.js?v=1')&&page.includes('daily-dino.js?v=1')&&page.includes('daily-play.css?v=1'));
+assert.ok(page.includes('daily-play.js?v=1')&&page.includes('daily-dino.js?v=1')&&page.includes('daily-play.css?v=2'));
 assert.ok(page.includes('window.DailyPlay.mountInterlude('),'Interludes must be integrated with quiz resume');
 assert.ok(page.includes('window.DailyPlay.mountSecret('),'Episode completion should expose secret');
 assert.ok(page.includes('window.DailyDino.mount('),'Arcade must be playable from daily home');
