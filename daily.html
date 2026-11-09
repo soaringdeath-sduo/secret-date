@@ -109,6 +109,7 @@ p{line-height:1.65;color:#795d6d}
 .couple-answer-card strong{color:#7f4460;font-size:14px}
 </style>
 <link rel="stylesheet" href="host-full-test.css?v=2">
+<link rel="stylesheet" href="daily-poetry.css?v=1">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -119,6 +120,7 @@ p{line-height:1.65;color:#795d6d}
 <script src="host-full-test.js?v=1"></script>
 <script src="couple-core.js?v=1"></script>
 <script src="daily-couple.js?v=1"></script>
+<script src="daily-poetry.js?v=1"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
@@ -194,6 +196,7 @@ function renderHome(){
  }
  html+='</div>';
  if(window.DailyCouple.ready(chosen(),state()))html+=window.DailyCouple.invitation();
+ html+='<div id="daily-poetry-library"></div>';
  html+='<p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
@@ -201,6 +204,7 @@ function renderHome(){
  if(retry)retry.addEventListener('click',()=>syncClock(true));
  root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open),organizerMode)));
  window.DailyCouple.bind(root,chosen,state);
+ window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),organizerMode);
 }
 function showUnavailable(){
  current=-1;episode=null;renderHome();
@@ -341,12 +345,14 @@ function showComplete(){
   +'<p>'+(previewMode?'Все 15 вопросов просмотрены, результаты Лизы не изменились.':'Все <b>15 вопросов</b> пройдены. Ты получила ещё одну печать в нашем романтическом альбоме!')+'</p>'
   +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
+  +'<div id="daily-poetry-card"></div>'
   +window.DailyCouple.portrait(i===0?null:episode,answers)
   +(i===(window.CoupleTests.days(chosen()).slice(-1)[0]-9)&&window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')
   +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>'
   +(window.SDTest.active()?'<button type="button" class="btn" id="sd-next-full-test">'+(i===DAYS.length-1?'🚗 Перейти к полному GPS-квесту':'Следующий выпуск ('+SHORT[i+1]+') →')+'</button>':'');
  root.querySelector('#back-to-list').addEventListener('click',renderHome);
  window.DailyCouple.bind(root,chosen,state);
+ window.DailyPoetry.completion(root.querySelector('#daily-poetry-card'),DAYS[i],previewMode||organizerMode);
  if(window.SDTest.active())root.querySelector('#sd-next-full-test').addEventListener('click',()=>{
    if(i===DAYS.length-1)window.SDTest.navTo('secret_date_game_luga.html');
    else openDay(i+1,false);
@@ -405,8 +411,9 @@ if(window.SDTest.active()){
  else showCompleteFromFullTest();
 }else{renderHome();syncClock(true);}
 function showCompleteFromFullTest(){
- root.innerHTML=intro()+'<div class="daily-preview-note">✓ Все шесть тестовых выпусков пройдены. Можешь продолжать проверку маршрута с самого начала.</div>'+(window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')+'<button type="button" class="btn" id="sd-full-route">🚗 Начать GPS-квест</button>';
+ root.innerHTML=intro()+'<div class="daily-preview-note">✓ Все шесть тестовых выпусков пройдены. Можешь продолжать проверку маршрута с самого начала.</div>'+(window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')+'<div id="daily-poetry-library"></div><button type="button" class="btn" id="sd-full-route">🚗 Начать GPS-квест</button>';
  window.DailyCouple.bind(root,chosen,state);
+ window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),true);
  root.querySelector('#sd-full-route').addEventListener('click',()=>window.SDTest.navTo('secret_date_game_luga.html'));
 }
 
