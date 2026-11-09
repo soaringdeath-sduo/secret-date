@@ -1,0 +1,33 @@
+name: Full host walkthrough checks
+
+on:
+  push:
+    branches: [main, "feature/**"]
+    paths:
+      - "index.html"
+      - "daily.html"
+      - "secret_date_game_luga.html"
+      - "story-flow.js"
+      - "soundtrack.js"
+      - "host-full-test.js"
+      - "daily-content/**"
+      - "scripts/check-full-host-test.mjs"
+      - ".github/workflows/check-full-host-test.yml"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-host-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify isolated complete walkthrough
+        run: node scripts/check-full-host-test.mjs
