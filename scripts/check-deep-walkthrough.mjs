@@ -66,6 +66,29 @@ function click(doc,sel,about){
  assert.ok(!el.disabled,about+': button disabled '+sel);
  el.click();return el;
 }
+function invitation(day){
+ const html=file('index.html');
+ const raw={'sd2810-host-v3':'1','sd2810-full-host-test-v1':'1'};
+ const d=browser(html,'https://soaringdeath-sduo.github.io/secret-date/index.html?replay=1',raw);
+ for(const part of inline(html))d.w.eval(part);
+ const c=d.document.getElementById('card');
+ click(c,'#start','Open sealed invitation');
+ for(let i=1;i<=5;i++){
+  assert.ok(c.textContent.includes('Вопрос '+i+' из 5'),'Invitation must ask question '+i);
+  click(c,'#yes','Answer invitation');
+ }
+ const form=c.querySelector('#secret-form');assert.ok(form,'Relationship date password must appear');
+ c.querySelector('#secret').value='28.10';
+ form.dispatchEvent(new d.w.Event('submit',{bubbles:true,cancelable:true}));
+ click(c,day==='sat'?'#choose-sat':'#choose-sun','Choose date');
+ assert.equal(d.w.SDTest.storage.getItem('sd2810-selected-day-v1'),day);
+ assert.equal(d.w.SDTest.storage.getItem('sd2810-invite-approved-v3'),'1');
+ assert.ok(c.querySelector('#final'),'Final invitation should render');
+ assert.ok(c.querySelector('#daily-story-link'),'Daily episode link should render');
+ assert.ok(c.textContent.includes('11:30'),'Selected invitation time must remain 11:30');
+ d.dom.window.close();
+ return day;
+}
 async function quizAll(){
  const d=browser(daily,'https://soaringdeath-sduo.github.io/secret-date/daily.html',isolatedSeed('sun'));
  d.loadScripts(['couple-core.js','daily-couple.js','daily-poetry.js']);
@@ -232,6 +255,7 @@ async function route(origin,choice='omchino',category='romance'){
  d.dom.window.close();
  return results;
 }
+console.log('✓ Full invitation and both date choices:',invitation('sat'),invitation('sun'));
 await quizAll();
 const zap=await route('zap');
 const luga=await route('luga');
