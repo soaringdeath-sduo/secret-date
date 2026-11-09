@@ -1,6 +1,6 @@
 /* Операция 28.10 — последовательные главы, свайпы и прогресс */
 .story-slide[hidden]{display:none!important}
-.story-slide{min-width:0;width:100%;position:relative;flex:1;touch-action:pan-y}
+.story-slide{min-width:0;width:100%;position:relative;display:block;flex:none;min-height:0;touch-action:pan-y}
 .story-current.story-swoop{animation:story-swoop .28s cubic-bezier(.2,.7,.2,1) both}
 @keyframes story-swoop{from{opacity:.2;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
 .story-flow-head{margin:0 0 18px;position:relative;z-index:2;background:rgba(255,242,251,.06);border:1px solid rgba(255,209,233,.18);border-radius:13px;padding:10px 11px 9px}
@@ -9,7 +9,7 @@
 .story-screen-count{font-weight:850;white-space:nowrap;color:#ffcedc}
 .story-progress{height:5px;background:rgba(255,230,240,.17);border-radius:99px;overflow:hidden}
 .story-progress-fill{height:100%;background:linear-gradient(90deg,#ec91bb,#ffe0bf);border-radius:inherit;transition:width .22s ease}
-.story-navigation{position:relative;z-index:2;margin-top:auto;padding-top:22px}
+.story-navigation{position:relative;z-index:2;margin:16px 0 0;padding:0}
 .story-nav-actions{display:grid;grid-template-columns:1fr 1.7fr;gap:9px}
 .story-navigation button{border:1px solid rgba(255,208,227,.28);min-height:54px;border-radius:13px;font:800 15px/1.3 system-ui,sans-serif;cursor:pointer}
 .story-nav-previous{background:#ffffff14;color:#ffe5f0}
@@ -17,7 +17,7 @@
 .story-navigation button:disabled{cursor:default;opacity:.42;box-shadow:none}
 .story-nav-status{text-align:center;color:#eec4d8;font:12px/1.55 system-ui,sans-serif;margin:9px 0 0}
 .story-slide .radio-card,.story-slide .mini,.story-slide .coords{max-width:100%}
-.story-slide .spacer{min-height:10px}
+.story-slide .spacer{display:none!important}
 .story-slide .btn{max-width:100%}
 .story-slide .scrap-prank,.story-slide .mission-panel{animation:story-swoop .22s ease both}
 .story-slide .story-song-hint{margin:18px 0 12px;padding:18px 15px;border:1px solid #e7b8cb78;background:linear-gradient(145deg,#3c2544,#271a30);border-radius:17px;text-align:center}
@@ -25,9 +25,50 @@
 .story-song-hint p{color:#efd5e1;font:14px/1.7 system-ui,sans-serif}
 .story-song-hint .btn{width:100%;margin-top:12px}
 .story-song-hint .story-lock-note{font-size:12px;color:#d4abbd}
-#app>.story-slide{display:flex;flex-direction:column}
+#app>.story-slide{display:block}
 #app>.story-slide[hidden]{display:none}
-#app>.story-slide>.spacer{flex:1}
-#app .over>.story-slide{display:flex;flex-direction:column}
+#app>.story-slide>.spacer{display:none}
+#app .over>.story-slide{display:block}
 #app .over>.story-slide[hidden]{display:none}
 @media(prefers-reduced-motion:reduce){.story-current.story-swoop,.story-slide .scrap-prank,.story-slide .mission-panel{animation:none!important}.story-progress-fill{transition:none}}
+
+/* Avoid stretched/empty screens, and never place next/previous behind audio. */
+#app.story-flow-mounted.card{
+ min-height:0;
+ flex:0 0 auto;
+ display:block;
+ padding-bottom:24px;
+}
+#app.story-flow-mounted>.story-slide,
+#app.story-flow-mounted .over>.story-slide{
+ display:block;
+ min-height:0;
+ height:auto;
+ flex:none;
+}
+#app.story-flow-mounted>.story-slide[hidden],
+#app.story-flow-mounted .over>.story-slide[hidden]{display:none!important}
+#app.story-flow-mounted .over{display:block!important;min-height:0;flex:none!important}
+#app.story-flow-mounted .story-navigation{
+ position:relative;
+ bottom:auto;
+ margin:17px 0 0;
+ padding:0;
+}
+#app.story-flow-mounted .story-slide>.spacer{display:none!important}
+#app.story-flow-mounted .story-slide>.btn:last-child{width:100%}
+body.sc-music-available .shell{
+ padding-bottom:calc(174px + env(safe-area-inset-bottom,0px))!important;
+}
+body.sc-music-available #app.story-flow-mounted .story-navigation{
+ scroll-margin-bottom:165px;
+}
+html{scroll-padding-bottom:160px}
+.wheel-frame{max-width:min(100%,420px);margin:12px auto 16px}
+#wheel-spin{width:100%}
+#wheel-status{text-align:center}
+@media(max-width:380px){
+ #app.story-flow-mounted.card{padding-left:17px;padding-right:17px}
+ #app.story-flow-mounted .story-nav-actions{grid-template-columns:1fr 1.5fr;gap:7px}
+ #app.story-flow-mounted .story-navigation button{min-height:48px;font-size:13px}
+}
