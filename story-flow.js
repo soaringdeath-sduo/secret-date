@@ -113,7 +113,7 @@
  }
  function isLast(){return position>=panels.length-1;}
  function statusText(){
-  if(!allowed())return 'Сначала заверши задание на этом экране ♡';
+  if(!allowed())return '🔒 Следующий конверт пока закрыт. Заверши текущий этап ♡';
   if(!isLast())return 'Свайпни влево или нажми «Далее»';
   if(config.hasNext())return 'Глава пройдена — можно идти дальше';
   return 'Выбери действие на экране, чтобы продолжить';
@@ -148,7 +148,7 @@
   prevButton.hidden=position===0;
   if(nav)nav.hidden=nextButton.hidden&&prevButton.hidden;
   nextButton.disabled=!can||(last&&!hasNext);
-  nextButton.textContent=last?'Следующая глава →':'Далее →';
+  nextButton.textContent=can?(last?'Открыть следующую главу →':'Далее →'):'🔒 Конверт закрыт';
   if(status)status.textContent=statusText();
  }
  function next(){
@@ -193,7 +193,13 @@
   panels=segment(root,options.stage);
   if(!panels.length)return;
   makeNav(app);
-  show(Math.min(getStep(),panels.length-1),false);
+  // A previously saved swipe is never authority to jump over a newly locked screen.
+  const requested=Math.min(getStep(),panels.length-1);
+  let safe=requested;
+  if(!(options.host()&&!window.SDTest.active())){
+   for(let i=0;i<requested;i++){if(!options.allow(i)){safe=i;break;}}
+  }
+  show(safe,false);
  }
  function cancelSwipeTarget(target){
   return !!target.closest('button,a,input,textarea,select,label,[role="slider"],.camera-overlay,.wheel-disc,#sc-music-dock');
