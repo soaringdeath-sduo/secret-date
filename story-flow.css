@@ -114,3 +114,10 @@ html{scroll-padding-bottom:160px}
 @keyframes story-confirm-fade{from{opacity:0}to{opacity:1}}
 @media(max-width:360px){.story-confirm-actions{grid-template-columns:1fr}.story-confirm-actions button{min-height:48px}}
 @media(prefers-reduced-motion:reduce){.story-confirm-overlay{animation:none}}
+
+
+/* Once a chapter is complete, show just one forward action in StoryFlow.
+ * The legacy in-content button stays wired for old test flows and fallback. */
+#app.story-flow-mounted .story-slide #go[hidden],
+#app.story-flow-mounted .story-slide #lunch-go[hidden]{display:none!important}
+#app.story-flow-mounted .story-nav-previous[hidden]+.story-nav-next{grid-column:1/-1}
