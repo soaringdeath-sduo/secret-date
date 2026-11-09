@@ -19,7 +19,7 @@ that other services will comply. See ai-policy.txt.
 <meta name="noimageai" content="true">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#160e24">
+  <meta name="theme-color" content="#f7e7e4">
   <meta name="description" content="Персональное приглашение для Бекетовой Елизаветы Васильевны">
   <title>Секретное приглашение для Лизы 💌</title>
   <style>
@@ -173,13 +173,14 @@ that other services will comply. See ai-policy.txt.
     .date-confirm p{font-size:13px;line-height:1.6;color:#ffe1ed;margin:7px 0}.date-confirm .button{display:block;width:100%;margin:12px auto;padding:16px 9px;font-size:14px;text-align:center;text-decoration:none}
     .date-confirm small{font-size:11px;color:#d1b5c8}.change-date{background:none;border:0;color:#ffcade;text-decoration:underline;padding:11px 5px;cursor:pointer;font:inherit;font-size:12px}
   </style>
+  <link rel="stylesheet" href="polaroid-theme.css?v=2">
 </head>
-<body>
+<body class="polaroid-site">
   <div class="ambient a1" aria-hidden="true"></div><div class="ambient a2" aria-hidden="true"></div>
   <span class="petal" aria-hidden="true">✦</span><span class="petal" aria-hidden="true">♡</span>
   <span class="petal" aria-hidden="true">♥</span><span class="petal" aria-hidden="true">✧</span>
   <main>
-    <div class="brand">совершенно секретно · только для неё</div>
+    <div class="brand">♥ ЛИЧНО ДЛЯ ЛИЗЫ · ОПЕРАЦИЯ 28.10</div>
     <section class="card" id="card" aria-live="polite"></section>
     <footer><button id="host-entry" type="button" class="host-entry" aria-label="Подпись открытки">СДЕЛАНО ИГОРЕМ · С ЛЮБОВЬЮ И КАПЕЛЬКОЙ ХИТРОСТИ ♡</button></footer>
   </main>
@@ -234,7 +235,7 @@ that other services will comply. See ai-policy.txt.
         box.innerHTML=`<p class="unlock-title">🔒 Секретный маршрут пока закрыт</p>
           <p class="unlock-description">Твоё приглашение действительно. Игра начнётся ${chosen.short} в ${TIME} по Москве.</p>
           <div class="countdown" role="timer">${formatWait(chosen.startUTC-Date.now())}</div>
-          <p class="unlock-description">До встречи! Не забудь открыть эту страницу в день свидания. ♡</p>`;
+          <p class="unlock-description">Пока ждёшь, заглядывай в ежедневные мини-игры выше. Каждый день — маленький сюрприз. ♡</p>`;
       }
     }
     function enableTicker(){
@@ -261,6 +262,7 @@ that other services will comply. See ai-policy.txt.
       if(ticker!==null){clearInterval(ticker);ticker=null;}
       if(stage===-1) {
         card.innerHTML = `<div class="step">
+          <div class="scrap-ribbon">Маленькая история для нас двоих ♡</div>
           <div class="envelope" aria-hidden="true"><svg viewBox="0 0 180 135" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="e" x2="1" y2="1"><stop stop-color="#fbc1cd"/><stop offset="1" stop-color="#cd648f"/></linearGradient></defs><rect x="8" y="12" width="164" height="113" rx="12" fill="#b76b94"/><path d="M8 26 Q8 12 23 12 H157 Q172 12 172 26 L94 86 Q90 90 86 86Z" fill="#f6bbc9"/><path d="M8 115 L75 66 90 78 105 66 172 115 Q172 125 158 125 H22 Q8 125 8 115Z" fill="url(#e)"/></svg><span class="seal">♥</span></div>
           <p class="eyebrow">персональное уведомление № 2810</p>
           <h1 class="serif">Для самой<br><span class="accent">любимой вредины</span></h1>
@@ -356,6 +358,7 @@ that other services will comply. See ai-policy.txt.
       const shareText=`Игорь, я выбрала ${chosen.week}, ${chosen.short} 2026 года, в 11:30 ❤️ Жду нашего свидания!`;
       const shareLink='https://t.me/share/url?url='+encodeURIComponent('https://soaringdeath-sduo.github.io/secret-date/')+'&text='+encodeURIComponent(shareText);
       card.innerHTML=`<div class="step reveal" id="final">
+        <div class="scrap-ribbon">Особенное приглашение ♡</div>
         <div class="final-heart" aria-hidden="true">♥</div>
         <p class="stamp">✓ личность подтверждена · пароль верный</p>
         <p class="eyebrow">секретное послание раскрыто</p>
@@ -367,6 +370,11 @@ that other services will comply. See ai-policy.txt.
           <div class="detail"><div class="ico">📍</div><div><span class="label">город</span><strong>${CITY}</strong></div></div>
         </div>
         <div class="heartline" aria-hidden="true">♡ ♥ ♡</div>
+        <a href="daily.html" class="scrap-daily-link" id="daily-story-link">
+          <span class="scrap-icon">📸</span><span><strong>Маленький сериал до свидания</strong>
+          <small>Каждый день — новая лёгкая игра на минутку. Собери печати для финала.</small></span>
+          <span aria-hidden="true">›</span>
+        </a>
         <div class="date-confirm">
           <p><b>💌 Сообщи Игорю выбранный день</b></p>
           <p>Нажми кнопку, выбери чат Игоря в Telegram и отправь готовое сообщение. Тогда он точно будет знать, когда тебя ждать.</p>
