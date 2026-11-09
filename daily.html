@@ -134,6 +134,9 @@ const ICONS=['🕵️','💞','🫶','🌷','🤝','✨'],COLORS=['rose','cream'
 const SHORT=['9 ноября','10 ноября','11 ноября','12 ноября','13 ноября','14 ноября'];
 const root=document.getElementById('daily-root');
 const archiveRequested=()=>window.location.hash==='#daily-poetry-library'||window.location.hash==='#our-poems';
+const chaptersRequested=()=>window.location.hash==='#quests'||window.location.hash==='#chapters';
+const arcadeRequested=()=>window.location.hash==='#dino';
+const menuRequested=()=>!window.location.hash||window.location.hash==='#menu';
 const resumeRequested=()=>window.location.hash==='#resume';
 let resumeAttempted=false;
 function resumeSavedDaily(){
@@ -155,7 +158,10 @@ function openPoetryArchive(){
  renderHome();
  // DailyPoetry.library scrolls to the unlocked album after its data loads.
 }
-window.addEventListener('hashchange',()=>{if(archiveRequested())openPoetryArchive();});
+window.addEventListener('hashchange',()=>{
+ if(archiveRequested())openPoetryArchive();
+ else if(menuRequested()||chaptersRequested()||arcadeRequested())renderHome();
+});
 let current=-1,episode=null,step=0,answers=[],working=false;
 let arcadeOpen=false,previewInterludes=new Set();
 let organizerMode=false,previewMode=false;
@@ -211,7 +217,41 @@ function dinoGiftHomeCard(){
 function openDino(){
  if(!canOpenArcade())return;
  current=-1;episode=null;arcadeOpen=true;root.dataset.theme='peach';
- window.DailyDino.mount(root,{canPlay:canOpenArcade,preview:organizerMode&&!window.SDTest.active(),onExit:renderHome});
+ window.DailyDino.mount(root,{canPlay:canOpenArcade,preview:organizerMode&&!window.SDTest.active(),onExit:()=>{
+  window.location.hash='#menu';renderHome();
+ }});
+}
+function backToChapters(){window.location.hash='#quests';renderHome();}
+function renderSeriesMenu(){
+ root.dataset.theme='rose';
+ const best=window.DailyDino.read().best;
+ const poems=progressDone();
+ const gameReady=canOpenArcade();
+ root.innerHTML='<div class="series-menu">'+
+  '<div class="series-menu-eyebrow">ОПЕРАЦИЯ 28.10 · НАШ МАЛЕНЬКИЙ СЕРИАЛ</div>'+
+  '<div class="series-menu-heart" aria-hidden="true">💌</div>'+
+  '<h1>Выбирай,<br><em>с чего начнём ♡</em></h1>'+
+  '<p class="subtitle">Лиза, здесь три маленьких мира: романтическая аркада, стихи и ежедневные квесты. Что откроем сегодня?</p>'+
+  '<div class="series-menu-grid">'+
+  '<a class="series-menu-tile series-menu-tile-game'+(gameReady?'':' is-locked')+'" href="'+(gameReady?'#dino':'#quests')+'">'+
+  '<span class="series-menu-icon" aria-hidden="true">🦕</span><span class="series-menu-copy"><strong>Динолюбик</strong>'+
+  '<small>'+(gameReady?'Прыгай, собирай сердечки и получай подарки. Рекорд: '+best+' ♡':'Аркада откроется в дни мини-сериала после проверки времени')+'</small>'+
+  '<span class="series-menu-action">'+(gameReady?'Играть →':'Условия доступа →')+'</span></span></a>'+
+  '<a class="series-menu-tile series-menu-tile-poems" href="#daily-poetry-library">'+
+  '<span class="series-menu-icon" aria-hidden="true">🎧</span><span class="series-menu-copy"><strong>Стихи для тебя</strong>'+
+  '<small>Романтические послания и аудиооткрытки. Пройдено выпусков: '+poems+' ♡</small>'+
+  '<span class="series-menu-action">Открыть альбом →</span></span></a>'+
+  '<a class="series-menu-tile series-menu-tile-quests" href="#quests">'+
+  '<span class="series-menu-icon" aria-hidden="true">📸</span><span class="series-menu-copy"><strong>Квесты и главы</strong>'+
+  '<small>15 вопросов, мини-игры и секретные сюрпризы в каждом выпуске.</small>'+
+  '<span class="series-menu-action">Выбрать главу →</span></span></a></div>'+
+  dinoGiftHomeCard()+
+  '<p class="series-menu-note">Новые выпуски открываются только в назначенный день. Уже пройденные ответы и призы сохраняются.</p>'+
+  '</div>';
+ window.DailyDinoCertificate.bind(root,{
+  preview:organizerMode&&!window.SDTest.active(),
+  unlocked:()=>window.DailyDino.read().best>=15000&&isInvited()
+ });
 }
 function showInterludeIfReady(){
  if(!episode||!canContinue()||window.SDTest.active()||![5,10].includes(step))return false;
@@ -239,16 +279,24 @@ function renderHome(){
   +'<a class="btn" style="display:block;text-align:center;text-decoration:none" href="index.html">Открыть приглашение 💌</a>';
   return;
  }
+ if(menuRequested()&&!window.SDTest.active()){renderSeriesMenu();return;}
+ if(arcadeRequested()&&!window.SDTest.active()){
+  if(canOpenArcade()){openDino();return;}
+  root.innerHTML='<div class="kicker">🦕 ДИНОЛЮБИК</div><h2>Игровая аркада пока закрыта</h2>'+
+   '<p>Чтобы играть, открой приглашение и дождись доступного дня мини-сериала. Время проверяется по серверу.</p>'+
+   '<a class="btn" style="display:block;text-align:center;text-decoration:none" href="#menu">← Назад в меню</a>';
+  return;
+ }
  if(archiveRequested()){
   root.innerHTML='<div class="kicker">НАШИ ПРИЗНАНИЯ · ЛИЧНЫЙ АЛЬБОМ</div>'+
    '<h1>Стихи для тебя ♡</h1>'+
    '<p class="subtitle">Все открытые аудиооткрытки в одном месте. Здесь всегда можно услышать голос Игоря.</p>'+
    '<div id="daily-poetry-library"></div>'+
-   '<a class="btn alt" href="daily.html" style="display:block;text-decoration:none;text-align:center">← К ежедневным главам</a>';
+   '<a class="btn alt" href="#menu" style="display:block;text-decoration:none;text-align:center">← В главное меню</a>';
   window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),organizerMode);
   return;
  }
- let html=intro()+dinoHomeCard()+dinoGiftHomeCard()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
+ let html='<a class="series-back" href="#menu">← Все разделы мини-сериала</a>'+intro()+dinoHomeCard()+dinoGiftHomeCard()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
  if(window.SDTest.active())html+='<div class="daily-preview-note">🔧 ПОЛНЫЙ ПРОХОД: пройди все 90 вопросов по очереди. Ответы сохраняются отдельно от данных Лизы. После последней главы откроется маршрут.</div>';
  if(nowTrusted()===null&&!window.SDTest.active()){
   html+='<div class="daily-clock-warning">🕒 '+safe(clockError||'Проверяем текущее московское время по сайту…')
@@ -271,7 +319,7 @@ function renderHome(){
  html+='<p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
- const arcade=root.querySelector('#open-dino');if(arcade)arcade.addEventListener('click',openDino);
+ const arcade=root.querySelector('#open-dino');if(arcade)arcade.addEventListener('click',()=>{window.location.hash='#dino';openDino()});
  window.DailyDinoCertificate.bind(root,{
   preview:organizerMode&&!window.SDTest.active(),
   unlocked:()=>window.DailyDino.read().best>=15000&&isInvited()
@@ -315,7 +363,7 @@ async function openDay(i,asPreview=false){
    +'<button class="btn" id="retry-day" type="button">Попробовать снова</button>'
    +'<button class="btn alt" id="back-to-list" type="button">К списку дней</button>';
   root.querySelector('#retry-day').addEventListener('click',()=>{working=false;openDay(i)});
-  root.querySelector('#back-to-list').addEventListener('click',renderHome);
+  root.querySelector('#back-to-list').addEventListener('click',backToChapters);
  }
 }
 function markComplete(){
@@ -344,7 +392,7 @@ function renderQuestion(){
   +'<button class="btn" type="submit">Сохранить мой ответ ♡</button></form>'
   +'<div id="daily-feedback" role="status"></div><div id="daily-save-status" class="day-status-note" role="status"></div></div>'
   +'<p class="day-status-note">'+(previewMode?'Это тестовое прохождение. Ничего не сохраняется.':'Ответы сохраняются после каждого вопроса. Можно закрыть страницу и вернуться в этот же день.')+'</p>'
-  +'<button type="button" class="btn alt" id="back-to-list">← Сохранить и выйти</button>';
+  +'<button type="button" class="btn alt" id="back-to-list">← К списку глав</button>';
  root.innerHTML=html;
  root.querySelectorAll('[data-answer]').forEach(el=>el.addEventListener('click',()=>chooseAnswer(Number(el.dataset.answer))));
  root.querySelector('#daily-custom-toggle').addEventListener('click',()=>{
@@ -354,7 +402,7 @@ function renderQuestion(){
  root.querySelector('#daily-custom-form').addEventListener('submit',event=>{
   event.preventDefault();chooseCustomAnswer(root.querySelector('#daily-custom-input').value);
  });
- root.querySelector('#back-to-list').addEventListener('click',renderHome);
+ root.querySelector('#back-to-list').addEventListener('click',backToChapters);
 }
 function chooseCustomAnswer(raw){
  if(!episode||!canContinue())return showUnavailable();
@@ -440,9 +488,9 @@ function showComplete(openPoemNow=false){
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
   +window.DailyCouple.portrait(i===0?null:episode,answers)
   +(i===(window.CoupleTests.days(chosen()).slice(-1)[0]-9)&&window.DailyCouple.ready(chosen(),state())?window.DailyCouple.invitation():'')
-  +'<button type="button" class="btn" id="back-to-list">К списку дней →</button>'
+  +'<button type="button" class="btn" id="back-to-list">К списку глав →</button>'
   +(window.SDTest.active()?'<button type="button" class="btn" id="sd-next-full-test">'+(i===DAYS.length-1?'🚗 Перейти к полному GPS-квесту':'Следующий выпуск ('+SHORT[i+1]+') →')+'</button>':'');
- root.querySelector('#back-to-list').addEventListener('click',renderHome);
+ root.querySelector('#back-to-list').addEventListener('click',backToChapters);
  root.querySelectorAll('[data-mini-replay]').forEach(el=>el.addEventListener('click',()=>{
   if(!canContinue())return showUnavailable();
   window.DailyPlay.mountInterlude(root,{day:DAYS[i],slot:Number(el.dataset.miniReplay),preview:previewMode,onResume:()=>showComplete(false)});
