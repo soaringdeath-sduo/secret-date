@@ -20,7 +20,7 @@ assert.ok(!wheel.includes('story-break'),'do not separate wheel and spin control
 assert.ok(html.includes('data-story-label="Фотоохота в парке"')&&html.includes('data-story-label="Завершение обеда"'));
 assert.ok(html.includes('data-story-label="Последняя песня"')&&html.includes('data-story-label="Наш фотоальбом"'));
 assert.ok(html.includes("if(stage===9&&index===1)return prankReady('parcel');"),'meal completion must gate forward button');
-assert.ok(html.includes("if(index===7)return parkReady()&&prankReady('suspect')&&missionReady('photos');"),'photo hunt final page must be gated');
+assert.ok(html.includes("if(index===8)return parkReady()&&prankReady('suspect')&&missionReady('photos');"),'photo hunt final page must be gated');
 assert.ok(css.includes('#app.story-flow-mounted.card')&&css.includes('flex:0 0 auto'),'card must not stretch into empty space');
 assert.ok(css.includes('padding-bottom:calc(174px')&&css.includes('.story-slide>.spacer{display:none'),'buttons must remain above audio dock');
 assert.ok(hostCss.includes('grid-template-columns:minmax(0,1fr) auto'),'compact host header required');
