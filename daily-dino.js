@@ -52,7 +52,7 @@
    (opts.preview?'<p class="daily-preview-note">🔧 Тестовый просмотр: награды и рекорд Лизы не сохраняются.</p>':'')+
    '<div class="daily-dino-scores"><span>Очки <b id="dino-score">0</b></span><span>Рекорд <b id="dino-best">'+best+'</b></span><span>Сердечки <b id="dino-hearts">0</b></span></div>'+
    '<div class="daily-dino-difficulty" id="dino-difficulty" aria-live="polite">🌷 Нежный режим · усложнение после 10 000 очков</div>'+
-   '<div class="daily-dino-surface"><div id="dino-turbo-toast" class="daily-dino-turbo-toast" hidden>🔥 10 000! ТУРБО-РЕЖИМ АКТИВИРОВАН</div><canvas id="dino-canvas" width="720" height="280" tabindex="0" role="img" aria-label="Игра Динолюбик: нажми кнопку Прыжок или пробел, чтобы перепрыгивать препятствия и собирать сердца"></canvas>'+
+   '<div class="daily-dino-surface"><canvas id="dino-canvas" width="720" height="280" tabindex="0" role="img" aria-label="Игра Динолюбик: нажми кнопку Прыжок или пробел, чтобы перепрыгивать препятствия и собирать сердца"></canvas>'+
    '<div id="dino-overlay" class="daily-dino-overlay" role="status"><strong id="dino-title">Готова играть? ♡</strong><small id="dino-hint">Коснись экрана или нажми «Начать». Затем прыгай касанием, пробелом или ↑.</small></div></div>'+
    '<div class="daily-dino-controls"><button type="button" id="dino-jump" class="btn">▶ Начать игру</button>'+
    '<button type="button" id="dino-pause" class="btn alt" disabled>Пауза</button></div>'+
@@ -63,19 +63,12 @@
   const scoreEl=host.querySelector('#dino-score'),bestEl=host.querySelector('#dino-best'),heartEl=host.querySelector('#dino-hearts');
   const overlay=host.querySelector('#dino-overlay'),title=host.querySelector('#dino-title'),hint=host.querySelector('#dino-hint');
   const jumpBtn=host.querySelector('#dino-jump'),pauseBtn=host.querySelector('#dino-pause'),rewardEl=host.querySelector('#dino-rewards');
-  const difficultyEl=host.querySelector('#dino-difficulty'),turboToast=host.querySelector('#dino-turbo-toast');
-  let turboToastTimer=null;
+  const difficultyEl=host.querySelector('#dino-difficulty');
   function refreshDifficulty(){
    if(!difficultyEl)return;
    const turbo=difficulty(points).turbo;
    difficultyEl.classList.toggle('is-turbo',turbo);
    difficultyEl.textContent=turbo?'🔥 ТУРБО-РЕЖИМ · БЫСТРЕЕ И СЛОЖНЕЕ':'🌷 Нежный режим · усложнение после 10 000 очков';
-  }
-  function announceTurbo(){
-   if(!turboToast)return;
-   turboToast.hidden=false;
-   if(turboToastTimer!==null)clearTimeout(turboToastTimer);
-   turboToastTimer=setTimeout(()=>{turboToast.hidden=true;turboToastTimer=null;},2400);
   }
   if(!ctx){host.innerHTML='<p>Эта версия браузера не поддерживает игру. Попробуй другой браузер на телефоне.</p><button class="btn" id="dino-exit">Назад</button>';host.querySelector('#dino-exit').addEventListener('click',()=>opts.onExit?.());return;}
   const pixelRatio=Math.max(1,Math.min(2,window.devicePixelRatio||1));
@@ -168,8 +161,6 @@
    points=0;heartCount=0;spawnObstacle=1.5;spawnHeart=1.0;
    player.y=FLOOR-player.h;player.vy=0;obstacles=[];hearts=[];lastTime=0;lastHud=-100;
    hud(true);awards();refreshDifficulty();
-   if(turboToastTimer!==null){clearTimeout(turboToastTimer);turboToastTimer=null;}
-   if(turboToast)turboToast.hidden=true;
   }
   function canPlay(){return opts.canPlay?opts.canPlay():true;}
   function jump(){
@@ -222,7 +213,7 @@
      persistBest();setState('over','Ой, препятствие! ♡','Собрано '+Math.floor(points)+' очков. Можно попробовать снова — лучшие награды останутся.');
      draw();return;
     }
-    if(last<TURBO_AT&&points>=TURBO_AT){refreshDifficulty();announceTurbo();}
+    if(last<TURBO_AT&&points>=TURBO_AT)refreshDifficulty();
     if([2000,5000,PREMIUM_AT].some(at=>last<at&&points>=at))persistBest();
     if(points>best+250)persistBest();
     clouds.forEach(c=>{c.x-=delta*6*c.scale;if(c.x<-50)c.x=W+40;});
@@ -247,7 +238,6 @@
    if(frame!==null){cancelAnimationFrame(frame);frame=null;}
    document.removeEventListener('keydown',onKeyboard);
    document.removeEventListener('visibilitychange',onVisibility);
-   if(turboToastTimer!==null){clearTimeout(turboToastTimer);turboToastTimer=null;}
    cv.removeEventListener('pointerdown',jumpClick);
    if(points>best)saveHigh(points,opts.preview);
   }
