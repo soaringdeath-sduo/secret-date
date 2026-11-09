@@ -97,7 +97,7 @@ const QUIZZES=[
 const root=document.getElementById('daily-root');
 let current=-1,sessionStep=0,sessionAnswers=[],doneMessage='';
 const chosen=()=>localStorage.getItem(DATE_KEY);
-const key=()=>BASE+':'+(chosen()||'unselected');
+const key=()=>BASE;
 const isHost=()=>localStorage.getItem(HOST_KEY)==='1';
 const count=()=>chosen()==='sun'?6:5;
 function state(){
