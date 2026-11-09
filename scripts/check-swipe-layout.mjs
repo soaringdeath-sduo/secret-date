@@ -7,7 +7,7 @@ const html=fs.readFileSync('secret_date_game_luga.html','utf8');
 const css=fs.readFileSync('story-flow.css','utf8');
 const hostCss=fs.readFileSync('host-full-test.css','utf8');
 new Function(flow);
-for(const m of html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g))new Function(m[1]);
+for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new Function(m[1]);
 
 assert.ok(flow.includes("element.classList.contains('story-break')"),'screens must be grouped at explicit semantic markers');
 const boundary=flow.slice(flow.indexOf(' function boundary('),flow.indexOf(' function segment('));
@@ -30,9 +30,9 @@ class El{
   this.nodeType=1;this.className=cls;this.tagName=tag;this.childNodes=[];this.dataset={};this.attributes={};
   this.innerHTML='';this.textContent='';this.style={};this.hidden=false;this.disabled=false;this.events={};
   this.classList={
-   contains:c=>this.className.split(/\\s+/).includes(c),
+   contains:c=>this.className.split(/\s+/).includes(c),
    add:c=>{if(!this.classList.contains(c))this.className+=' '+c;},
-   remove:c=>{this.className=this.className.split(/\\s+/).filter(x=>x!==c).join(' ');},
+   remove:c=>{this.className=this.className.split(/\s+/).filter(x=>x!==c).join(' ');},
    toggle:(c,force)=>{if(force)this.classList.add(c);else this.classList.remove(c);}
   };
  }
@@ -43,9 +43,9 @@ class El{
  getAttribute(k){return this.attributes[k]??null;}
  addEventListener(k,fn){this.events[k]=fn;}
  querySelector(sel){
-  const found=this.childNodes.find(n=>n.classList?.contains(sel.replace(/^\\./,'')));
+  const found=this.childNodes.find(n=>n.classList?.contains(sel.replace(/^\./,'')));
   if(found)return found;
-  if(this.innerHTML.includes(sel.replace(/^\\./,'')))return new El('stub');
+  if(this.innerHTML.includes(sel.replace(/^\./,'')))return new El('stub');
   return null;
  }
  get offsetWidth(){return 150;}
