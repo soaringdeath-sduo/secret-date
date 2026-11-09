@@ -17,10 +17,10 @@ for(const cls of ['spacer','scrap-prank','mission-panel','mini','scanner','wheel
 const wheel=html.slice(html.indexOf('function wheelPrankHTML(){'),html.indexOf('function spinRomanticWheel(){'));
 assert.ok(wheel.includes('id="wheel-disc"')&&wheel.includes('id="wheel-spin"'),'wheel and spin control must both be present');
 assert.ok(!wheel.includes('story-break'),'do not separate wheel and spin control');
-assert.ok(html.includes('data-story-label="Фотоохота"')&&html.includes('data-story-label="Завершение обеда"'));
+assert.ok(html.includes('data-story-label="Фотоохота в парке"')&&html.includes('data-story-label="Завершение обеда"'));
 assert.ok(html.includes('data-story-label="Последняя песня"')&&html.includes('data-story-label="Наш фотоальбом"'));
 assert.ok(html.includes("if(stage===9&&index===1)return prankReady('parcel');"),'meal completion must gate forward button');
-assert.ok(html.includes("if(index===4)return prankReady('suspect')&&missionReady('photos');"),'photo hunt final page must be gated');
+assert.ok(html.includes("if(index===7)return parkReady()&&prankReady('suspect')&&missionReady('photos');"),'photo hunt final page must be gated');
 assert.ok(css.includes('#app.story-flow-mounted.card')&&css.includes('flex:0 0 auto'),'card must not stretch into empty space');
 assert.ok(css.includes('padding-bottom:calc(174px')&&css.includes('.story-slide>.spacer{display:none'),'buttons must remain above audio dock');
 assert.ok(hostCss.includes('grid-template-columns:minmax(0,1fr) auto'),'compact host header required');
@@ -75,13 +75,27 @@ const radioPanels=mount(1,[
  marker('Первая координата'),el('mini')
 ]);
 assert.equal(radioPanels.length,6,'radio, song and driver checks should each have their own screen');
-const walking=mount(6,[
- el('hero'),marker('Куда идём'),el('coords'),el('mini'),marker('Проверка Игоря'),el('mini scrap-prank'),
- marker('Фотоохота'),el('mission-panel'),marker('Продолжение прогулки'),el('spacer'),el('btn')
+const park=mount(6,[
+ el('hero'),
+ marker('Едем в Заречный парк'),el('coords'),el('mini'),
+ marker('Мы уже на месте'),el('mini'),
+ marker('Время только для нас'),el('mini'),
+ marker('Кофейная пауза'),el('mini'),
+ marker('Проверка Игоря'),el('mini scrap-prank'),
+ marker('Фотоохота в парке'),el('mission-panel'),
+ marker('Продолжаем свидание'),el('mini'),el('btn')
 ]);
-assert.equal(walking.length,5,'walk and photo hunt should be five coherent screens');
-assert.equal(walking[3].childNodes.length,1);
-assert.equal(walking[4].childNodes.length,2);
-console.log('✓ Semantic slide grouping: wheel, meal, radio, walk, photo hunt');
+assert.equal(park.length,8,'Zarechny park chapter should have 8 coherent screens');
+assert.equal(park[1].childNodes.length,2,'Driving instructions and map stay together');
+assert.equal(park[4].childNodes.length,1,'Optional coffee choice is a separate screen');
+assert.equal(park[7].childNodes.length,2,'Final action should stay with its description');
+assert.ok(html.includes('Заречный парк, Луга'),'New destination should be in the itinerary');
+assert.ok(html.includes('Terrazza'),'Coffee should be grounded in real cafe in the park');
+assert.ok(!html.includes('Лужский городской Дом культуры'),'Old House of Culture destination should be removed');
+assert.ok(html.includes("if(stage===6)return 'park-v1';"),'Old slide state must not skip new park screens');
+assert.ok(html.includes("if(index===2)return parkState().arrived;"),'Do not skip arriving at park');
+assert.ok(html.includes("if(index===3)return parkState().together;"),'Do not skip spending time together');
+assert.ok(html.includes("if(index===4)return parkState().coffee!==null;"),'Both coffee choices should advance');
+console.log('✓ Semantic slide grouping: wheel, meal, radio, eight-stage park chapter');
 console.log('✓ No empty stretched slide or player/button overlap selectors');
 console.log('✓ Quest JavaScript syntax and required progression gates');
