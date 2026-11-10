@@ -111,6 +111,7 @@ p{line-height:1.65;color:#795d6d}
 <link rel="stylesheet" href="host-full-test.css?v=2">
 <link rel="stylesheet" href="daily-poetry.css?v=3">
 <link rel="stylesheet" href="daily-play.css?v=6">
+<link rel="stylesheet" href="daily-secrets.css?v=1">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -123,6 +124,7 @@ p{line-height:1.65;color:#795d6d}
 <script src="daily-couple.js?v=1"></script>
 <script src="daily-poetry.js?v=4"></script>
 <script src="daily-play.js?v=1"></script>
+<script src="daily-secrets.js?v=1"></script>
 <script src="daily-dino-certificate.js?v=2"></script>
 <script src="daily-dino-wishes.js?v=3"></script>
 <script src="daily-dino.js?v=6"></script>
@@ -137,6 +139,7 @@ const root=document.getElementById('daily-root');
 const archiveRequested=()=>window.location.hash==='#daily-poetry-library'||window.location.hash==='#our-poems';
 const chaptersRequested=()=>window.location.hash==='#quests'||window.location.hash==='#chapters';
 const arcadeRequested=()=>window.location.hash==='#dino';
+const secretRequested=()=>['#secret-files','#cupid','#puzzle','#future-letter','#scratch'].includes(window.location.hash)||/^#scratch-(9|10|11|12|13|14)$/.test(window.location.hash);
 const menuRequested=()=>!window.location.hash||window.location.hash==='#menu';
 const resumeRequested=()=>window.location.hash==='#resume';
 let resumeAttempted=false;
@@ -161,7 +164,7 @@ function openPoetryArchive(){
 }
 window.addEventListener('hashchange',()=>{
  if(archiveRequested())openPoetryArchive();
- else if(menuRequested()||chaptersRequested()||arcadeRequested())renderHome();
+ else if(menuRequested()||chaptersRequested()||arcadeRequested()||secretRequested())renderHome();
 });
 let current=-1,episode=null,step=0,answers=[],working=false;
 let arcadeOpen=false,previewInterludes=new Set();
@@ -200,6 +203,18 @@ function phase(i){
 const available=i=>window.SDTest.active()||isInvited()&&phase(i)==='today';
 const canContinue=()=>window.SDTest.active()||previewMode&&organizerMode||available(current);
 const canOpenArcade=()=>window.DailyDino.gameAvailable(nowTrusted(),chosen(),isInvited(),window.SDTest.active()||organizerMode);
+function renderSecrets(){
+ const s=state(),activeDays=DAYS.slice(0,numberOfDays());
+ const earned=activeDays.filter(d=>s.done[DAYS.indexOf(d)]===true);
+ const hash=window.location.hash;
+ const section=hash==='#cupid'?'chat':hash==='#puzzle'?'puzzle':
+  hash==='#future-letter'?'letter':hash==='#scratch'||hash.startsWith('#scratch-')?'scratch':'hub';
+ const scratchMatch=hash.match(/^#scratch-(9|10|11|12|13|14)$/);
+ root.dataset.theme='rose';
+ window.DailySecrets.render(root,{
+  days:activeDays,earned,preview:organizerMode&&!window.SDTest.active()
+ },section,scratchMatch?Number(scratchMatch[1]):null);
+}
 function dinoWishesHomeCard(){
  const best=window.DailyDino.read().best;
  if(best<5000||!isInvited())return '';
@@ -232,7 +247,7 @@ function renderSeriesMenu(){
   '<div class="series-menu-eyebrow">ОПЕРАЦИЯ 28.10 · НАШ МАЛЕНЬКИЙ СЕРИАЛ</div>'+
   '<div class="series-menu-heart" aria-hidden="true">💌</div>'+
   '<h1>Выбирай,<br><em>с чего начнём ♡</em></h1>'+
-  '<p class="subtitle">Лиза, здесь три маленьких мира: романтическая аркада, стихи и ежедневные квесты. Что откроем сегодня?</p>'+
+  '<p class="subtitle">Лиза, здесь романтическая аркада, стихи, ежедневные квесты и одно особенно секретное досье. Что откроем сегодня?</p>'+
   '<div class="series-menu-grid">'+
   '<a class="series-menu-tile series-menu-tile-game'+(gameReady?'':' is-locked')+'" href="#dino">'+
   '<span class="series-menu-icon" aria-hidden="true">🦕</span><span class="series-menu-copy"><strong>Динолюбик</strong>'+
@@ -245,7 +260,11 @@ function renderSeriesMenu(){
   '<a class="series-menu-tile series-menu-tile-quests" href="#quests">'+
   '<span class="series-menu-icon" aria-hidden="true">📸</span><span class="series-menu-copy"><strong>Квесты и главы</strong>'+
   '<small>15 вопросов, мини-игры и секретные сюрпризы в каждом выпуске.</small>'+
-  '<span class="series-menu-action">Выбрать главу →</span></span></a></div>'+
+  '<span class="series-menu-action">Выбрать главу →</span></span></a>'+
+  '<a class="series-menu-tile series-menu-tile-secrets" href="#secret-files">'+
+  '<span class="series-menu-icon" aria-hidden="true">🗝️</span><span class="series-menu-copy"><strong>Секретное досье</strong>'+
+  '<small>Чат Купидона, пять фрагментов, письмо из будущего и скретч-карты.</small>'+
+  '<span class="series-menu-action">Открыть тайны →</span></span></a></div>'+
   dinoWishesHomeCard()+dinoGiftHomeCard()+
   '<p class="series-menu-note">Новые выпуски открываются только в назначенный день. Уже пройденные ответы и призы сохраняются.</p>'+
   '</div>';
@@ -289,6 +308,7 @@ function renderHome(){
   +'<a class="btn" style="display:block;text-align:center;text-decoration:none" href="index.html">Открыть приглашение 💌</a>';
   return;
  }
+ if(secretRequested()&&!window.SDTest.active()){renderSecrets();return;}
  if(menuRequested()&&!window.SDTest.active()){renderSeriesMenu();return;}
  if(arcadeRequested()&&!window.SDTest.active()){
   if(canOpenArcade()){openDino();return;}
@@ -487,6 +507,7 @@ function showComplete(openPoemNow=false){
    '<span>В конце игры оно появляется само. Потом его всегда можно открыть здесь снова.</span></div>'
   +'<div id="daily-poetry-card"></div>'
   +'<div id="daily-secret-host"></div>'
+  +'<p class="secret-chapter-link">🗝️ Новая улика ждёт в отдельном досье. <a href="#secret-files">Посмотреть загадки и карточки →</a></p>'
   +'<div class="daily-done-stamp">'+(previewMode?'🔧 ПРОСМОТР БЕЗ СОХРАНЕНИЯ':'✓ ДЕНЬ '+(i+1)+' • ПЕЧАТЬ ПОЛУЧЕНА')+'</div>'
   +'<p class="day-status-note">'+(previewMode?'Ни одна печать не начислена.':'Всего печатей: '+progressDone()+' из '+numberOfDays()+'. Они появятся в финальном отчёте.')+'</p>'
   +window.DailyCouple.portrait(i===0?null:episode,answers)
@@ -528,12 +549,12 @@ async function syncClock(showLoading){
  }finally{
   clockLoading=false;
   if(current>=0 && !canContinue())showUnavailable();
-  else if(current<0&&!arcadeOpen&&!resumeSavedDaily())renderHome();
+  else if(current<0&&!arcadeOpen&&!secretRequested()&&!resumeSavedDaily())renderHome();
  }
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncClock(false)});
 window.addEventListener('focus',()=>syncClock(false));
-setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0&&!arcadeOpen&&!archiveRequested())renderHome()},30000);
+setInterval(()=>{if(current>=0&&!canContinue())showUnavailable();else if(current<0&&!arcadeOpen&&!archiveRequested()&&!secretRequested())renderHome()},30000);
 setInterval(()=>syncClock(false),120000);
 document.getElementById('host-daily-button').addEventListener('click',()=>{
  if(window.SDTest.active()){window.alert('Полное тестовое прохождение уже активно. Для выхода используй панель сверху.');return;}
