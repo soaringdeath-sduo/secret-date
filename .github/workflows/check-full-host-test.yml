@@ -47,6 +47,7 @@ on:
       - "host-full-test.js"
       - "daily-content/**"
       - "scripts/check-full-host-test.mjs"
+      - "scripts/check-host-first-stage.mjs"
       - "scripts/check-final-audit.mjs"
       - "finales-config.json"
       - "assets/**"
@@ -72,6 +73,7 @@ jobs:
       - name: Verify isolated complete walkthrough
         run: |
           node scripts/check-full-host-test.mjs
+          node scripts/check-host-first-stage.mjs
           node scripts/check-swipe-layout.mjs
           node scripts/check-strict-confirmations.mjs
           node scripts/check-zarechny-visit.mjs
