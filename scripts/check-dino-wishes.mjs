@@ -10,14 +10,15 @@ const game=file('daily-dino.js');
 const daily=file('daily.html');
 const css=file('daily-play.css');
 new Function(code);new Function(game);
-assert.ok(daily.includes('daily-dino-wishes.js?v=1'),'Daily page must load wish-activation module');
-assert.ok(daily.includes('daily-dino.js?v=4'),'Dino code must refresh on mobile browsers');
+assert.ok(daily.includes('daily-dino-wishes.js?v=2'),'Daily page must load wish-activation module');
+assert.ok(daily.includes('daily-dino.js?v=5'),'Dino code must refresh on mobile browsers');
 assert.ok(daily.includes('daily-play.css?v=6'),'Wish card CSS must bust mobile cache');
 assert.ok(daily.includes('dinoWishesHomeCard()'),'Earned wishes must be accessible after arcade closes');
 assert.ok(daily.includes('getNow:nowTrusted,getDay:chosen'),'Dino must use trusted time and chosen date');
 assert.ok(css.includes('.dino-wish-card')&&!css.includes('.dino-wish-toast'),'Activation status must not obscure gameplay');
 assert.ok(game.includes("5000,title:'💝 24 часа пожеланий ПОСЛЕ свидания'"));
-assert.ok(game.includes('Покупки на 5 000 ₽')===false || game.includes('ПОСЛЕ свидания'));
+assert.ok(game.includes('суммарно до 1 000 ₽'),'Dino reward must show the 1000 RUB cap');
+assert.ok(!game.includes('без покупок, денег и косметики'),'Old blanket purchase ban must be removed');
 
 const dom=new JSDOM('<!doctype html><body><div id="test"></div></body>',{
  url:'https://soaringdeath-sduo.github.io/secret-date/daily.html',runScripts:'outside-only'
@@ -28,6 +29,7 @@ w.confirm=()=>true;
 w.alert=message=>{throw new Error(message)};
 w.eval(code);
 const wishes=w.DailyDinoWishes;
+assert.equal(wishes.PURCHASE_LIMIT,1000,'Personal gift limit is 1000 RUB total, not per request');
 const beforeSat=Date.UTC(2026,10,14,20,59,59); // 14 Nov, 23:59 MSK
 const satStart=Date.UTC(2026,10,14,21,0,0);  // 15 Nov, 00:00 MSK
 const beforeSun=Date.UTC(2026,10,15,20,59,59); // 15 Nov, 23:59 MSK
@@ -49,7 +51,7 @@ assert.equal(wishes.status({score:5000,day:'sun',now:sunStart}).kind,'ready');
 assert.ok(wishes.card({score:5000,day:'sat',now:beforeSat}).includes('15 ноября 2026'));
 assert.ok(wishes.card({score:5000,day:'sun',now:beforeSun}).includes('16 ноября 2026'));
 const cardBefore=wishes.card({score:5000,day:'sat',now:beforeSat});
-for(const text of ['на свидании её использовать нельзя','День самого свидания','15 000 очков','покупки','деньги','косметика','Магнит Косметик'])
+for(const text of ['на свидании её использовать нельзя','День самого свидания','15 000 очков','покупки','деньги','косметику','Магнит Косметик','общую сумму до 1 000 ₽','суммарно не больше 1 000 ₽','не за каждое желание'])
  assert.ok(cardBefore.includes(text),'Clear gift rule missing: '+text);
 assert.ok(!cardBefore.includes('data-wishes-activate'),'Do not expose claim button before date');
 assert.equal(wishes.redeem({score:5000,day:'sat',now:satStart,preview:true}).ok,false,'Preview must never activate');
@@ -78,4 +80,4 @@ w.localStorage.setItem('sd2810-dino-heart-v1',JSON.stringify({best:8076}));
 assert.equal(JSON.parse(w.localStorage.getItem('sd2810-dino-heart-v1')).best,8076,'Existing 5k+ high score not altered');
 dom.window.close();
 
-console.log('✓ 5000 wishes: activated only after 14/15 Nov date, 24h one-time window, no money/purchases, preview isolated, 15000 separate reward retained');
+console.log('✓ 5000 wishes: after-date-only activation, one 24h period, 1000 RUB TOTAL small purchases cap, no cash transfers, 15000 shop prize separate');
