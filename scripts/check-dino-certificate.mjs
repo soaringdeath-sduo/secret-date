@@ -6,7 +6,7 @@ const js=fs.readFileSync('daily-dino-certificate.js','utf8');
 const daily=fs.readFileSync('daily.html','utf8'),arcade=fs.readFileSync('daily-dino.js','utf8');
 const styles=fs.readFileSync('daily-play.css','utf8');
 new Function(js);new Function(arcade);
-assert.ok(daily.includes('daily-dino-certificate.js?v=1'),'Daily page must load the certificate generator');
+assert.ok(daily.includes('daily-dino-certificate.js?v=2'),'Daily page must load the certificate generator');
 assert.ok(daily.includes('dinoGiftHomeCard()'),'Already-earned certificate must be accessible after arcade dates');
 assert.ok(styles.includes('.dino-certificate-amount')&&styles.includes('.dino-home-claimed'),'Romantic certificate and claimed gift shelf must be styled');
 const dom=new JSDOM('<!doctype html><html lang="ru"><body><main id="host"></main></body></html>',{
@@ -17,7 +17,7 @@ w.TextEncoder=TextEncoder;
 w.alert=message=>{throw Error('Certificate download error: '+message)};
 w.eval(js);
 const gift=w.DailyDinoCertificate;
-assert.equal(gift.THRESHOLD,15000);
+assert.equal(gift.THRESHOLD,10000);
 assert.equal(gift.DETAIL.expires,'31.12.2026');
 assert.equal(gift.DETAIL.amount,'5 000 ₽');
 assert.ok(gift.certificateControls().includes('Магнит Косметик'));
@@ -33,7 +33,7 @@ const lines=[],ctx={
 w.HTMLCanvasElement.prototype.getContext=()=>ctx;
 const picture=gift.makeCanvas(false);
 assert.equal(picture.width,1600);assert.equal(picture.height,1132);
-for(const expected of ['День красоты','Магнит Косметик','5 000 ₽','ДЕЙСТВУЕТ ДО 31.12.2026','Не является подарочной картой']){
+for(const expected of ['День красоты','Магнит Косметик','5 000 ₽','ДЕЙСТВУЕТ ДО 31.12.2026','Не является подарочной картой','Разблокировано за 10 000 очков']){
  assert.ok(lines.some(t=>t.includes(expected)),'Missing crucial certificate text: '+expected);
 }
 lines.length=0;gift.makeCanvas(true);
@@ -70,4 +70,4 @@ gift.bind(host,{unlocked:()=>false});
 host.querySelector('[data-dino-certificate="pdf"]').click();
 assert.equal(anchorEvents.length,3,'Claim buttons must not work if not earned');
 dom.window.close();
-console.log('✓ 15k personal gift: beautiful A4 certificate, exact 2026 expiry, non-store-issuer disclaimer, valid PDF/PNG downloads, secure unlock, preview watermark');
+console.log('✓ 10k personal gift: beautiful A4 certificate, exact 2026 expiry, non-store-issuer disclaimer, valid PDF/PNG downloads, secure unlock, preview watermark');
