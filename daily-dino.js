@@ -4,8 +4,8 @@
  const storage=window.SDTest.storage;
  const KEY='sd2810-dino-heart-v1';
  const W=720,H=280,FLOOR=226;
- const TURBO_AT=10000,PREMIUM_AT=15000;
- // At 10,000 points the SAME run becomes slightly harder:
+ const TURBO_AT=8000,PREMIUM_AT=10000;
+ // At 8,000 points the SAME run becomes slightly harder:
  // faster movement, 12% denser obstacles and taller hazards.
  function difficulty(score){
   const turbo=Number(score)>=TURBO_AT;
@@ -13,8 +13,8 @@
  }
  const GIFTS=[
   {at:2000,title:'🍫 Шоколадка от Игоря',detail:'Покажи купон Игорю — он должен тебе шоколадку.'},
-  {at:5000,title:'💝 24 часа пожеланий ПОСЛЕ свидания',detail:'Заработано навсегда! Активировать сутки можно только после свидания. Разрешены маленькие покупки суммарно до 1 000 ₽ за все 24 часа, а также нематериальные пожелания. Подарок «Магнит Косметик» на 5 000 ₽ — отдельно за 15 000 очков.'},
-  {at:15000,title:'🌸 Магнит Косметик — покупки на 5 000 ₽',detail:'Один совместный поход до 31.12.2026 включительно. Лиза выбирает покупки, Игорь оплачивает до 5 000 ₽. Это личный подарок, не сертификат магазина.'}
+  {at:5000,title:'💝 24 часа пожеланий ПОСЛЕ свидания',detail:'Заработано навсегда! Активировать сутки можно только после свидания. Разрешены маленькие покупки суммарно до 1 000 ₽ за все 24 часа, а также нематериальные пожелания. Подарок «Магнит Косметик» на 5 000 ₽ — отдельно за 10 000 очков.'},
+  {at:PREMIUM_AT,title:'🌸 Магнит Косметик — покупки на 5 000 ₽',detail:'Один совместный поход до 31.12.2026 включительно. Лиза выбирает покупки, Игорь оплачивает до 5 000 ₽. Это личный подарок, не сертификат магазина.'}
  ];
  function read(){
   try{const a=JSON.parse(storage.getItem(KEY)||'null');if(a&&Number.isFinite(a.best))return {best:Math.max(0,Math.floor(a.best))};}catch(e){}
@@ -48,10 +48,10 @@
   let best=previous.best;
   host.innerHTML='<div class="kicker">СЕКРЕТНЫЙ АРКАДНЫЙ БОНУС · ОПЕРАЦИЯ 28.10</div>'+
    '<div class="daily-dino-title">🦕 <span>Динолюбик</span> 💗</div>'+
-   '<p class="subtitle">Прыгай через препятствия и собирай сердечки! Очки за расстояние и сердца суммируются <b>в одном забеге</b>. За 5 000 очков открываются <b>24 часа пожеланий после свидания</b> с небольшими покупками на общую сумму до <b>1 000 ₽</b> (на самом свидании они не действуют). После <b>10 000</b> включится турбо-режим. За <b>15 000 очков</b> — отдельный подарок на 5 000 ₽ в «Магнит Косметик»! ♡</p>'+
+   '<p class="subtitle">Прыгай через препятствия и собирай сердечки! Очки за расстояние и сердца суммируются <b>в одном забеге</b>. За 5 000 очков открываются <b>24 часа пожеланий после свидания</b> с небольшими покупками на общую сумму до <b>1 000 ₽</b> (на самом свидании они не действуют). После <b>8 000</b> включится сложный уровень. За <b>10 000 очков</b> — отдельный подарок на 5 000 ₽ в «Магнит Косметик»! ♡</p>'+
    (opts.preview?'<p class="daily-preview-note">🔧 Тестовый просмотр: награды и рекорд Лизы не сохраняются.</p>':'')+
    '<div class="daily-dino-scores"><span>Очки <b id="dino-score">0</b></span><span>Рекорд <b id="dino-best">'+best+'</b></span><span>Сердечки <b id="dino-hearts">0</b></span></div>'+
-   '<div class="daily-dino-difficulty" id="dino-difficulty" aria-live="polite">🌷 Нежный режим · усложнение после 10 000 очков</div>'+
+   '<div class="daily-dino-difficulty" id="dino-difficulty" aria-live="polite">🌷 Лёгкий уровень · до 8 000 очков</div>'+
    '<div class="daily-dino-surface"><canvas id="dino-canvas" width="720" height="280" tabindex="0" role="img" aria-label="Игра Динолюбик: нажми кнопку Прыжок или пробел, чтобы перепрыгивать препятствия и собирать сердца"></canvas>'+
    '<div id="dino-overlay" class="daily-dino-overlay" role="status"><strong id="dino-title">Готова играть? ♡</strong><small id="dino-hint">Коснись экрана или нажми «Начать». Затем прыгай касанием, пробелом или ↑.</small></div></div>'+
    '<div class="daily-dino-controls"><button type="button" id="dino-jump" class="btn">▶ Начать игру</button>'+
@@ -68,7 +68,7 @@
    if(!difficultyEl)return;
    const turbo=difficulty(points).turbo;
    difficultyEl.classList.toggle('is-turbo',turbo);
-   difficultyEl.textContent=turbo?'🔥 ТУРБО-РЕЖИМ · БЫСТРЕЕ И СЛОЖНЕЕ':'🌷 Нежный режим · усложнение после 10 000 очков';
+   difficultyEl.textContent=turbo?'🔥 СЛОЖНЫЙ УРОВЕНЬ · 8 000–10 000+ ОЧКОВ':'🌷 Лёгкий уровень · до 8 000 очков';
   }
   if(!ctx){host.innerHTML='<p>Эта версия браузера не поддерживает игру. Попробуй другой браузер на телефоне.</p><button class="btn" id="dino-exit">Назад</button>';host.querySelector('#dino-exit').addEventListener('click',()=>opts.onExit?.());return;}
   const pixelRatio=Math.max(1,Math.min(2,window.devicePixelRatio||1));
