@@ -47,6 +47,9 @@ on:
       - "host-full-test.js"
       - "daily-content/**"
       - "scripts/check-full-host-test.mjs"
+      - "scripts/check-final-audit.mjs"
+      - "finales-config.json"
+      - "assets/**"
       - ".github/workflows/check-full-host-test.yml"
   pull_request:
   workflow_dispatch:
@@ -83,3 +86,4 @@ jobs:
           node scripts/check-deep-walkthrough.mjs
           node scripts/check-resume-memory.mjs
           node scripts/check-memory-album.mjs
+          node scripts/check-final-audit.mjs
