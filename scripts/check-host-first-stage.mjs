@@ -81,7 +81,7 @@ assert.equal(w.document.getElementById('host-bar').classList.contains('hidden'),
 w.__hostAnswer='wrong-code';
 for(let i=0;i<6;i++)w.document.getElementById('organizer').click();
 assert.equal(w.localStorage.getItem('sd2810-host-v3'),null);
-assert.ok(w.__lastHostAlert==='undefined'||!w.__lastHostAlert,'Wrong guest code must not enable host mode');
+assert.ok(w.__lastHostAlert?.includes('Код ведущего не подошёл'),'A wrong code should show a useful explanation');
 
 // Correct code enters verified organizer mode. A visible Zaplyusye button
 // must open radio chapter one without any GPS attempt.
