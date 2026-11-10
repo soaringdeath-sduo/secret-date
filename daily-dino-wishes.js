@@ -1,11 +1,12 @@
 /* The 5,000-point "24 hours of wishes" reward is earned now but can only be
  * activated from 00:00 Moscow time on the day AFTER the selected date.
- * This is a personal, non-monetary promise, not an app-enforceable contract.
+ * This personal promise permits up to 1000 RUB of small purchases TOTAL over 24h,
+ * and cannot be enforced by a static website; the two people honor the budget.
  * Uses trusted HTTP-Date time supplied by daily.html and isolated host storage. */
 (function(){
  'use strict';
  const KEY='sd2810-wishes-24h-v1';
- const THRESHOLD=5000,DAY=24*60*60*1000;
+ const THRESHOLD=5000,DAY=24*60*60*1000,PURCHASE_LIMIT=1000;
  const store=window.SDTest.storage;
  const dateStart=selected=>selected==='sat'?Date.UTC(2026,10,14,21):
    selected==='sun'?Date.UTC(2026,10,15,21):null; // next day 00:00 MSK
@@ -70,8 +71,9 @@
    '<div class="dino-wish-status" role="status">'+message+'</div>'+
    (info.kind==='ready'?'<p class="dino-wish-caution">После активации отсчёт 24 часов начнётся сразу и повторно запустить его нельзя.</p>':'')+
    button+
-   '<div class="dino-wish-terms"><strong>Что можно загадать?</strong> Фильм на вечер, завтрак от Игоря, прогулку, объятия, игры, забавные совместные задания и другие нематериальные желания по обоюдному согласию.'+
-   '<p><strong>Что не входит?</strong> День самого свидания, покупки, деньги, косметика, товары, подарочные сертификаты и опасные или неприятные просьбы. Покупки на 5 000 ₽ в «Магнит Косметик» — <b>отдельная награда за 15 000 очков</b>.</p></div>'+
+   '<div class="dino-wish-terms"><strong>Что можно загадать?</strong> Фильм на вечер, завтрак от Игоря, прогулку, объятия, игры, забавные совместные задания, а также <b>небольшие покупки на общую сумму до 1 000 ₽ за все 24 часа</b> — по взаимному согласию.'+
+   '<p><strong>Лимит покупок:</strong> Можно выбрать несколько мелочей, включая косметику, но <b>суммарно не больше 1 000 ₽</b>. Это общий бюджет на весь период, не за каждое желание; дробление покупок лимит не увеличивает.</p>'+
+   '<p><strong>Что не входит?</strong> День самого свидания, покупки сверх 1 000 ₽, наличные деньги, денежные переводы, подарочные сертификаты и опасные или неприятные просьбы. Поход в «Магнит Косметик» на 5 000 ₽ — <b>отдельная награда за 15 000 очков</b>.</p></div>'+
    '</section>';
  }
  function bind(host,options={}){
@@ -81,11 +83,11 @@
    const score=options.getScore?.()||0;
    const selected=options.getDay?.();
    if(status({score,day:selected,now,preview:!!options.preview}).kind!=='ready')return;
-   if(!window.confirm('Активировать 24 часа желаний прямо сейчас? Они начнутся после нажатия и закончатся ровно через сутки. На покупки и деньги награда не распространяется.'))return;
+   if(!window.confirm('Активировать 24 часа желаний прямо сейчас? Они начнутся после нажатия и закончатся ровно через сутки. Небольшие покупки разрешены на общую сумму до 1 000 ₽ за все 24 часа; переводы и наличные не входят.'))return;
    const result=redeem({score,day:selected,now:options.getNow?.(),preview:!!options.preview});
    if(result.ok&&typeof options.onChange==='function')options.onChange();
    else if(!result.ok)window.alert('Не удалось активировать подарок: проверь время на сайте или свободное место браузера.');
   }));
  }
- window.DailyDinoWishes={KEY,THRESHOLD,DAY,dateStart,dayLabel,dateText,read,status,redeem,card,bind};
+ window.DailyDinoWishes={KEY,THRESHOLD,DAY,PURCHASE_LIMIT,dateStart,dayLabel,dateText,read,status,redeem,card,bind};
 })();
