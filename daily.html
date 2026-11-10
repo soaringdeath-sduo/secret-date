@@ -123,9 +123,9 @@ p{line-height:1.65;color:#795d6d}
 <script src="daily-couple.js?v=1"></script>
 <script src="daily-poetry.js?v=4"></script>
 <script src="daily-play.js?v=1"></script>
-<script src="daily-dino-certificate.js?v=1"></script>
-<script src="daily-dino-wishes.js?v=2"></script>
-<script src="daily-dino.js?v=5"></script>
+<script src="daily-dino-certificate.js?v=2"></script>
+<script src="daily-dino-wishes.js?v=3"></script>
+<script src="daily-dino.js?v=6"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
@@ -209,7 +209,7 @@ function dinoWishesHomeCard(){
 }
 function dinoGiftHomeCard(){
  // The earned certificate remains downloadable after the arcade season ends.
- if(!isInvited()||window.DailyDino.read().best<15000)return '';
+ if(!isInvited()||window.DailyDino.read().best<10000)return '';
  return '<details class="dino-home-claimed"><summary>🌸 Мой выигранный сертификат · Магнит Косметик · 5 000 ₽</summary>'+
   window.DailyDinoCertificate.certificateControls(organizerMode&&!window.SDTest.active())+
   '</details>';
@@ -251,7 +251,7 @@ function renderSeriesMenu(){
   '</div>';
  window.DailyDinoCertificate.bind(root,{
   preview:organizerMode&&!window.SDTest.active(),
-  unlocked:()=>window.DailyDino.read().best>=15000&&isInvited()
+  unlocked:()=>window.DailyDino.read().best>=10000&&isInvited()
  });
  window.DailyDinoWishes.bind(root,{
   preview:organizerMode&&!window.SDTest.active(),getScore:()=>window.DailyDino.read().best,
