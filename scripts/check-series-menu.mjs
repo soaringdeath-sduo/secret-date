@@ -68,6 +68,11 @@ assert.ok(b.root.querySelector('a[href="#dino"]'),'Arcade should be accessible d
 b.root.querySelector('a[href="#quests"]').click();
 await tick(35);
 assert.ok(b.root.querySelector('.daily-grid'),'Quest option opens existing daily chapters');
+assert.ok(b.root.textContent.includes('Наши квесты'),'Quest area has its own focused heading');
+assert.equal(b.root.querySelector('.daily-arcade-home'),null,'Dino must not be duplicated inside the quest list');
+assert.equal(b.root.querySelector('#open-dino'),null,'No redundant launch-game button in quests');
+assert.equal(b.root.querySelector('#daily-poetry-library'),null,'Poetry archive must not repeat underneath quest cards');
+assert.equal(b.root.querySelector('.dino-home-claimed'),null,'The earned gift shelf lives in the main menu only');
 assert.ok(b.root.querySelector('a.series-back[href="#menu"]'),'Quest list can return to main menu');
 b.root.querySelector('[data-open="0"]').click();
 await tick(35);
@@ -81,6 +86,8 @@ assert.ok(b.root.querySelector('.series-menu'),'Menu is accessible after a chapt
 b.root.querySelector('a[href="#daily-poetry-library"]').click();
 await tick(35);
 assert.ok(b.root.textContent.includes('Стихи для тебя'),'Poem archive should open');
+assert.ok(b.root.querySelector('#daily-poetry-library'),'Poetry archive must live only under its own menu item');
+assert.equal(b.root.querySelector('.daily-grid'),null,'Poetry route must not include chapter list');
 assert.ok(b.root.querySelector('a[href="#menu"]'),'Poem archive should return to menu');
 b.root.querySelector('a[href="#menu"]').click();
 await tick(35);
