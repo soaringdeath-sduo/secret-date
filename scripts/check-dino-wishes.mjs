@@ -49,7 +49,7 @@ assert.equal(wishes.status({score:5000,day:'sun',now:sunStart}).kind,'ready');
 assert.ok(wishes.card({score:5000,day:'sat',now:beforeSat}).includes('15 ноября 2026'));
 assert.ok(wishes.card({score:5000,day:'sun',now:beforeSun}).includes('16 ноября 2026'));
 const cardBefore=wishes.card({score:5000,day:'sat',now:beforeSat});
-for(const text of ['на свидании её использовать нельзя','день встречи','15 000 очков','покупки','деньги','косметика','Магнит Косметик'])
+for(const text of ['на свидании её использовать нельзя','День самого свидания','15 000 очков','покупки','деньги','косметика','Магнит Косметик'])
  assert.ok(cardBefore.includes(text),'Clear gift rule missing: '+text);
 assert.ok(!cardBefore.includes('data-wishes-activate'),'Do not expose claim button before date');
 assert.equal(wishes.redeem({score:5000,day:'sat',now:satStart,preview:true}).ok,false,'Preview must never activate');
@@ -70,7 +70,7 @@ assert.equal(wishes.status({score:5000,day:'sat',now:satStart+3600_000}).kind,'a
 assert.equal(wishes.status({score:5000,day:'sat',now:satStart+86_400_000}).kind,'used');
 assert.equal(wishes.status({score:5000,day:'sat',now:satStart+86_400_001}).kind,'used');
 assert.equal(wishes.redeem({score:5000,day:'sat',now:satStart+86_400_001}).ok,false,'The 24h gift cannot be restarted repeatedly');
-assert.deepEqual(JSON.parse(w.localStorage.getItem(wishes.KEY)),record,'State remains saved across route changes');
+assert.equal(JSON.stringify(JSON.parse(w.localStorage.getItem(wishes.KEY))),JSON.stringify(record),'State remains saved across route changes');
 assert.equal(wishes.status({score:5000,day:'sat',now:satStart,preview:true}).kind,'preview','Host preview must remain read-only');
 assert.ok(!wishes.card({score:5000,day:'sun',now:sunStart,preview:true}).includes('data-wishes-activate'));
 assert.ok(wishes.card({score:5000,day:'sat',now:satStart+1}).includes('Действуют до'));
