@@ -2,7 +2,7 @@
  * Export as a fully offline-built A4 landscape PDF or PNG; no external libraries. */
 (function(){
  'use strict';
- const THRESHOLD=15000;
+ const THRESHOLD=10000;
  const DETAIL={
   shop:'Магнит Косметик',amount:'5 000 ₽',
   recipient:'Лиза',issuer:'Игорь',expires:'31.12.2026'
@@ -80,7 +80,7 @@
   c.textAlign='right';c.fillText('ДЕЙСТВУЕТ ДО 31.12.2026',1450,991);
   c.textAlign='center';c.font='20px Arial,sans-serif';c.fillStyle='#8d6579';
   c.fillText('Личное обещание Игоря. Не является подарочной картой или сертификатом сети «Магнит Косметик».',W/2,1036);
-  c.font='italic 18px Georgia,serif';c.fillStyle='#b07a86';c.fillText('Разблокировано за 15 000 очков в игре «Динолюбик»',W/2,1076);
+  c.font='italic 18px Georgia,serif';c.fillStyle='#b07a86';c.fillText('Разблокировано за 10 000 очков в игре «Динолюбик»',W/2,1076);
   if(preview){
    c.save();c.translate(W/2,H/2);c.rotate(-.28);
    c.globalAlpha=.58;c.fillStyle='#a95474';c.font='bold 65px Arial,sans-serif';
