@@ -141,8 +141,8 @@ function next(w,expected,reason){
  w.StoryFlow.next();
  if(expected!==undefined)assert.equal(pageIndex(w),expected,reason+' (was '+prior+')');
 }
-async function route(origin,choice='omchino',category='romance'){
- const d=browser(source,'https://soaringdeath-sduo.github.io/secret-date/secret_date_game_luga.html',isolatedSeed('sat'),{fastTimers:true});
+async function route(origin,choice='omchino',category='romance',day='sat'){
+ const d=browser(source,'https://soaringdeath-sduo.github.io/secret-date/secret_date_game_luga.html',isolatedSeed(day),{fastTimers:true});
  d.loadScripts(['story-flow.js']);
  const w=d.w,doc=d.document;
  w.SecretSoundtrack={
@@ -291,15 +291,36 @@ async function route(origin,choice='omchino',category='romance'){
  next(w,5,'embrace');
  tap('#hug');
  assert.ok(doc.querySelector('#hug-text').textContent.includes('обнимай'));
- const results={origin,stages:14,ending:choice,category,radio:origin==='zap'?'radio-zap-v2.mp3':'radio-luga-v2.mp3',archiveLink:a.href};
+ const results={origin,day,stages:14,ending:choice,category,radio:origin==='zap'?'radio-zap-v2.mp3':'radio-luga-v2.mp3',archiveLink:a.href};
  d.dom.window.close();
  return results;
 }
 console.log('✓ Full invitation and both date choices:',invitation('sat'),invitation('sun'));
 await quizAll();
-const zap=await route('zap');
-const luga=await route('luga');
-const arcade=await route('zap','minigame','adventure');
-const activity=await route('luga','anticafe','adventure');
-const cinema=await route('zap','thriller','cinema');
-console.log('✓ Route all the way through three finale types, custom quest, and both origins:',JSON.stringify({zap,luga,arcade,activity,cinema}));
+// Every configured ending now receives a real 14-stage DOM walkthrough,
+ // not only a static rendering assertion. Both start points and both date
+ // selections are represented; one romance and two cinema routes are repeated.
+const cases=[
+ ['zap','omchino','romance','sat'],
+ ['luga','omchino','romance','sun'],
+ ['luga','toloni','romance','sat'],
+ ['zap','zarechny','romance','sun'],
+ ['luga','bowling','adventure','sat'],
+ ['luga','anticafe','adventure','sun'],
+ ['zap','minigame','adventure','sat'],
+ ['zap','thriller','cinema','sat'],
+ ['luga','comedy','cinema','sun'],
+ ['zap','lovefilm','cinema','sat']
+];
+const endings=new Set();
+const checks=[];
+for(const args of cases){
+ const completed=await route(...args);
+ endings.add(completed.ending);
+ checks.push(completed);
+}
+assert.deepEqual([...endings].sort(),['omchino','toloni','zarechny','bowling','anticafe','minigame','thriller','comedy','lovefilm'].sort(),
+ 'All nine configured endings must be reachable through a full DOM route');
+assert.deepEqual([...new Set(checks.map(x=>x.day))].sort(),['sat','sun']);
+assert.deepEqual([...new Set(checks.map(x=>x.origin))].sort(),['luga','zap']);
+console.log('✓ ALL nine ending options, two launch cities and both encounter dates fully traversed:',JSON.stringify(checks));
