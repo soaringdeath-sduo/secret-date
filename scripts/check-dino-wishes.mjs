@@ -19,7 +19,6 @@ assert.ok(css.includes('.dino-wish-card')&&!css.includes('.dino-wish-toast'),'Ac
 assert.ok(game.includes("5000,title:'💝 24 часа пожеланий ПОСЛЕ свидания'"));
 assert.ok(game.includes('суммарно до 1 000 ₽'),'Dino reward must show the 1000 RUB cap');
 assert.ok(!game.includes('без покупок, денег и косметики'),'Old blanket purchase ban must be removed');
-assert.equal(wishes.PURCHASE_LIMIT,1000,'Personal gift limit is 1000 RUB total, not per request');
 
 const dom=new JSDOM('<!doctype html><body><div id="test"></div></body>',{
  url:'https://soaringdeath-sduo.github.io/secret-date/daily.html',runScripts:'outside-only'
@@ -30,6 +29,7 @@ w.confirm=()=>true;
 w.alert=message=>{throw new Error(message)};
 w.eval(code);
 const wishes=w.DailyDinoWishes;
+assert.equal(wishes.PURCHASE_LIMIT,1000,'Personal gift limit is 1000 RUB total, not per request');
 const beforeSat=Date.UTC(2026,10,14,20,59,59); // 14 Nov, 23:59 MSK
 const satStart=Date.UTC(2026,10,14,21,0,0);  // 15 Nov, 00:00 MSK
 const beforeSun=Date.UTC(2026,10,15,20,59,59); // 15 Nov, 23:59 MSK
