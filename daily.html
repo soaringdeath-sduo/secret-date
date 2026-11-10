@@ -199,14 +199,6 @@ function phase(i){
 const available=i=>window.SDTest.active()||isInvited()&&phase(i)==='today';
 const canContinue=()=>window.SDTest.active()||previewMode&&organizerMode||available(current);
 const canOpenArcade=()=>window.DailyDino.gameAvailable(nowTrusted(),chosen(),isInvited(),window.SDTest.active()||organizerMode);
-function dinoHomeCard(){
- if(!canOpenArcade())return '';
- const best=window.DailyDino.read().best;
- return '<div class="daily-arcade-home"><div class="kicker">НОВАЯ ИГРА · БОНУС ДЛЯ ЛИЗЫ</div>'+
- '<h3>🦕 Динолюбик ♡</h3><p>Прыгай, собирай сердца и заработай настоящие подарки! <b>2 000</b> — шоколадка, <b>5 000</b> — сутки пожеланий, а <b>15 000</b> — сертификат на 5 000 ₽ в «Магнит Косметик». После 10 000 игра станет сложнее!</p>'+
- '<div class="daily-mini-marks"><span>Рекорд: '+best+'</span><span>🍫 2 000</span><span>💝 5 000</span><span>🔥 10 000 · сложнее</span><span>🌸 15 000 · сертификат</span></div>'+
- '<button type="button" class="btn" id="open-dino">🎮 Играть за сердечки →</button></div>';
-}
 function dinoGiftHomeCard(){
  // The earned certificate remains downloadable after the arcade season ends.
  if(!isInvited()||window.DailyDino.read().best<15000)return '';
@@ -265,6 +257,11 @@ function showInterludeIfReady(){
   }
  });
 }
+function questsIntro(){
+ return '<div class="kicker">ОПЕРАЦИЯ 28.10 · ЕЖЕДНЕВНЫЕ ГЛАВЫ</div>'+
+ '<h1>Наши квесты ♡</h1>'+
+ '<p class="subtitle">Выбирай доступную главу. В каждой — 15 романтических вопросов, две мини-игры и маленький секретный сюрприз. Прогресс сохраняется.</p>';
+}
 function intro(){
  return '<div class="kicker">НАШ МАЛЕНЬКИЙ СЕРИАЛ • ОПЕРАЦИЯ 28.10</div>'
   +'<h1>Каждый день —<br><em>немного любви ♡</em></h1>'
@@ -296,7 +293,7 @@ function renderHome(){
   window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),organizerMode);
   return;
  }
- let html='<a class="series-back" href="#menu">← Все разделы мини-сериала</a>'+intro()+dinoHomeCard()+dinoGiftHomeCard()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
+ let html='<a class="series-back" href="#menu">← Все разделы мини-сериала</a>'+questsIntro()+'<div class="day-count"><span class="day-badge">📖 Выпусков: '+numberOfDays()+'</span><span class="day-badge">💗 Печатей: '+progressDone()+' / '+numberOfDays()+'</span></div>';
  if(window.SDTest.active())html+='<div class="daily-preview-note">🔧 ПОЛНЫЙ ПРОХОД: пройди все 90 вопросов по очереди. Ответы сохраняются отдельно от данных Лизы. После последней главы откроется маршрут.</div>';
  if(nowTrusted()===null&&!window.SDTest.active()){
   html+='<div class="daily-clock-warning">🕒 '+safe(clockError||'Проверяем текущее московское время по сайту…')
@@ -315,20 +312,13 @@ function renderHome(){
  }
  html+='</div>';
  if(window.DailyCouple.ready(chosen(),state()))html+=window.DailyCouple.invitation();
- html+='<div id="daily-poetry-library"></div>';
- html+='<p class="skip-note">Каждая игра доступна только в свой день с 09:00 до конца дня по Москве. Прошедшие выпуски остаются в списке, а заработанные печати сохраняются.</p>'
+ html+='<p class="skip-note">Каждая глава доступна только в свой день с 09:00 до конца дня по Москве. Уже полученные печати сохраняются, а стихи и «Динолюбик» находятся в отдельных разделах главного меню.</p>'
  +'<a href="index.html" class="btn alt" style="display:block;text-align:center;text-decoration:none">Вернуться к приглашению ♡</a>';
  root.innerHTML=html;
- const arcade=root.querySelector('#open-dino');if(arcade)arcade.addEventListener('click',()=>{window.location.hash='#dino';if(window.SDTest.active())openDino();});
- window.DailyDinoCertificate.bind(root,{
-  preview:organizerMode&&!window.SDTest.active(),
-  unlocked:()=>window.DailyDino.read().best>=15000&&isInvited()
- });
  const retry=root.querySelector('#clock-retry');
  if(retry)retry.addEventListener('click',()=>syncClock(true));
  root.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openDay(Number(el.dataset.open),organizerMode)));
  window.DailyCouple.bind(root,chosen,state);
- window.DailyPoetry.library(root.querySelector('#daily-poetry-library'),state(),chosen(),organizerMode);
 }
 function showUnavailable(){
  current=-1;episode=null;renderHome();
