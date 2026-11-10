@@ -14,12 +14,15 @@ for(const [name,code] of [['index.html',index],['daily.html',daily],['secret_dat
  const scripts=[...code.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
  assert.ok(scripts.length>0,name+': missing inline scripts');
  for(const m of scripts)new Function(m[1]);
- has(code,'host-full-test.js?v=1',name+': full test loader');
+ has(code,name==='daily.html'?'host-full-test.js?v=1':'host-full-test.js?v=2',name+': full test loader');
  has(code,'const localStorage=window.SDTest.storage;',name+': storage isolation');
  console.log('✓ Inline scripts and isolation:',name);
 }
-has(index,"8 — ПОЛНЫЙ ПРОХОД С НУЛЯ",'Invitation must offer full host test');
+has(index,"8 — ПОЛНЫЙ ПРОХОД С ОТКРЫТКИ",'Invitation must offer full host test');
 has(index,"window.SDTest.start();",'Start must clear prior test progress');
+has(index,"window.SDTest.startGame();",'Organizers must be able to test the first game stage directly');
+has(quest,"host-start-first",'Game should include first-stage quick action for host');
+has(helper,"function startGame(){",'Direct first-stage test should remain isolated from real data');
 has(index,"sd-full-daily-next",'Invitation must link to daily test');
 has(daily,"const available=i=>window.SDTest.active()",'Daily chapter clock must not block host test');
 has(daily,"const numberOfDays=()=>window.SDTest.active()",'Host must see all 6 days');
