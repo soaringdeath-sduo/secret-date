@@ -17,7 +17,7 @@ assert.ok(daily.includes('dinoWishesHomeCard()'),'Earned wishes must be accessib
 assert.ok(daily.includes('getNow:nowTrusted,getDay:chosen'),'Dino must use trusted time and chosen date');
 assert.ok(css.includes('.dino-wish-card')&&!css.includes('.dino-wish-toast'),'Activation status must not obscure gameplay');
 assert.ok(game.includes("5000,title:'💝 24 часа пожеланий ПОСЛЕ свидания'"));
-assert.ok(game.includes('общую сумму до 1 000 ₽'),'Dino reward must show the 1000 RUB cap');
+assert.ok(game.includes('суммарно до 1 000 ₽'),'Dino reward must show the 1000 RUB cap');
 assert.ok(!game.includes('без покупок, денег и косметики'),'Old blanket purchase ban must be removed');
 assert.equal(wishes.PURCHASE_LIMIT,1000,'Personal gift limit is 1000 RUB total, not per request');
 
