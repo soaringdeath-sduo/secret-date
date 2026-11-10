@@ -190,7 +190,7 @@ that other services will comply. See ai-policy.txt.
     <section class="card" id="card" aria-live="polite"></section>
     <footer><button id="host-entry" type="button" class="host-entry" aria-label="Подпись открытки">СДЕЛАНО ИГОРЕМ · С ЛЮБОВЬЮ И КАПЕЛЬКОЙ ХИТРОСТИ ♡</button></footer>
   </main>
-  <script src="host-full-test.js?v=1"></script>
+  <script src="host-full-test.js?v=2"></script>
   <script>
     "use strict";
     const localStorage=window.SDTest.storage;
@@ -300,13 +300,14 @@ that other services will comply. See ai-policy.txt.
     }
     function hostTools(){
       const raw=prompt('Режим ведущего: введите код');
-      if((raw||'').trim()!==HOST_CODE)return;
+      if(raw===null)return;
+      if((raw||'').trim()!==HOST_CODE){alert('Код ведущего не подошёл. Используй именно код ведущего, а не пароль приглашения.');return;}
       localStorage.setItem(HOST_KEY,'1');
-      const option=prompt('Проверка: 1 — вопросы, 2 — дата/таймер, 3 — игра, 4 — выйти, 5 — выбор даты, 6 — все мини-игры, 7 — музыкальные открытки, 8 — ПОЛНЫЙ ПРОХОД С НУЛЯ','8');
+      const option=prompt('Режим ведущего: 1 — вопросы, 2 — дата/таймер, 3 — ИГРА С ПЕРВОГО ЭТАПА (без GPS), 4 — выйти, 5 — выбор даты, 6 — мини-сериал, 7 — музыкальные открытки, 8 — ПОЛНЫЙ ПРОХОД С ОТКРЫТКИ','3');
       if(option==='4'){if(window.SDTest.active()){window.SDTest.stop();return;}localStorage.removeItem(HOST_KEY);render();return;}
       if(option==='8'){window.SDTest.start();return;}
       if(option==='1'){stage=-1;localStorage.removeItem(INVITE_KEY);render();return;}
-      if(option==='3'){localStorage.setItem(INVITE_KEY,'1');window.location.href='secret_date_game_luga.html';return;}
+      if(option==='3'){window.SDTest.startGame();return;}
       if(option==='6'){window.location.href='daily.html';return;}
       if(option==='7'){localStorage.setItem(INVITE_KEY,'1');window.location.href='secret_date_game_luga.html?host-music-preview=1';return;}
       if(option==='2'||option==='5'){localStorage.setItem(INVITE_KEY,'1');stage=option==='5'?questions.length+1:(getDay()?questions.length+2:questions.length+1);render();return;}
@@ -467,7 +468,14 @@ that other services will comply. See ai-policy.txt.
       }
     }
     let secretClicks=0;
+    const directHostLogin=new URLSearchParams(window.location.search).get('host')==='1';
+    if(directHostLogin){
+      const entry=document.getElementById('host-entry');
+      entry.textContent='🔧 Вход ведущего — нажми здесь';
+      entry.setAttribute('aria-label','Открыть окно входа ведущего');
+    }
     document.getElementById('host-entry').addEventListener('click',()=>{
+      if(directHostLogin){hostTools();return;}
       if(++secretClicks>=6){secretClicks=0;hostTools();}
     });
     window.addEventListener('pagehide',()=>{if(ticker!==null)clearInterval(ticker);});

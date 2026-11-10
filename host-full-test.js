@@ -28,6 +28,18 @@
     clearTestData();
     window.location.assign('index.html?replay=1');
   }
+  // Jump to the first GPS story chapter in a completely isolated test session.
+  // Never write invitation, date, GPS or route progress to the real visitor keys.
+  function startGame(){
+    const selected=real.getItem('sd2810-selected-day-v1');
+    real.setItem(HOST,'1');
+    real.setItem(ACTIVE,'1');
+    clearTestData();
+    storage.setItem('sd2810-selected-day-v1',['sat','sun'].includes(selected)?selected:'sat');
+    storage.setItem('sd2810-invite-approved-v3','1');
+    storage.setItem('sd2810-route-v7','0');
+    window.location.assign('secret_date_game_luga.html');
+  }
   function resume(){if(active())window.location.assign('index.html');}
   function stop(){
     try{real.removeItem(ACTIVE);real.removeItem(HOST);}catch(e){}
@@ -53,7 +65,7 @@
       if(window.confirm('Завершить тест и вернуться к обычной версии?'))stop();
     });
   }
-  window.SDTest={active,start,resume,stop,storage,navTo,banner,clearTestData};
+  window.SDTest={active,start,startGame,resume,stop,storage,navTo,banner,clearTestData};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',banner);
   else banner();
 })();
