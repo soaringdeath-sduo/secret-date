@@ -13,7 +13,7 @@
  }
  const GIFTS=[
   {at:2000,title:'🍫 Шоколадка от Игоря',detail:'Покажи купон Игорю — он должен тебе шоколадку.'},
-  {at:5000,title:'💝 24 часа твоих пожеланий',detail:'Игорь исполняет твои пожелания целые сутки — в разумных пределах, по взаимному согласию и без опасных заданий.'},
+  {at:5000,title:'💝 24 часа пожеланий ПОСЛЕ свидания',detail:'Заработано навсегда! Но активировать сутки можно только на следующий день после свидания или позже. Пожелания нематериальные: без покупок, денег и косметики. Подарок «Магнит Косметик» — отдельно за 15 000 очков.'},
   {at:15000,title:'🌸 Магнит Косметик — покупки на 5 000 ₽',detail:'Один совместный поход до 31.12.2026 включительно. Лиза выбирает покупки, Игорь оплачивает до 5 000 ₽. Это личный подарок, не сертификат магазина.'}
  ];
  function read(){
@@ -48,7 +48,7 @@
   let best=previous.best;
   host.innerHTML='<div class="kicker">СЕКРЕТНЫЙ АРКАДНЫЙ БОНУС · ОПЕРАЦИЯ 28.10</div>'+
    '<div class="daily-dino-title">🦕 <span>Динолюбик</span> 💗</div>'+
-   '<p class="subtitle">Прыгай через препятствия и собирай сердечки! Очки за расстояние и сердца суммируются <b>в одном забеге</b>. После <b>10 000 очков</b> включится турбо-режим: препятствия станут чуть чаще и быстрее. За <b>15 000 очков</b> — подарок на 5 000 ₽ в «Магнит Косметик»! ♡</p>'+
+   '<p class="subtitle">Прыгай через препятствия и собирай сердечки! Очки за расстояние и сердца суммируются <b>в одном забеге</b>. За 5 000 очков открываются <b>24 часа нематериальных пожеланий после свидания</b> (на самом свидании они не действуют). После <b>10 000</b> включится турбо-режим. За <b>15 000 очков</b> — отдельный подарок на 5 000 ₽ в «Магнит Косметик»! ♡</p>'+
    (opts.preview?'<p class="daily-preview-note">🔧 Тестовый просмотр: награды и рекорд Лизы не сохраняются.</p>':'')+
    '<div class="daily-dino-scores"><span>Очки <b id="dino-score">0</b></span><span>Рекорд <b id="dino-best">'+best+'</b></span><span>Сердечки <b id="dino-hearts">0</b></span></div>'+
    '<div class="daily-dino-difficulty" id="dino-difficulty" aria-live="polite">🌷 Нежный режим · усложнение после 10 000 очков</div>'+
@@ -136,7 +136,14 @@
    rewardEl.innerHTML=GIFTS.map(g=>'<div class="daily-dino-gift'+(shown>=g.at?' is-unlocked':'')+'"><strong>'+
     (shown>=g.at?'✅ ':'🔒 ')+g.at+' очков · '+g.title+'</strong><span>'+
     (shown>=g.at?g.detail:'Пока закрыто. Ещё '+Math.max(0,g.at-shown)+' очков до награды.')+'</span></div>').join('')+
+    (shown>=5000&&window.DailyDinoWishes?
+      '<details class="dino-wish-drawer"><summary>💝 Условия и активация суток пожеланий</summary>'+
+        window.DailyDinoWishes.card({score:shown,day:opts.getDay?.(),now:opts.getNow?.(),preview:!!opts.preview})+'</details>':'')+
     (shown>=PREMIUM_AT&&window.DailyDinoCertificate?window.DailyDinoCertificate.certificateControls(opts.preview):'');
+   if(shown>=5000&&window.DailyDinoWishes)window.DailyDinoWishes.bind(rewardEl,{
+    preview:!!opts.preview,getScore:()=>read().best,getDay:opts.getDay,getNow:opts.getNow,
+    onChange:awards
+   });
    if(shown>=PREMIUM_AT&&window.DailyDinoCertificate)window.DailyDinoCertificate.bind(rewardEl,{
     preview:opts.preview,unlocked:()=>read().best>=PREMIUM_AT
    });

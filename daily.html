@@ -110,7 +110,7 @@ p{line-height:1.65;color:#795d6d}
 </style>
 <link rel="stylesheet" href="host-full-test.css?v=2">
 <link rel="stylesheet" href="daily-poetry.css?v=3">
-<link rel="stylesheet" href="daily-play.css?v=5">
+<link rel="stylesheet" href="daily-play.css?v=6">
 </head>
 <body class="polaroid-site">
 <div class="daily-shell">
@@ -124,7 +124,8 @@ p{line-height:1.65;color:#795d6d}
 <script src="daily-poetry.js?v=4"></script>
 <script src="daily-play.js?v=1"></script>
 <script src="daily-dino-certificate.js?v=1"></script>
-<script src="daily-dino.js?v=3"></script>
+<script src="daily-dino-wishes.js?v=1"></script>
+<script src="daily-dino.js?v=4"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
@@ -199,6 +200,13 @@ function phase(i){
 const available=i=>window.SDTest.active()||isInvited()&&phase(i)==='today';
 const canContinue=()=>window.SDTest.active()||previewMode&&organizerMode||available(current);
 const canOpenArcade=()=>window.DailyDino.gameAvailable(nowTrusted(),chosen(),isInvited(),window.SDTest.active()||organizerMode);
+function dinoWishesHomeCard(){
+ const best=window.DailyDino.read().best;
+ if(best<5000||!isInvited())return '';
+ return '<div class="dino-wishes-home">'+
+   window.DailyDinoWishes.card({score:best,day:chosen(),now:nowTrusted(),preview:organizerMode&&!window.SDTest.active()})+
+   '</div>';
+}
 function dinoGiftHomeCard(){
  // The earned certificate remains downloadable after the arcade season ends.
  if(!isInvited()||window.DailyDino.read().best<15000)return '';
@@ -209,7 +217,8 @@ function dinoGiftHomeCard(){
 function openDino(){
  if(!canOpenArcade())return;
  current=-1;episode=null;arcadeOpen=true;root.dataset.theme='peach';
- window.DailyDino.mount(root,{canPlay:canOpenArcade,preview:organizerMode&&!window.SDTest.active(),onExit:()=>{
+ window.DailyDino.mount(root,{canPlay:canOpenArcade,preview:organizerMode&&!window.SDTest.active(),
+  getNow:nowTrusted,getDay:chosen,onExit:()=>{
   window.location.hash='#menu';renderHome();
  }});
 }
@@ -227,7 +236,7 @@ function renderSeriesMenu(){
   '<div class="series-menu-grid">'+
   '<a class="series-menu-tile series-menu-tile-game'+(gameReady?'':' is-locked')+'" href="#dino">'+
   '<span class="series-menu-icon" aria-hidden="true">🦕</span><span class="series-menu-copy"><strong>Динолюбик</strong>'+
-  '<small>'+(gameReady?'Прыгай, собирай сердечки и получай подарки. Рекорд: '+best+' ♡':'Аркада откроется в дни мини-сериала после проверки времени')+'</small>'+
+  '<small>'+(gameReady?'Прыгай, собирай сердечки и получай подарки. Рекорд: '+best+' ♡':'Аркада откроется в дни мини-сериала после проверки времени')+' 24 часа пожеланий действуют только после свидания.</small>'+
   '<span class="series-menu-action">'+(gameReady?'Играть →':'Условия доступа →')+'</span></span></a>'+
   '<a class="series-menu-tile series-menu-tile-poems" href="#daily-poetry-library">'+
   '<span class="series-menu-icon" aria-hidden="true">🎧</span><span class="series-menu-copy"><strong>Стихи для тебя</strong>'+
@@ -237,12 +246,16 @@ function renderSeriesMenu(){
   '<span class="series-menu-icon" aria-hidden="true">📸</span><span class="series-menu-copy"><strong>Квесты и главы</strong>'+
   '<small>15 вопросов, мини-игры и секретные сюрпризы в каждом выпуске.</small>'+
   '<span class="series-menu-action">Выбрать главу →</span></span></a></div>'+
-  dinoGiftHomeCard()+
+  dinoWishesHomeCard()+dinoGiftHomeCard()+
   '<p class="series-menu-note">Новые выпуски открываются только в назначенный день. Уже пройденные ответы и призы сохраняются.</p>'+
   '</div>';
  window.DailyDinoCertificate.bind(root,{
   preview:organizerMode&&!window.SDTest.active(),
   unlocked:()=>window.DailyDino.read().best>=15000&&isInvited()
+ });
+ window.DailyDinoWishes.bind(root,{
+  preview:organizerMode&&!window.SDTest.active(),getScore:()=>window.DailyDino.read().best,
+  getDay:chosen,getNow:nowTrusted,onChange:renderHome
  });
 }
 function showInterludeIfReady(){

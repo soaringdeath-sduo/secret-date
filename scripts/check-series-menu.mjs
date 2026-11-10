@@ -11,7 +11,7 @@ assert.ok(html.includes('href="#daily-poetry-library"'),'Poems need a dedicated 
 assert.ok(html.includes('href="#quests"'),'Quests need a dedicated entry');
 assert.ok(html.includes('href="#dino"'),'Game menu choice must always show its own access status, not open quests');
 assert.ok(html.includes("const resumeRequested=()=>window.location.hash==='#resume'"),'Existing chapter-resume link must survive');
-assert.ok(css.includes('.series-menu-tile')&&html.includes('daily-play.css?v=5'),'Polaroid menu and fresh CSS must load');
+assert.ok(css.includes('.series-menu-tile')&&html.includes('daily-play.css?v=6'),'Polaroid menu and fresh CSS must load');
 assert.ok(file('index.html').includes('id="daily-story-link"'),'Invitation must still lead to the mini-series');
 
 const inline=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
@@ -51,7 +51,7 @@ function makeBrowser(hash='',extra={}){
  };
  w.HTMLCanvasElement.prototype.getContext=()=>ctx;
  w.requestAnimationFrame=()=>1;w.cancelAnimationFrame=()=>{};
- for(const path of ['host-full-test.js','couple-core.js','daily-couple.js','daily-poetry.js','daily-play.js','daily-dino-certificate.js','daily-dino.js'])
+ for(const path of ['host-full-test.js','couple-core.js','daily-couple.js','daily-poetry.js','daily-play.js','daily-dino-certificate.js','daily-dino-wishes.js','daily-dino.js'])
   w.eval(file(path));
  for(const script of inline)w.eval(script);
  return {dom,w,root:w.document.querySelector('#daily-root')};

@@ -131,3 +131,21 @@
 .series-back:hover{text-decoration:underline}
 @media(max-width:385px){.series-menu-tile{grid-template-columns:65px 1fr;gap:12px;padding:13px 10px;min-height:109px}.series-menu-icon{width:64px;height:74px;font-size:35px;border-width:4px}.series-menu-copy strong{font-size:23px}}
 @media(prefers-reduced-motion:reduce){.series-menu-tile{transition:none}}
+
+
+/* The 5000-point reward is a deferred non-monetary 24h wish pass.
+   Status and activation always live BELOW the game, never over the canvas. */
+.dino-wishes-home{margin:18px 0}
+.dino-wish-drawer{border:1px solid #d9a7bd;border-radius:15px;background:#fbe4ec;margin:12px 0}
+.dino-wish-drawer summary{padding:15px 13px;color:#854864;font-weight:850;font-size:14px;cursor:pointer;line-height:1.45}
+.dino-wish-drawer[open] summary{border-bottom:1px dashed #d1a4b3}
+.dino-wish-drawer>.dino-wish-card{margin:9px 11px 14px}
+.dino-wish-card{background:linear-gradient(135deg,#fff8ef,#ffe8ef 75%,#f4e2f1);border:2px solid #d8a3b9;border-radius:17px;padding:18px 15px;margin:10px 0;color:#76435b;box-shadow:0 6px 17px #ac6a8432;text-align:left}
+.dino-wish-kicker{font:850 10px/1.5 system-ui,sans-serif;letter-spacing:1.45px;color:#a45a79}
+.dino-wish-card h3{margin:9px 0 12px;font:italic 27px/1.17 Georgia,serif;color:#73394f}
+.dino-wish-description{font-size:13px;line-height:1.6;color:#835670}
+.dino-wish-status{border:1px solid #d7a2b7;background:#f8dee9;border-radius:11px;padding:12px 13px;color:#87415e;font-size:13px;font-weight:700;line-height:1.65;margin:12px 0}
+.dino-wish-card>.btn{display:block;width:100%;margin:10px 0 13px;padding:12px 10px;min-height:48px}
+.dino-wish-caution{font-size:11px;color:#946b7f;line-height:1.5}
+.dino-wish-terms{font-size:12px;line-height:1.65;color:#7d556b;border-top:1px dashed #d2a1b2;margin-top:16px;padding-top:12px}
+.dino-wish-terms p{font-size:12px;margin:11px 0 0;line-height:1.65}
