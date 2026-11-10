@@ -124,8 +124,8 @@ p{line-height:1.65;color:#795d6d}
 <script src="daily-poetry.js?v=4"></script>
 <script src="daily-play.js?v=1"></script>
 <script src="daily-dino-certificate.js?v=1"></script>
-<script src="daily-dino-wishes.js?v=1"></script>
-<script src="daily-dino.js?v=4"></script>
+<script src="daily-dino-wishes.js?v=2"></script>
+<script src="daily-dino.js?v=5"></script>
 <script>
 'use strict';
 const localStorage=window.SDTest.storage;
@@ -236,7 +236,7 @@ function renderSeriesMenu(){
   '<div class="series-menu-grid">'+
   '<a class="series-menu-tile series-menu-tile-game'+(gameReady?'':' is-locked')+'" href="#dino">'+
   '<span class="series-menu-icon" aria-hidden="true">🦕</span><span class="series-menu-copy"><strong>Динолюбик</strong>'+
-  '<small>'+(gameReady?'Прыгай, собирай сердечки и получай подарки. Рекорд: '+best+' ♡':'Аркада откроется в дни мини-сериала после проверки времени')+' 24 часа пожеланий действуют только после свидания.</small>'+
+  '<small>'+(gameReady?'Прыгай, собирай сердечки и получай подарки. Рекорд: '+best+' ♡':'Аркада откроется в дни мини-сериала после проверки времени')+' 24 часа пожеланий действуют только после свидания; общий лимит мелких покупок — 1 000 ₽.</small>'+
   '<span class="series-menu-action">'+(gameReady?'Играть →':'Условия доступа →')+'</span></span></a>'+
   '<a class="series-menu-tile series-menu-tile-poems" href="#daily-poetry-library">'+
   '<span class="series-menu-icon" aria-hidden="true">🎧</span><span class="series-menu-copy"><strong>Стихи для тебя</strong>'+
