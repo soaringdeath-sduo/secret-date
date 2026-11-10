@@ -300,7 +300,8 @@ that other services will comply. See ai-policy.txt.
     }
     function hostTools(){
       const raw=prompt('Режим ведущего: введите код');
-      if((raw||'').trim()!==HOST_CODE)return;
+      if(raw===null)return;
+      if((raw||'').trim()!==HOST_CODE){alert('Код ведущего не подошёл. Используй именно код ведущего, а не пароль приглашения.');return;}
       localStorage.setItem(HOST_KEY,'1');
       const option=prompt('Режим ведущего: 1 — вопросы, 2 — дата/таймер, 3 — ИГРА С ПЕРВОГО ЭТАПА (без GPS), 4 — выйти, 5 — выбор даты, 6 — мини-сериал, 7 — музыкальные открытки, 8 — ПОЛНЫЙ ПРОХОД С ОТКРЫТКИ','3');
       if(option==='4'){if(window.SDTest.active()){window.SDTest.stop();return;}localStorage.removeItem(HOST_KEY);render();return;}
@@ -467,7 +468,14 @@ that other services will comply. See ai-policy.txt.
       }
     }
     let secretClicks=0;
+    const directHostLogin=new URLSearchParams(window.location.search).get('host')==='1';
+    if(directHostLogin){
+      const entry=document.getElementById('host-entry');
+      entry.textContent='🔧 Вход ведущего — нажми здесь';
+      entry.setAttribute('aria-label','Открыть окно входа ведущего');
+    }
     document.getElementById('host-entry').addEventListener('click',()=>{
+      if(directHostLogin){hostTools();return;}
       if(++secretClicks>=6){secretClicks=0;hostTools();}
     });
     window.addEventListener('pagehide',()=>{if(ticker!==null)clearInterval(ticker);});
